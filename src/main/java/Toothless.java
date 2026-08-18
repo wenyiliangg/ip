@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * Starts the Toothless chatbot application.
  */
@@ -20,7 +22,19 @@ public class Toothless {
         System.out.println("Hi there! I'm Toothless. It's wonderful to meet you!");
         System.out.println("What can I do for you today?");
         System.out.println(divider);
-        System.out.println("Bye for now! I hope to see you again soon!");
-        System.out.println(divider);
+
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNextLine()) {
+            String command = scanner.nextLine();
+
+            if (command.equals("bye")) {
+                System.out.println("Bye-bye, friend! Hope to see you again soon! Take care!");
+                System.out.println(divider);
+                break;
+            }
+
+            System.out.println(command);
+            System.out.println(divider);
+        }
     }
 }
