@@ -17,10 +17,10 @@ public class Toothless {
         System.out.println(divider);
         System.out.println(banner);
         System.out.println();
-        System.out.println("Hello! I'm Toothless.");
-        System.out.println("What can I do for you?");
+        System.out.println("Hi there! I'm Toothless. It's wonderful to meet you!");
+        System.out.println("What can I do for you today?");
         System.out.println(divider);
-        System.out.println("Bye. Hope to see you again soon!");
+        System.out.println("Bye for now! I hope to see you again soon!");
         System.out.println(divider);
     }
 }

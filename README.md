@@ -26,10 +26,10 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    /___/   /|_______|\   \___\
            /_/     \_\
 
-   Hello! I'm Toothless.
-   What can I do for you?
+   Hi there! I'm Toothless. It's wonderful to meet you!
+   What can I do for you today?
    ____________________________________________________________
-   Bye. Hope to see you again soon!
+   Bye for now! I hope to see you again soon!
    ____________________________________________________________
    ```
 
