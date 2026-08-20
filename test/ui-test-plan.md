@@ -187,13 +187,170 @@ ____________________________________________________________
 Toothless can’t find task 999 in the cave.
 Please choose a number from 1 to 3.
 ____________________________________________________________
-All done! Toothless has removed this task:
+A tiny farewell roar! Toothless has removed this task:
   [T][ ] read book
-Now you have 2 tasks in the list. ★
+Now you have 2 tasks in the list.
 ____________________________________________________________
 Here are the tasks in your list:
 1.[D][★] return book (by: Sunday)
 2.[E][ ] project meeting (from: tomorrow to: 4pm)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+
+## TC-02: Delete tasks safely from an ArrayList
+
+Aim: Verify deletion from an empty list; invalid, missing, decimal, negative, zero, out-of-range, and extra arguments; deletion of first, middle, and last Todo, Deadline, and Event tasks; completed-task deletion; re-numbering; order; singular/plural counts; multiple deletions; and other commands after deletion.
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && javac -d /tmp/toothless-ui-classes src/main/java/*.java && java -cp /tmp/toothless-ui-classes Toothless'
+```
+
+Input:
+
+```text
+delete
+todo first task
+deadline middle deadline /by Friday
+event last event /from 2pm /to 3pm
+todo tail task
+mark 2
+delete
+delete abc
+delete 1.5
+delete 0
+delete -1
+delete 99
+delete 2 extra
+list
+delete 2
+list
+delete 1
+delete 2
+list
+mark 1
+delete 1
+list
+delete 1
+todo new task
+delete 1
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [DATE_OR_TIME]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Toothless's cave is empty, so there is no task to delete.
+Add a task first, then try again.
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] first task
+Now you have 1 task in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [D][ ] middle deadline (by: Friday)
+Now you have 2 tasks in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [E][ ] last event (from: 2pm to: 3pm)
+Now you have 3 tasks in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] tail task
+Now you have 4 tasks in the list. ★
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [D][★] middle deadline (by: Friday)
+____________________________________________________________
+Toothless needs a task number to delete.
+Try: delete 1
+____________________________________________________________
+That task number looks a little unusual.
+Please use a whole number, like: delete 1
+____________________________________________________________
+That task number looks a little unusual.
+Please use a whole number, like: delete 1
+____________________________________________________________
+Toothless can’t find task 0 in the cave.
+Please choose a number from 1 to 4.
+____________________________________________________________
+Toothless can’t find task -1 in the cave.
+Please choose a number from 1 to 4.
+____________________________________________________________
+Toothless can’t find task 99 in the cave.
+Please choose a number from 1 to 4.
+____________________________________________________________
+That task number looks a little unusual.
+Please use a whole number, like: delete 1
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] first task
+2.[D][★] middle deadline (by: Friday)
+3.[E][ ] last event (from: 2pm to: 3pm)
+4.[T][ ] tail task
+____________________________________________________________
+A tiny farewell roar! Toothless has removed this task:
+  [D][★] middle deadline (by: Friday)
+Now you have 3 tasks in the list.
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] first task
+2.[E][ ] last event (from: 2pm to: 3pm)
+3.[T][ ] tail task
+____________________________________________________________
+A tiny farewell roar! Toothless has removed this task:
+  [T][ ] first task
+Now you have 2 tasks in the list.
+____________________________________________________________
+A tiny farewell roar! Toothless has removed this task:
+  [T][ ] tail task
+Now you have 1 task in the list.
+____________________________________________________________
+Here are the tasks in your list:
+1.[E][ ] last event (from: 2pm to: 3pm)
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [E][★] last event (from: 2pm to: 3pm)
+____________________________________________________________
+A tiny farewell roar! Toothless has removed this task:
+  [E][★] last event (from: 2pm to: 3pm)
+Now you have 0 tasks in the list.
+____________________________________________________________
+Your task list is empty. Ready for a new adventure!
+____________________________________________________________
+Toothless's cave is empty, so there is no task to delete.
+Add a task first, then try again.
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] new task
+Now you have 1 task in the list. ★
+____________________________________________________________
+A tiny farewell roar! Toothless has removed this task:
+  [T][ ] new task
+Now you have 0 tasks in the list.
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________

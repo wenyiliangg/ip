@@ -4,7 +4,6 @@ import java.util.Scanner;
  * Starts the Toothless chatbot application.
  */
 public class Toothless {
-    private static final int MAX_TASKS = 100;
     private static final String DIVIDER = "____________________________________________________________";
     private static final String COMMANDS = "todo, deadline, event, list, mark, unmark, delete, or bye";
 
@@ -44,19 +43,6 @@ public class Toothless {
                     + "Please choose a number from 1 to " + taskCount + ".");
         }
         return taskNumber - 1;
-    }
-
-    /**
-     * Ensures a task can be added without exceeding the application's capacity.
-     *
-     * @param taskCount current number of tasks
-     * @throws ToothlessException if the task list is full
-     */
-    private static void ensureSpaceForTask(int taskCount) throws ToothlessException {
-        if (taskCount >= MAX_TASKS) {
-            throw new ToothlessException("Toothless's cave is full with " + MAX_TASKS + " tasks.\n"
-                    + "Delete one task before adding another.");
-        }
     }
 
     /**
@@ -191,9 +177,20 @@ public class Toothless {
     private static void printTaskAdded(Task task, int taskCount) {
         System.out.println("Got it! Toothless has added this task for you:");
         System.out.println("  " + task);
-        String taskWord = taskCount == 1 ? "task" : "tasks";
-        System.out.println("Now you have " + taskCount + " " + taskWord + " in the list. ★");
+        System.out.println(formatTaskCount(taskCount) + " ★");
     }
+
+    /**
+     * Formats the current task count with correct singular or plural grammar.
+     *
+     * @param taskCount current number of tasks
+     * @return sentence describing the current task count
+     */
+    private static String formatTaskCount(int taskCount) {
+        String taskWord = taskCount == 1 ? "task" : "tasks";
+        return "Now you have " + taskCount + " " + taskWord + " in the list.";
+    }
+
     /**
      * Runs the chatbot and responds to commands entered by the user.
      *
@@ -223,8 +220,7 @@ public class Toothless {
         System.out.println(DIVIDER);
 
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        TaskList taskList = new TaskList();
 
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine().trim();
@@ -249,58 +245,48 @@ public class Toothless {
                         throw new ToothlessException("The list command doesn't need extra words.\n"
                                 + "Try: list");
                     }
-                    if (taskCount == 0) {
+                    if (taskList.isEmpty()) {
                         System.out.println("Your task list is empty. Ready for a new adventure!");
                     } else {
                         System.out.println("Here are the tasks in your list:");
-                        for (int i = 0; i < taskCount; i++) {
-                            System.out.println((i + 1) + "." + tasks[i]);
+                        for (int i = 0; i < taskList.size(); i++) {
+                            System.out.println((i + 1) + "." + taskList.getTask(i));
                         }
                     }
                 } else if (command.equals("mark")) {
-                    int taskIndex = parseTaskIndex("mark", details, taskCount);
-                    tasks[taskIndex].markAsDone();
+                    int taskIndex = parseTaskIndex("mark", details, taskList.size());
+                    Task markedTask = taskList.markTask(taskIndex);
                     System.out.println("A happy little roar! I've starred this task as done:");
-                    System.out.println("  " + tasks[taskIndex]);
+                    System.out.println("  " + markedTask);
                 } else if (command.equals("unmark")) {
-                    int taskIndex = parseTaskIndex("unmark", details, taskCount);
-                    if (!tasks[taskIndex].isDone()) {
+                    int taskIndex = parseTaskIndex("unmark", details, taskList.size());
+                    Task selectedTask = taskList.getTask(taskIndex);
+                    if (!selectedTask.isDone()) {
                         System.out.println("This task wasn't marked as done before, little rider:");
-                        System.out.println("  " + tasks[taskIndex]);
+                        System.out.println("  " + selectedTask);
                     } else {
-                        tasks[taskIndex].unmarkAsDone();
+                        Task unmarkedTask = taskList.unmarkTask(taskIndex);
                         System.out.println("All right, little rider! I've unstarred this task for now:");
-                        System.out.println("  " + tasks[taskIndex]);
+                        System.out.println("  " + unmarkedTask);
                     }
                 } else if (command.equals("delete")) {
-                    int taskIndex = parseTaskIndex("delete", details, taskCount);
-                    Task deletedTask = tasks[taskIndex];
-                    for (int i = taskIndex; i < taskCount - 1; i++) {
-                        tasks[i] = tasks[i + 1];
-                    }
-                    tasks[taskCount - 1] = null;
-                    taskCount--;
-                    System.out.println("All done! Toothless has removed this task:");
+                    int taskIndex = parseTaskIndex("delete", details, taskList.size());
+                    Task deletedTask = taskList.deleteTask(taskIndex);
+                    System.out.println("A tiny farewell roar! Toothless has removed this task:");
                     System.out.println("  " + deletedTask);
-                    System.out.println("Now you have " + taskCount + " tasks in the list. ★");
+                    System.out.println(formatTaskCount(taskList.size()));
                 } else if (command.equals("todo")) {
                     Todo todo = parseTodo(details);
-                    ensureSpaceForTask(taskCount);
-                    tasks[taskCount] = todo;
-                    taskCount++;
-                    printTaskAdded(tasks[taskCount - 1], taskCount);
+                    taskList.addTask(todo);
+                    printTaskAdded(todo, taskList.size());
                 } else if (command.equals("deadline")) {
                     Deadline deadline = parseDeadline(details);
-                    ensureSpaceForTask(taskCount);
-                    tasks[taskCount] = deadline;
-                    taskCount++;
-                    printTaskAdded(tasks[taskCount - 1], taskCount);
+                    taskList.addTask(deadline);
+                    printTaskAdded(deadline, taskList.size());
                 } else if (command.equals("event")) {
                     Event event = parseEvent(details);
-                    ensureSpaceForTask(taskCount);
-                    tasks[taskCount] = event;
-                    taskCount++;
-                    printTaskAdded(tasks[taskCount - 1], taskCount);
+                    taskList.addTask(event);
+                    printTaskAdded(event, taskList.size());
                 } else {
                     throw new ToothlessException("Toothless tilted his head—he doesn’t recognise that command.\n"
                             + "Try " + COMMANDS + ".");
