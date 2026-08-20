@@ -225,22 +225,20 @@ public class Toothless {
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine().trim();
 
-            if (input.equals("bye")) {
-                System.out.println("Bye. Hope to see you again soon!");
-                System.out.println(DIVIDER);
-                break;
-            }
-
             try {
                 if (input.isEmpty()) {
                     throw new ToothlessException("Toothless heard a tiny silence. What should he do?\n"
                             + "Try " + COMMANDS + ".");
                 }
                 String[] commandParts = input.split("\\s+", 2);
-                String command = commandParts[0];
+                Command command = Command.fromKeyword(commandParts[0]);
                 String details = commandParts.length == 2 ? commandParts[1].trim() : "";
 
-                if (command.equals("list")) {
+                if (command == Command.BYE && details.isEmpty()) {
+                    System.out.println("Bye. Hope to see you again soon!");
+                    System.out.println(DIVIDER);
+                    break;
+                } else if (command == Command.LIST) {
                     if (!details.isEmpty()) {
                         throw new ToothlessException("The list command doesn't need extra words.\n"
                                 + "Try: list");
@@ -253,13 +251,13 @@ public class Toothless {
                             System.out.println((i + 1) + "." + taskList.getTask(i));
                         }
                     }
-                } else if (command.equals("mark")) {
-                    int taskIndex = parseTaskIndex("mark", details, taskList.size());
+                } else if (command == Command.MARK) {
+                    int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
                     Task markedTask = taskList.markTask(taskIndex);
                     System.out.println("A happy little roar! I've starred this task as done:");
                     System.out.println("  " + markedTask);
-                } else if (command.equals("unmark")) {
-                    int taskIndex = parseTaskIndex("unmark", details, taskList.size());
+                } else if (command == Command.UNMARK) {
+                    int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
                     Task selectedTask = taskList.getTask(taskIndex);
                     if (!selectedTask.isDone()) {
                         System.out.println("This task wasn't marked as done before, little rider:");
@@ -269,21 +267,21 @@ public class Toothless {
                         System.out.println("All right, little rider! I've unstarred this task for now:");
                         System.out.println("  " + unmarkedTask);
                     }
-                } else if (command.equals("delete")) {
-                    int taskIndex = parseTaskIndex("delete", details, taskList.size());
+                } else if (command == Command.DELETE) {
+                    int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
                     Task deletedTask = taskList.deleteTask(taskIndex);
                     System.out.println("A tiny farewell roar! Toothless has removed this task:");
                     System.out.println("  " + deletedTask);
                     System.out.println(formatTaskCount(taskList.size()));
-                } else if (command.equals("todo")) {
+                } else if (command == Command.TODO) {
                     Todo todo = parseTodo(details);
                     taskList.addTask(todo);
                     printTaskAdded(todo, taskList.size());
-                } else if (command.equals("deadline")) {
+                } else if (command == Command.DEADLINE) {
                     Deadline deadline = parseDeadline(details);
                     taskList.addTask(deadline);
                     printTaskAdded(deadline, taskList.size());
-                } else if (command.equals("event")) {
+                } else if (command == Command.EVENT) {
                     Event event = parseEvent(details);
                     taskList.addTask(event);
                     printTaskAdded(event, taskList.size());
