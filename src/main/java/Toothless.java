@@ -12,9 +12,6 @@ public class Toothless {
         "Safely tucked under my wing: %s",
         "Another quest for us! I've noted: %s"
     };
-    private static final String DONE_MARK = "★";
-    private static final String NOT_DONE_MARK = " ";
-
     /**
      * Runs the chatbot and responds to commands entered by the user.
      *
@@ -40,8 +37,7 @@ public class Toothless {
         System.out.println(divider);
 
         Scanner scanner = new Scanner(System.in);
-        String[] tasks = new String[MAX_TASKS];
-        boolean[] isDone = new boolean[MAX_TASKS];
+        Task[] tasks = new Task[MAX_TASKS];
         int taskCount = 0;
 
         while (scanner.hasNextLine()) {
@@ -59,8 +55,7 @@ public class Toothless {
                 } else {
                     System.out.println("Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
-                        String statusMark = isDone[i] ? DONE_MARK : NOT_DONE_MARK;
-                        System.out.println((i + 1) + ".[" + statusMark + "] " + tasks[i]);
+                        System.out.println((i + 1) + "." + tasks[i]);
                     }
                 }
             } else if (command.equals("mark") || command.startsWith("mark ")) {
@@ -70,9 +65,9 @@ public class Toothless {
                     if (taskIndex < 0 || taskIndex >= taskCount) {
                         System.out.println("Oops! I can't find that task in our adventure list.");
                     } else {
-                        isDone[taskIndex] = true;
+                        tasks[taskIndex].markAsDone();
                         System.out.println("A happy little roar! I've starred this task as done:");
-                        System.out.println("  [" + DONE_MARK + "] " + tasks[taskIndex]);
+                        System.out.println("  " + tasks[taskIndex]);
                     }
                 } catch (NumberFormatException exception) {
                     System.out.println("Please tell me which task to star, like this: mark 2");
@@ -83,19 +78,19 @@ public class Toothless {
                     int taskIndex = Integer.parseInt(taskNumberText) - 1;
                     if (taskIndex < 0 || taskIndex >= taskCount) {
                         System.out.println("Oops! I can't find that task in our adventure list.");
-                    } else if (!isDone[taskIndex]) {
+                    } else if (!tasks[taskIndex].isDone()) {
                         System.out.println("This task wasn't marked as done before, little rider:");
-                        System.out.println("  [" + NOT_DONE_MARK + "] " + tasks[taskIndex]);
+                        System.out.println("  " + tasks[taskIndex]);
                     } else {
-                        isDone[taskIndex] = false;
+                        tasks[taskIndex].unmarkAsDone();
                         System.out.println("All right, little rider! I've unstarred this task for now:");
-                        System.out.println("  [" + NOT_DONE_MARK + "] " + tasks[taskIndex]);
+                        System.out.println("  " + tasks[taskIndex]);
                     }
                 } catch (NumberFormatException exception) {
                     System.out.println("Please tell me which task to unstar, like this: unmark 2");
                 }
             } else {
-                tasks[taskCount] = command;
+                tasks[taskCount] = new Task(command);
                 taskCount++;
                 int responseIndex = (taskCount - 1) % ADD_RESPONSES.length;
                 System.out.printf((ADD_RESPONSES[responseIndex]) + "%n", command);
