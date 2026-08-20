@@ -5,8 +5,8 @@ public class Task {
     private static final String DONE_MARK = "★";
     private static final String NOT_DONE_MARK = " ";
 
-    protected String description;
-    protected boolean isDone;
+    private final String description;
+    private boolean isDone;
 
     /**
      * Creates an incomplete task with the given description.
@@ -48,6 +48,15 @@ public class Task {
      */
     public String getStatusIcon() {
         return isDone ? DONE_MARK : NOT_DONE_MARK;
+    }
+
+    /**
+     * Returns the task description for use by subclasses when displaying a task.
+     *
+     * @return description of this task
+     */
+    protected String getDescription() {
+        return description;
     }
 
     /**
