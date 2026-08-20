@@ -12,6 +12,8 @@ public class Toothless {
         "Safely tucked under my wing: %s",
         "Another quest for us! I've noted: %s"
     };
+    private static final String DONE_MARK = "★";
+    private static final String NOT_DONE_MARK = " ";
 
     /**
      * Runs the chatbot and responds to commands entered by the user.
@@ -39,6 +41,7 @@ public class Toothless {
 
         Scanner scanner = new Scanner(System.in);
         String[] tasks = new String[MAX_TASKS];
+        boolean[] isDone = new boolean[MAX_TASKS];
         int taskCount = 0;
 
         while (scanner.hasNextLine()) {
@@ -54,9 +57,25 @@ public class Toothless {
                 if (taskCount == 0) {
                     System.out.println("Your task list is empty. Ready for a new adventure!");
                 } else {
+                    System.out.println("Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
-                        System.out.println((i + 1) + ". " + tasks[i]);
+                        String statusMark = isDone[i] ? DONE_MARK : NOT_DONE_MARK;
+                        System.out.println((i + 1) + ".[" + statusMark + "] " + tasks[i]);
                     }
+                }
+            } else if (command.equals("mark") || command.startsWith("mark ")) {
+                String taskNumberText = command.substring("mark".length()).trim();
+                try {
+                    int taskIndex = Integer.parseInt(taskNumberText) - 1;
+                    if (taskIndex < 0 || taskIndex >= taskCount) {
+                        System.out.println("Oops! I can't find that task in our adventure list.");
+                    } else {
+                        isDone[taskIndex] = true;
+                        System.out.println("A happy little roar! I've starred this task as done:");
+                        System.out.println("  [" + DONE_MARK + "] " + tasks[taskIndex]);
+                    }
+                } catch (NumberFormatException exception) {
+                    System.out.println("Please tell me which task to star, like this: mark 2");
                 }
             } else {
                 tasks[taskCount] = command;
