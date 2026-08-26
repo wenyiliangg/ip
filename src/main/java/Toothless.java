@@ -233,7 +233,13 @@ public class Toothless {
         Scanner scanner = new Scanner(System.in);
         TaskList taskList;
         try {
-            taskList = storage.load();
+            StorageLoadResult loadResult = storage.load();
+            taskList = loadResult.getTaskList();
+            if (loadResult.getMalformedLineCount() > 0) {
+                System.out.println(formatMalformedDataMessage(loadResult.getMalformedLineCount()));
+                System.out.println("He skipped them and kept every task he could understand.");
+                System.out.println(DIVIDER);
+            }
         } catch (StorageException exception) {
             taskList = new TaskList();
             System.out.println("Toothless had trouble reading his saved quests.");
@@ -333,5 +339,14 @@ public class Toothless {
             System.out.println("Toothless couldn’t tuck these changes into his data file.");
             System.out.println("They’re still safe for this adventure, but may not return next time.");
         }
+    }
+
+    /**
+     * Formats the corrupted-data warning with correct singular or plural grammar.
+     */
+    private static String formatMalformedDataMessage(int malformedLineCount) {
+        String lineWord = malformedLineCount == 1 ? "line" : "lines";
+        return "Toothless found " + malformedLineCount + " puzzling " + lineWord
+                + " in his saved quests.";
     }
 }

@@ -28,6 +28,9 @@ public class StorageTest {
         createsMissingPathsOnFirstSave();
         reportsExpectedReadAndWriteFailures();
         keepsChangedTasksInMemoryAfterSaveFailure();
+        skipsMalformedDataWithoutRewritingTheFile();
+        reportsMalformedDataAtStartup();
+        preservesMarkedStatusAfterRestart();
         System.out.println("All Storage tests passed.");
     }
 
@@ -100,7 +103,7 @@ public class StorageTest {
                 "E | 1 | project meeting | Monday 2pm | Monday 3pm"),
                 StandardCharsets.UTF_8);
 
-        TaskList loadedTasks = new Storage(dataFile).load();
+        TaskList loadedTasks = new Storage(dataFile).load().getTaskList();
 
         assertEquals(3, loadedTasks.size(), "every valid line should load");
         assertTrue(loadedTasks.getTask(0) instanceof Todo, "the todo type should be restored");
@@ -133,7 +136,7 @@ public class StorageTest {
         originalTasks.markTask(2);
 
         storage.save(originalTasks);
-        TaskList loadedTasks = storage.load();
+        TaskList loadedTasks = storage.load().getTaskList();
 
         assertEquals(originalTasks.size(), loadedTasks.size(),
                 "the round trip should preserve the task count");
@@ -169,7 +172,7 @@ public class StorageTest {
         Path testDirectory = Files.createTempDirectory("toothless-no-directory-");
         Path dataFile = testDirectory.resolve("missing").resolve("tasks.txt");
 
-        TaskList loadedTasks = new Storage(dataFile).load();
+        TaskList loadedTasks = new Storage(dataFile).load().getTaskList();
 
         assertTrue(loadedTasks.isEmpty(), "a missing data directory should load an empty list");
         assertTrue(Files.notExists(dataFile.getParent()),
@@ -183,7 +186,7 @@ public class StorageTest {
         Path testDirectory = Files.createTempDirectory("toothless-no-file-");
         Path dataFile = testDirectory.resolve("tasks.txt");
 
-        TaskList loadedTasks = new Storage(dataFile).load();
+        TaskList loadedTasks = new Storage(dataFile).load().getTaskList();
 
         assertTrue(loadedTasks.isEmpty(), "a missing data file should load an empty list");
         assertTrue(Files.notExists(dataFile), "loading should not create a missing data file");
@@ -204,7 +207,8 @@ public class StorageTest {
         assertTrue(Files.isDirectory(dataFile.getParent()),
                 "the first save should create the data directory");
         assertTrue(Files.isRegularFile(dataFile), "the first save should create the data file");
-        assertEquals("[T][ ] first saved task", storage.load().getTask(0).toString(),
+        assertEquals("[T][ ] first saved task",
+                storage.load().getTaskList().getTask(0).toString(),
                 "the first saved task should remain readable");
     }
 
@@ -246,6 +250,73 @@ public class StorageTest {
         assertTrue(output.contains("1.[T][ ] keep this task"),
                 "the changed task should remain available after a write failure");
         assertTrue(!output.contains("Exception"), "expected failures should not print a stack trace");
+    }
+
+    /**
+     * Verifies malformed entries are skipped while valid entries and source data remain intact.
+     */
+    private static void skipsMalformedDataWithoutRewritingTheFile() throws Exception {
+        Path testDirectory = Files.createTempDirectory("toothless-malformed-load-");
+        Path dataFile = testDirectory.resolve("tasks.txt");
+        List<String> originalLines = List.of(
+                "T | 1 | borrow book",
+                "X | 0 | unknown type",
+                "D | 0 | missing time",
+                "T | maybe | invalid status",
+                "E | 0 | truncated event | 2pm",
+                "",
+                "T | 0 | unexpected data | extra field",
+                "T | 0 | invalid \\q escape",
+                "T | 0 | ",
+                "D | 0 | return book | Friday 6pm");
+        Files.write(dataFile, originalLines, StandardCharsets.UTF_8);
+
+        StorageLoadResult loadResult = new Storage(dataFile).load();
+
+        assertEquals(8, loadResult.getMalformedLineCount(),
+                "every malformed saved entry should be counted");
+        assertEquals(2, loadResult.getTaskList().size(),
+                "valid entries around malformed data should be preserved");
+        assertEquals("[T][★] borrow book", loadResult.getTaskList().getTask(0).toString(),
+                "the valid completed todo should load unchanged");
+        assertEquals("[D][ ] return book (by: Friday 6pm)",
+                loadResult.getTaskList().getTask(1).toString(),
+                "the valid deadline after malformed entries should load unchanged");
+        assertEquals(originalLines, Files.readAllLines(dataFile, StandardCharsets.UTF_8),
+                "loading malformed data should not rewrite the original file");
+    }
+
+    /**
+     * Verifies Toothless reports skipped saved data without exposing a raw error.
+     */
+    private static void reportsMalformedDataAtStartup() throws Exception {
+        Path testDirectory = Files.createTempDirectory("toothless-malformed-message-");
+        Path dataFile = testDirectory.resolve("tasks.txt");
+        Files.write(dataFile, List.of("T | 0 | valid task", "unknown line"),
+                StandardCharsets.UTF_8);
+
+        String output = runWithInput(new Storage(dataFile), "list\nbye\n");
+
+        assertTrue(output.contains("Toothless found 1 puzzling line in his saved quests."),
+                "corrupted data should have a clear startup warning");
+        assertTrue(output.contains("1.[T][ ] valid task"),
+                "valid saved tasks should remain available");
+        assertTrue(!output.contains("Exception"),
+                "malformed saved data should not print a stack trace");
+    }
+
+    /**
+     * Verifies a command-marked task still displays as completed after restart.
+     */
+    private static void preservesMarkedStatusAfterRestart() throws Exception {
+        Path testDirectory = Files.createTempDirectory("toothless-mark-restart-");
+        Storage storage = new Storage(testDirectory.resolve("data").resolve("tasks.txt"));
+
+        runWithInput(storage, "todo borrow book\nmark 1\nbye\n");
+        String restartedOutput = runWithInput(storage, "list\nbye\n");
+
+        assertTrue(restartedOutput.contains("1.[T][★] borrow book"),
+                "marking, saving, and restarting should preserve the completion display");
     }
 
     /**

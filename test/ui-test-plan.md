@@ -464,3 +464,54 @@ ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+
+## TC-05: Skip malformed saved tasks safely
+
+Aim: Verify malformed saved entries produce one friendly warning while valid entries retain their type, values, order, and completion display.
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "X | 0 | unknown type" "D | 0 | missing time" "T | maybe | invalid status" "E | 0 | truncated event | 2pm" "" "T | 0 | unexpected data | extra field" "D | 0 | return book | Friday 6pm" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+```
+
+Input:
+
+```text
+list
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [DATE_OR_TIME]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Toothless found 6 puzzling lines in his saved quests.
+He skipped them and kept every task he could understand.
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][★] borrow book
+2.[D][ ] return book (by: Friday 6pm)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```

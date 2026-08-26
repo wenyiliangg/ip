@@ -59,22 +59,27 @@ public class Storage {
     /**
      * Loads every saved task from the data file.
      *
-     * @return task list reconstructed from the saved file
+     * @return valid tasks and the number of malformed lines skipped
      * @throws StorageException if an existing file cannot be read
      */
-    public TaskList load() throws StorageException {
+    public StorageLoadResult load() throws StorageException {
         TaskList taskList = new TaskList();
         if (Files.notExists(dataFile)) {
-            return taskList;
+            return new StorageLoadResult(taskList, 0);
         }
+        int malformedLineCount = 0;
         try {
             for (String line : Files.readAllLines(dataFile, StandardCharsets.UTF_8)) {
-                taskList.addTask(deserialize(line));
+                try {
+                    taskList.addTask(deserialize(line));
+                } catch (IllegalArgumentException exception) {
+                    malformedLineCount++;
+                }
             }
         } catch (IOException exception) {
             throw new StorageException("Unable to load tasks", exception);
         }
-        return taskList;
+        return new StorageLoadResult(taskList, malformedLineCount);
     }
 
     /**
@@ -126,6 +131,9 @@ public class Storage {
      * Reconstructs one task from its saved representation.
      */
     private Task deserialize(String line) {
+        if (line.isBlank()) {
+            throw new IllegalArgumentException("Saved task line is empty");
+        }
         List<String> fields = splitFields(line);
         String taskType = fields.get(0);
         int expectedFieldCount = switch (taskType) {
@@ -138,6 +146,11 @@ public class Storage {
             throw new IllegalArgumentException("Unexpected number of saved task fields");
         }
 
+        String status = fields.get(1);
+        if (!status.equals("0") && !status.equals("1")) {
+            throw new IllegalArgumentException("Unknown saved completion status");
+        }
+
         Task task = switch (taskType) {
         case "T" -> new Todo(unescape(fields.get(2)));
         case "D" -> new Deadline(unescape(fields.get(2)), unescape(fields.get(3)));
@@ -145,10 +158,14 @@ public class Storage {
                 unescape(fields.get(4)));
         default -> throw new IllegalStateException("Task type was already validated");
         };
-        if (fields.get(1).equals("1")) {
+        if (task.getDescription().isEmpty()
+                || task instanceof Deadline deadline && deadline.getBy().isEmpty()
+                || task instanceof Event event
+                        && (event.getFrom().isEmpty() || event.getTo().isEmpty())) {
+            throw new IllegalArgumentException("Saved task has an empty required field");
+        }
+        if (status.equals("1")) {
             task.markAsDone();
-        } else if (!fields.get(1).equals("0")) {
-            throw new IllegalArgumentException("Unknown saved completion status");
         }
         return task;
     }
