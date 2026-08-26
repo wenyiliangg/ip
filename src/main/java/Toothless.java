@@ -45,8 +45,11 @@ public class Toothless {
                 String details = parsedCommand.getDetails();
 
                 if (commandType == CommandType.BYE) {
-                    ui.showGoodbye();
-                    break;
+                    Command command = new ExitCommand();
+                    command.execute(taskList, ui, storage);
+                    if (command.isExit()) {
+                        break;
+                    }
                 } else if (commandType == CommandType.LIST) {
                     ui.showTaskList(taskList);
                 } else if (commandType == CommandType.MARK) {
