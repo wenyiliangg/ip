@@ -1,6 +1,4 @@
 import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
@@ -8,175 +6,7 @@ import java.util.Scanner;
  */
 public class Toothless {
     private static final String DIVIDER = "____________________________________________________________";
-    private static final String COMMANDS = "todo, deadline, event, list, mark, unmark, delete, or bye";
     private static final Path DATA_FILE = Path.of("data", "toothless.txt");
-
-    /**
-     * Validates and returns the task index supplied to a task command.
-     *
-     * @param commandName command whose argument is being checked
-     * @param argument text following the command name
-     * @param taskCount current number of tasks
-     * @return zero-based index of the selected task
-     * @throws ToothlessException if the task number is absent or invalid
-     */
-    private static int parseTaskIndex(String commandName, String argument, int taskCount)
-            throws ToothlessException {
-        if (taskCount == 0) {
-            throw new ToothlessException("Toothless's cave is empty, so there is no task to "
-                    + commandName + ".\nAdd a task first, then try again.");
-        }
-        if (argument.isBlank()) {
-            throw new ToothlessException("Toothless needs a task number to " + commandName + ".\n"
-                    + "Try: " + commandName + " 1");
-        }
-        if (!argument.matches("[+-]?\\d+")) {
-            throw new ToothlessException("That task number looks a little unusual.\n"
-                    + "Please use a whole number, like: " + commandName + " 1");
-        }
-
-        final int taskNumber;
-        try {
-            taskNumber = Integer.parseInt(argument);
-        } catch (NumberFormatException exception) {
-            throw new ToothlessException("That task number is too large for Toothless to count.\n"
-                    + "Please choose a number from 1 to " + taskCount + ".");
-        }
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new ToothlessException("Toothless can’t find task " + taskNumber + " in the cave.\n"
-                    + "Please choose a number from 1 to " + taskCount + ".");
-        }
-        return taskNumber - 1;
-    }
-
-    /**
-     * Parses a Todo only after confirming that its description is present.
-     *
-     * @param details text following the todo command
-     * @return validated Todo
-     * @throws ToothlessException if the description is empty
-     */
-    private static Todo parseTodo(String details) throws ToothlessException {
-        if (details.isBlank()) {
-            throw new ToothlessException("Toothless couldn’t find a description for that todo.\n"
-                    + "Try: todo borrow book");
-        }
-        return new Todo(details.trim());
-    }
-
-    /**
-     * Parses a Deadline and validates its description and finishing date.
-     *
-     * @param details text following the deadline command
-     * @return validated Deadline
-     * @throws ToothlessException if the command structure is incomplete or ambiguous
-     */
-    private static Deadline parseDeadline(String details) throws ToothlessException {
-        String trimmed = details.trim();
-        int byIndex = findSeparator(trimmed, "/by", 0);
-        if (byIndex < 0) {
-            throw new ToothlessException("This deadline is missing '/by' and its date.\n"
-                    + "Try: deadline return book /by 2019-12-02");
-        }
-        if (findSeparator(trimmed, "/by", byIndex + 3) >= 0 || containsSeparator(trimmed, "/from")
-                || containsSeparator(trimmed, "/to")) {
-            throw new ToothlessException("This deadline's format has Toothless puzzled.\n"
-                    + "Please use: deadline DESCRIPTION /by yyyy-MM-dd");
-        }
-        String description = trimmed.substring(0, byIndex).trim();
-        String by = trimmed.substring(byIndex + 3).trim();
-        if (description.isEmpty()) {
-            throw new ToothlessException("Toothless couldn’t find a description for that deadline.\n"
-                    + "Try: deadline return book /by 2019-12-02");
-        }
-        if (by.isEmpty()) {
-            throw new ToothlessException("This deadline is missing its date.\n"
-                    + "Try: deadline return book /by 2019-12-02");
-        }
-        try {
-            LocalDate date = DeadlineDate.parse(by);
-            return new Deadline(description, date);
-        } catch (DateTimeParseException exception) {
-            throw new ToothlessException("That deadline date made Toothless tilt his head.\n"
-                    + "Please use a real date in yyyy-MM-dd format.");
-        }
-    }
-
-    /**
-     * Parses an Event and validates its description, start, and end.
-     *
-     * @param details text following the event command
-     * @return validated Event
-     * @throws ToothlessException if the command structure is incomplete or ambiguous
-     */
-    private static Event parseEvent(String details) throws ToothlessException {
-        String trimmed = details.trim();
-        int fromIndex = findSeparator(trimmed, "/from", 0);
-        int toIndex = findSeparator(trimmed, "/to", 0);
-        if (fromIndex < 0) {
-            throw new ToothlessException("This event is missing its starting time after '/from'.\n"
-                    + "Try: event DESCRIPTION /from START /to END");
-        }
-        if (toIndex < 0) {
-            throw new ToothlessException("This event is missing its ending time after '/to'.\n"
-                    + "Try: event DESCRIPTION /from START /to END");
-        }
-        if (toIndex < fromIndex) {
-            throw new ToothlessException("The event's '/from' must come before '/to'.\n"
-                    + "Try: event DESCRIPTION /from START /to END");
-        }
-        if (findSeparator(trimmed, "/from", fromIndex + 5) >= 0
-                || findSeparator(trimmed, "/to", toIndex + 3) >= 0
-                || containsSeparator(trimmed, "/by")) {
-            throw new ToothlessException("This event's format has Toothless puzzled.\n"
-                    + "Try: event DESCRIPTION /from START /to END");
-        }
-        String description = trimmed.substring(0, fromIndex).trim();
-        String from = trimmed.substring(fromIndex + 5, toIndex).trim();
-        String to = trimmed.substring(toIndex + 3).trim();
-        if (description.isEmpty()) {
-            throw new ToothlessException("Toothless couldn’t find a description for that event.\n"
-                    + "Try: event DESCRIPTION /from START /to END");
-        }
-        if (from.isEmpty()) {
-            throw new ToothlessException("This event is missing its starting time.\n"
-                    + "Try: event DESCRIPTION /from START /to END");
-        }
-        if (to.isEmpty()) {
-            throw new ToothlessException("This event is missing its ending time.\n"
-                    + "Try: event DESCRIPTION /from START /to END");
-        }
-        return new Event(description, from, to);
-    }
-
-    /**
-     * Returns whether a separator occurs as a separate input token.
-     */
-    private static boolean isSeparatorAt(String text, int index, String separator) {
-        boolean hasLeftBoundary = index == 0 || Character.isWhitespace(text.charAt(index - 1));
-        int endIndex = index + separator.length();
-        boolean hasRightBoundary = endIndex == text.length()
-                || Character.isWhitespace(text.charAt(endIndex));
-        return hasLeftBoundary && hasRightBoundary;
-    }
-
-    /**
-     * Returns whether the text contains the given separator token.
-     */
-    private static boolean containsSeparator(String text, String separator) {
-        return findSeparator(text, separator, 0) >= 0;
-    }
-
-    /**
-     * Finds a separator that occurs as a complete token rather than inside a value.
-     */
-    private static int findSeparator(String text, String separator, int fromIndex) {
-        int index = text.indexOf(separator, fromIndex);
-        while (index >= 0 && !isSeparatorAt(text, index, separator)) {
-            index = text.indexOf(separator, index + 1);
-        }
-        return index;
-    }
 
     /**
      * Prints a friendly confirmation after a task is added.
@@ -255,27 +85,20 @@ public class Toothless {
             System.out.println(DIVIDER);
         }
 
+        Parser parser = new Parser();
         while (scanner.hasNextLine()) {
-            String input = scanner.nextLine().trim();
+            String input = scanner.nextLine();
 
             try {
-                if (input.isEmpty()) {
-                    throw new ToothlessException("Toothless heard a tiny silence. What should he do?\n"
-                            + "Try " + COMMANDS + ".");
-                }
-                String[] commandParts = input.split("\\s+", 2);
-                Command command = Command.fromKeyword(commandParts[0]);
-                String details = commandParts.length == 2 ? commandParts[1].trim() : "";
+                Parser.ParsedCommand parsedCommand = parser.parse(input);
+                Command command = parsedCommand.getCommand();
+                String details = parsedCommand.getDetails();
 
-                if (command == Command.BYE && details.isEmpty()) {
+                if (command == Command.BYE) {
                     System.out.println("Bye. Hope to see you again soon!");
                     System.out.println(DIVIDER);
                     break;
                 } else if (command == Command.LIST) {
-                    if (!details.isEmpty()) {
-                        throw new ToothlessException("The list command doesn't need extra words.\n"
-                                + "Try: list");
-                    }
                     if (taskList.isEmpty()) {
                         System.out.println("Your task list is empty. Ready for a new adventure!");
                     } else {
@@ -285,13 +108,13 @@ public class Toothless {
                         }
                     }
                 } else if (command == Command.MARK) {
-                    int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
+                    int taskIndex = parser.parseTaskIndex(command, details, taskList.size());
                     Task markedTask = taskList.markTask(taskIndex);
                     System.out.println("A happy little roar! I've starred this task as done:");
                     System.out.println("  " + markedTask);
                     saveTasks(storage, taskList);
                 } else if (command == Command.UNMARK) {
-                    int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
+                    int taskIndex = parser.parseTaskIndex(command, details, taskList.size());
                     Task selectedTask = taskList.getTask(taskIndex);
                     if (!selectedTask.isDone()) {
                         System.out.println("This task wasn't marked as done before, little rider:");
@@ -303,30 +126,29 @@ public class Toothless {
                         saveTasks(storage, taskList);
                     }
                 } else if (command == Command.DELETE) {
-                    int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
+                    int taskIndex = parser.parseTaskIndex(command, details, taskList.size());
                     Task deletedTask = taskList.deleteTask(taskIndex);
                     System.out.println("A tiny farewell roar! Toothless has removed this task:");
                     System.out.println("  " + deletedTask);
                     System.out.println(formatTaskCount(taskList.size()));
                     saveTasks(storage, taskList);
                 } else if (command == Command.TODO) {
-                    Todo todo = parseTodo(details);
+                    Todo todo = parser.parseTodo(details);
                     taskList.addTask(todo);
                     printTaskAdded(todo, taskList.size());
                     saveTasks(storage, taskList);
                 } else if (command == Command.DEADLINE) {
-                    Deadline deadline = parseDeadline(details);
+                    Deadline deadline = parser.parseDeadline(details);
                     taskList.addTask(deadline);
                     printTaskAdded(deadline, taskList.size());
                     saveTasks(storage, taskList);
                 } else if (command == Command.EVENT) {
-                    Event event = parseEvent(details);
+                    Event event = parser.parseEvent(details);
                     taskList.addTask(event);
                     printTaskAdded(event, taskList.size());
                     saveTasks(storage, taskList);
                 } else {
-                    throw new ToothlessException("Toothless tilted his head—he doesn’t recognise that command.\n"
-                            + "Try " + COMMANDS + ".");
+                    throw new IllegalStateException("Parser returned an unsupported command");
                 }
             } catch (ToothlessException exception) {
                 System.out.println(exception.getMessage());
