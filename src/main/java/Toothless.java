@@ -1,3 +1,4 @@
+import java.nio.file.Path;
 import java.util.Scanner;
 
 /**
@@ -6,6 +7,7 @@ import java.util.Scanner;
 public class Toothless {
     private static final String DIVIDER = "____________________________________________________________";
     private static final String COMMANDS = "todo, deadline, event, list, mark, unmark, delete, or bye";
+    private static final Path DATA_FILE = Path.of("data", "toothless.txt");
 
     /**
      * Validates and returns the task index supplied to a task command.
@@ -197,6 +199,15 @@ public class Toothless {
      * @param args command-line arguments; they are not used
      */
     public static void main(String[] args) {
+        run(new Storage(DATA_FILE));
+    }
+
+    /**
+     * Runs the chatbot using the supplied storage destination.
+     *
+     * @param storage storage used after task-list changes
+     */
+    static void run(Storage storage) {
         String banner = "  __/\\__           __/\\__\n"
                 + " /     \\_________/     \\\n"
                 + "/   /\\   O     O   /\\   \\\n"
@@ -220,7 +231,21 @@ public class Toothless {
         System.out.println(DIVIDER);
 
         Scanner scanner = new Scanner(System.in);
-        TaskList taskList = new TaskList();
+        TaskList taskList;
+        try {
+            StorageLoadResult loadResult = storage.load();
+            taskList = loadResult.getTaskList();
+            if (loadResult.getMalformedLineCount() > 0) {
+                System.out.println(formatMalformedDataMessage(loadResult.getMalformedLineCount()));
+                System.out.println("He skipped them and kept every task he could understand.");
+                System.out.println(DIVIDER);
+            }
+        } catch (StorageException exception) {
+            taskList = new TaskList();
+            System.out.println("Toothless had trouble reading his saved quests.");
+            System.out.println("He'll start with an empty cave, but the saved file was left untouched.");
+            System.out.println(DIVIDER);
+        }
 
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine().trim();
@@ -256,6 +281,7 @@ public class Toothless {
                     Task markedTask = taskList.markTask(taskIndex);
                     System.out.println("A happy little roar! I've starred this task as done:");
                     System.out.println("  " + markedTask);
+                    saveTasks(storage, taskList);
                 } else if (command == Command.UNMARK) {
                     int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
                     Task selectedTask = taskList.getTask(taskIndex);
@@ -266,6 +292,7 @@ public class Toothless {
                         Task unmarkedTask = taskList.unmarkTask(taskIndex);
                         System.out.println("All right, little rider! I've unstarred this task for now:");
                         System.out.println("  " + unmarkedTask);
+                        saveTasks(storage, taskList);
                     }
                 } else if (command == Command.DELETE) {
                     int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
@@ -273,18 +300,22 @@ public class Toothless {
                     System.out.println("A tiny farewell roar! Toothless has removed this task:");
                     System.out.println("  " + deletedTask);
                     System.out.println(formatTaskCount(taskList.size()));
+                    saveTasks(storage, taskList);
                 } else if (command == Command.TODO) {
                     Todo todo = parseTodo(details);
                     taskList.addTask(todo);
                     printTaskAdded(todo, taskList.size());
+                    saveTasks(storage, taskList);
                 } else if (command == Command.DEADLINE) {
                     Deadline deadline = parseDeadline(details);
                     taskList.addTask(deadline);
                     printTaskAdded(deadline, taskList.size());
+                    saveTasks(storage, taskList);
                 } else if (command == Command.EVENT) {
                     Event event = parseEvent(details);
                     taskList.addTask(event);
                     printTaskAdded(event, taskList.size());
+                    saveTasks(storage, taskList);
                 } else {
                     throw new ToothlessException("Toothless tilted his head—he doesn’t recognise that command.\n"
                             + "Try " + COMMANDS + ".");
@@ -296,5 +327,26 @@ public class Toothless {
         }
 
         scanner.close();
+    }
+
+    /**
+     * Saves a changed task list while keeping it available after an expected failure.
+     */
+    private static void saveTasks(Storage storage, TaskList taskList) {
+        try {
+            storage.save(taskList);
+        } catch (StorageException exception) {
+            System.out.println("Toothless couldn’t tuck these changes into his data file.");
+            System.out.println("They’re still safe for this adventure, but may not return next time.");
+        }
+    }
+
+    /**
+     * Formats the corrupted-data warning with correct singular or plural grammar.
+     */
+    private static String formatMalformedDataMessage(int malformedLineCount) {
+        String lineWord = malformedLineCount == 1 ? "line" : "lines";
+        return "Toothless found " + malformedLineCount + " puzzling " + lineWord
+                + " in his saved quests.";
     }
 }

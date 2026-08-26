@@ -19,6 +19,24 @@ public class Event extends Task {
     }
 
     /**
+     * Returns the event's starting date or time.
+     *
+     * @return event start date or time
+     */
+    public String getFrom() {
+        return from;
+    }
+
+    /**
+     * Returns the event's ending date or time.
+     *
+     * @return event end date or time
+     */
+    public String getTo() {
+        return to;
+    }
+
+    /**
      * Returns this event in the chatbot's display format.
      *
      * @return formatted event
