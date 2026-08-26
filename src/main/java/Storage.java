@@ -1,7 +1,9 @@
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,33 +27,80 @@ public class Storage {
     /**
      * Replaces the saved file with the current tasks.
      *
-     * <p>The destination directory is expected to exist at this stage.</p>
-     *
      * @param taskList tasks to save
-     * @throws IOException if the file cannot be written
+     * @throws StorageException if the file cannot be written safely
      */
-    public void save(TaskList taskList) throws IOException {
+    public void save(TaskList taskList) throws StorageException {
         List<String> lines = new ArrayList<>();
         for (int i = 0; i < taskList.size(); i++) {
             lines.add(serialize(taskList.getTask(i)));
         }
-        Files.write(dataFile, lines, StandardCharsets.UTF_8);
+
+        Path temporaryFile = null;
+        try {
+            Path parentDirectory = dataFile.getParent();
+            if (parentDirectory != null) {
+                Files.createDirectories(parentDirectory);
+            }
+            Path temporaryDirectory = parentDirectory == null ? Path.of(".") : parentDirectory;
+            String temporaryPrefix = dataFile.getFileName().toString();
+            if (temporaryPrefix.length() < 3) {
+                temporaryPrefix = (temporaryPrefix + "___").substring(0, 3);
+            }
+            temporaryFile = Files.createTempFile(temporaryDirectory, temporaryPrefix, ".tmp");
+            Files.write(temporaryFile, lines, StandardCharsets.UTF_8);
+            replaceDataFile(temporaryFile);
+        } catch (IOException exception) {
+            deleteTemporaryFile(temporaryFile);
+            throw new StorageException("Unable to save tasks", exception);
+        }
     }
 
     /**
      * Loads every saved task from the data file.
      *
-     * <p>The data file is expected to exist and contain valid data at this stage.</p>
-     *
      * @return task list reconstructed from the saved file
-     * @throws IOException if the file cannot be read
+     * @throws StorageException if an existing file cannot be read
      */
-    public TaskList load() throws IOException {
+    public TaskList load() throws StorageException {
         TaskList taskList = new TaskList();
-        for (String line : Files.readAllLines(dataFile, StandardCharsets.UTF_8)) {
-            taskList.addTask(deserialize(line));
+        if (Files.notExists(dataFile)) {
+            return taskList;
+        }
+        try {
+            for (String line : Files.readAllLines(dataFile, StandardCharsets.UTF_8)) {
+                taskList.addTask(deserialize(line));
+            }
+        } catch (IOException exception) {
+            throw new StorageException("Unable to load tasks", exception);
         }
         return taskList;
+    }
+
+    /**
+     * Replaces the data file atomically when the file system supports it.
+     */
+    private void replaceDataFile(Path temporaryFile) throws IOException {
+        try {
+            Files.move(temporaryFile, dataFile, StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException exception) {
+            Files.move(temporaryFile, dataFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    /**
+     * Removes an incomplete temporary file without hiding the original failure.
+     */
+    private void deleteTemporaryFile(Path temporaryFile) {
+        if (temporaryFile == null) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(temporaryFile);
+        } catch (IOException ignored) {
+            // The original save failure is more useful to the caller.
+        }
     }
 
     /**

@@ -1,6 +1,5 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -24,13 +23,18 @@ public class StorageTest {
         loadsEveryTaskTypeAndCompletionStatus();
         roundTripsAMixedTaskList();
         loadsSavedTasksWhenToothlessStarts();
+        startsWithoutADataDirectory();
+        startsWithoutADataFile();
+        createsMissingPathsOnFirstSave();
+        reportsExpectedReadAndWriteFailures();
+        keepsChangedTasksInMemoryAfterSaveFailure();
         System.out.println("All Storage tests passed.");
     }
 
     /**
      * Verifies the saved format for every task type and both completion states.
      */
-    private static void writesEveryTaskTypeAndCompletionStatus() throws IOException {
+    private static void writesEveryTaskTypeAndCompletionStatus() throws Exception {
         Path testDirectory = Files.createTempDirectory("toothless-storage-save-");
         Path dataFile = testDirectory.resolve("tasks.txt");
         Storage storage = new Storage(dataFile);
@@ -87,7 +91,7 @@ public class StorageTest {
     /**
      * Verifies loading all concrete task types, values, and completion states.
      */
-    private static void loadsEveryTaskTypeAndCompletionStatus() throws IOException {
+    private static void loadsEveryTaskTypeAndCompletionStatus() throws Exception {
         Path testDirectory = Files.createTempDirectory("toothless-storage-load-");
         Path dataFile = testDirectory.resolve("tasks.txt");
         Files.write(dataFile, List.of(
@@ -117,7 +121,7 @@ public class StorageTest {
     /**
      * Verifies that saving and loading a mixed list is reversible.
      */
-    private static void roundTripsAMixedTaskList() throws IOException {
+    private static void roundTripsAMixedTaskList() throws Exception {
         Path testDirectory = Files.createTempDirectory("toothless-storage-round-trip-");
         Path dataFile = testDirectory.resolve("tasks.txt");
         Storage storage = new Storage(dataFile);
@@ -159,9 +163,95 @@ public class StorageTest {
     }
 
     /**
+     * Verifies startup uses an empty list when the data directory is absent.
+     */
+    private static void startsWithoutADataDirectory() throws Exception {
+        Path testDirectory = Files.createTempDirectory("toothless-no-directory-");
+        Path dataFile = testDirectory.resolve("missing").resolve("tasks.txt");
+
+        TaskList loadedTasks = new Storage(dataFile).load();
+
+        assertTrue(loadedTasks.isEmpty(), "a missing data directory should load an empty list");
+        assertTrue(Files.notExists(dataFile.getParent()),
+                "loading should not create a missing data directory");
+    }
+
+    /**
+     * Verifies startup uses an empty list when only the data file is absent.
+     */
+    private static void startsWithoutADataFile() throws Exception {
+        Path testDirectory = Files.createTempDirectory("toothless-no-file-");
+        Path dataFile = testDirectory.resolve("tasks.txt");
+
+        TaskList loadedTasks = new Storage(dataFile).load();
+
+        assertTrue(loadedTasks.isEmpty(), "a missing data file should load an empty list");
+        assertTrue(Files.notExists(dataFile), "loading should not create a missing data file");
+    }
+
+    /**
+     * Verifies the first save creates its directory and file using Path operations.
+     */
+    private static void createsMissingPathsOnFirstSave() throws Exception {
+        Path testDirectory = Files.createTempDirectory("toothless-first-save-");
+        Path dataFile = testDirectory.resolve("nested").resolve("tasks.txt");
+        Storage storage = new Storage(dataFile);
+        TaskList tasks = new TaskList();
+        tasks.addTask(new Todo("first saved task"));
+
+        storage.save(tasks);
+
+        assertTrue(Files.isDirectory(dataFile.getParent()),
+                "the first save should create the data directory");
+        assertTrue(Files.isRegularFile(dataFile), "the first save should create the data file");
+        assertEquals("[T][ ] first saved task", storage.load().getTask(0).toString(),
+                "the first saved task should remain readable");
+    }
+
+    /**
+     * Verifies expected file-system failures use storage errors and preserve other state.
+     */
+    private static void reportsExpectedReadAndWriteFailures() throws Exception {
+        Path testDirectory = Files.createTempDirectory("toothless-io-failures-");
+        Path directoryAsFile = Files.createDirectory(testDirectory.resolve("directory-as-file"));
+        assertStorageFailure(() -> new Storage(directoryAsFile).load(),
+                "reading a directory as a data file should fail safely");
+
+        Path blockingParent = testDirectory.resolve("blocking-parent");
+        Files.writeString(blockingParent, "unrelated state", StandardCharsets.UTF_8);
+        Storage failingStorage = new Storage(blockingParent.resolve("tasks.txt"));
+        TaskList tasks = new TaskList();
+        tasks.addTask(new Todo("keep in memory"));
+
+        assertStorageFailure(() -> failingStorage.save(tasks),
+                "writing below a regular file should fail safely");
+        assertEquals(1, tasks.size(), "a failed save should not change the task list");
+        assertEquals("unrelated state", Files.readString(blockingParent, StandardCharsets.UTF_8),
+                "a failed save should not corrupt unrelated file state");
+    }
+
+    /**
+     * Verifies Toothless reports a save failure and keeps the changed list usable.
+     */
+    private static void keepsChangedTasksInMemoryAfterSaveFailure() throws Exception {
+        Path testDirectory = Files.createTempDirectory("toothless-save-message-");
+        Path dataFile = testDirectory.resolve("tasks.txt");
+        Files.writeString(dataFile, "", StandardCharsets.UTF_8);
+        Storage storage = new FailingSaveStorage(dataFile);
+
+        String output = runWithInput(storage, "todo keep this task\nlist\nbye\n");
+
+        assertTrue(output.contains("Toothless couldn’t tuck these changes into his data file."),
+                "a write failure should have a friendly message");
+        assertTrue(output.contains("1.[T][ ] keep this task"),
+                "the changed task should remain available after a write failure");
+        assertTrue(!output.contains("Exception"), "expected failures should not print a stack trace");
+    }
+
+    /**
      * Runs Toothless with isolated input and output streams.
      */
-    private static String runWithInput(Storage storage, String input) throws IOException {
+    private static String runWithInput(Storage storage, String input) {
         InputStream originalInput = System.in;
         PrintStream originalOutput = System.out;
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -195,6 +285,26 @@ public class StorageTest {
     }
 
     /**
+     * Fails the test unless the operation reports an expected storage error.
+     */
+    private static void assertStorageFailure(StorageOperation operation, String message) {
+        try {
+            operation.run();
+        } catch (StorageException exception) {
+            return;
+        }
+        throw new AssertionError(message);
+    }
+
+    /**
+     * Represents a storage operation that may fail in an expected way.
+     */
+    @FunctionalInterface
+    private interface StorageOperation {
+        void run() throws StorageException;
+    }
+
+    /**
      * Records how often Toothless asks storage to persist a changed list.
      */
     private static class CountingStorage extends Storage {
@@ -207,7 +317,7 @@ public class StorageTest {
         }
 
         @Override
-        public void save(TaskList taskList) throws IOException {
+        public void save(TaskList taskList) throws StorageException {
             saveCount++;
             super.save(taskList);
         }
@@ -222,6 +332,20 @@ public class StorageTest {
 
         Path getDataFile() {
             return dataFile;
+        }
+    }
+
+    /**
+     * Simulates a predictable write failure after startup loading succeeds.
+     */
+    private static class FailingSaveStorage extends Storage {
+        FailingSaveStorage(Path dataFile) {
+            super(dataFile);
+        }
+
+        @Override
+        public void save(TaskList taskList) throws StorageException {
+            throw new StorageException("Expected test failure", new IllegalStateException());
         }
     }
 }

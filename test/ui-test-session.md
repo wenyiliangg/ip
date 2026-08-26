@@ -7,7 +7,7 @@ Aim: Verify empty and unknown input, every task format, malformed separators, al
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && touch "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Console input:
@@ -354,7 +354,7 @@ Aim: Verify deletion from an empty list; invalid, missing, decimal, negative, ze
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && touch "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Console input:
@@ -696,6 +696,108 @@ Here are the tasks in your list:
 1.[T][★] borrow book
 2.[D][ ] return book (by: Sunday 5pm)
 3.[E][★] project meeting (from: Monday 2pm to: Monday 3pm)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+Exit code: `0` (expected `0`)
+
+## TC-04: Keep tasks usable after storage failures — PASS
+
+Aim: Verify expected read and write failures show friendly messages without a stack trace or loss of in-memory task state.
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir -p "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+```
+
+Console input:
+
+```text
+list
+todo keep this task
+list
+bye
+```
+
+Actual console output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [DATE_OR_TIME]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Toothless had trouble reading his saved quests.
+He'll start with an empty cave, but the saved file was left untouched.
+____________________________________________________________
+Your task list is empty. Ready for a new adventure!
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] keep this task
+Now you have 1 task in the list. ★
+Toothless couldn’t tuck these changes into his data file.
+They’re still safe for this adventure, but may not return next time.
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] keep this task
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [DATE_OR_TIME]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Toothless had trouble reading his saved quests.
+He'll start with an empty cave, but the saved file was left untouched.
+____________________________________________________________
+Your task list is empty. Ready for a new adventure!
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] keep this task
+Now you have 1 task in the list. ★
+Toothless couldn’t tuck these changes into his data file.
+They’re still safe for this adventure, but may not return next time.
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] keep this task
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
