@@ -55,7 +55,7 @@ public class Task {
      *
      * @return description of this task
      */
-    protected String getDescription() {
+    public String getDescription() {
         return description;
     }
 

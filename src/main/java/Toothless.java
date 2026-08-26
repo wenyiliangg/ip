@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Scanner;
 
 /**
@@ -6,6 +8,7 @@ import java.util.Scanner;
 public class Toothless {
     private static final String DIVIDER = "____________________________________________________________";
     private static final String COMMANDS = "todo, deadline, event, list, mark, unmark, delete, or bye";
+    private static final Path DATA_FILE = Path.of("data", "toothless.txt");
 
     /**
      * Validates and returns the task index supplied to a task command.
@@ -196,7 +199,17 @@ public class Toothless {
      *
      * @param args command-line arguments; they are not used
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        run(new Storage(DATA_FILE));
+    }
+
+    /**
+     * Runs the chatbot using the supplied storage destination.
+     *
+     * @param storage storage used after task-list changes
+     * @throws IOException if the changed task list cannot be saved
+     */
+    static void run(Storage storage) throws IOException {
         String banner = "  __/\\__           __/\\__\n"
                 + " /     \\_________/     \\\n"
                 + "/   /\\   O     O   /\\   \\\n"
@@ -254,6 +267,7 @@ public class Toothless {
                 } else if (command == Command.MARK) {
                     int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
                     Task markedTask = taskList.markTask(taskIndex);
+                    storage.save(taskList);
                     System.out.println("A happy little roar! I've starred this task as done:");
                     System.out.println("  " + markedTask);
                 } else if (command == Command.UNMARK) {
@@ -264,26 +278,31 @@ public class Toothless {
                         System.out.println("  " + selectedTask);
                     } else {
                         Task unmarkedTask = taskList.unmarkTask(taskIndex);
+                        storage.save(taskList);
                         System.out.println("All right, little rider! I've unstarred this task for now:");
                         System.out.println("  " + unmarkedTask);
                     }
                 } else if (command == Command.DELETE) {
                     int taskIndex = parseTaskIndex(command.toString(), details, taskList.size());
                     Task deletedTask = taskList.deleteTask(taskIndex);
+                    storage.save(taskList);
                     System.out.println("A tiny farewell roar! Toothless has removed this task:");
                     System.out.println("  " + deletedTask);
                     System.out.println(formatTaskCount(taskList.size()));
                 } else if (command == Command.TODO) {
                     Todo todo = parseTodo(details);
                     taskList.addTask(todo);
+                    storage.save(taskList);
                     printTaskAdded(todo, taskList.size());
                 } else if (command == Command.DEADLINE) {
                     Deadline deadline = parseDeadline(details);
                     taskList.addTask(deadline);
+                    storage.save(taskList);
                     printTaskAdded(deadline, taskList.size());
                 } else if (command == Command.EVENT) {
                     Event event = parseEvent(details);
                     taskList.addTask(event);
+                    storage.save(taskList);
                     printTaskAdded(event, taskList.size());
                 } else {
                     throw new ToothlessException("Toothless tilted his head—he doesn’t recognise that command.\n"

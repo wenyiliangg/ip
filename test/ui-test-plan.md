@@ -7,7 +7,7 @@ Aim: Verify empty and unknown input, every task format, malformed separators, al
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && javac -d /tmp/toothless-ui-classes src/main/java/*.java && java -cp /tmp/toothless-ui-classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Input:
@@ -207,7 +207,7 @@ Aim: Verify deletion from an empty list; invalid, missing, decimal, negative, ze
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && javac -d /tmp/toothless-ui-classes src/main/java/*.java && java -cp /tmp/toothless-ui-classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Input:
