@@ -23,32 +23,33 @@ public class Parser {
         }
 
         String[] commandParts = trimmedInput.split("\\s+", 2);
-        Command command = Command.fromKeyword(commandParts[0]);
+        CommandType commandType = CommandType.fromKeyword(commandParts[0]);
         String details = commandParts.length == 2 ? commandParts[1].trim() : "";
-        if (command == Command.UNKNOWN || command == Command.BYE && !details.isEmpty()) {
+        if (commandType == CommandType.UNKNOWN
+                || commandType == CommandType.BYE && !details.isEmpty()) {
             throw new ToothlessException(
                     "Toothless tilted his head—he doesn’t recognise that command.\n"
                             + "Try " + COMMANDS + ".");
         }
-        if (command == Command.LIST && !details.isEmpty()) {
+        if (commandType == CommandType.LIST && !details.isEmpty()) {
             throw new ToothlessException("The list command doesn't need extra words.\n"
                     + "Try: list");
         }
-        return new ParsedCommand(command, details);
+        return new ParsedCommand(commandType, details);
     }
 
     /**
      * Validates and returns the task index supplied to a task command.
      *
-     * @param command command whose argument is being checked
+     * @param commandType command type whose argument is being checked
      * @param argument text following the command name
      * @param taskCount current number of tasks
      * @return zero-based index of the selected task
      * @throws ToothlessException if the task number is absent or invalid
      */
-    public int parseTaskIndex(Command command, String argument, int taskCount)
+    public int parseTaskIndex(CommandType commandType, String argument, int taskCount)
             throws ToothlessException {
-        String commandName = command.toString();
+        String commandName = commandType.toString();
         if (taskCount == 0) {
             throw new ToothlessException("Toothless's cave is empty, so there is no task to "
                     + commandName + ".\nAdd a task first, then try again.");
@@ -211,21 +212,21 @@ public class Parser {
      * Holds the command keyword and remaining details parsed from one input line.
      */
     public static final class ParsedCommand {
-        private final Command command;
+        private final CommandType commandType;
         private final String details;
 
-        private ParsedCommand(Command command, String details) {
-            this.command = command;
+        private ParsedCommand(CommandType commandType, String details) {
+            this.commandType = commandType;
             this.details = details;
         }
 
         /**
-         * Returns the command selected by the user.
+         * Returns the command type selected by the user.
          *
-         * @return parsed command
+         * @return parsed command type
          */
-        public Command getCommand() {
-            return command;
+        public CommandType getCommandType() {
+            return commandType;
         }
 
         /**

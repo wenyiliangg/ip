@@ -41,21 +41,21 @@ public class Toothless {
 
             try {
                 Parser.ParsedCommand parsedCommand = parser.parse(input);
-                Command command = parsedCommand.getCommand();
+                CommandType commandType = parsedCommand.getCommandType();
                 String details = parsedCommand.getDetails();
 
-                if (command == Command.BYE) {
+                if (commandType == CommandType.BYE) {
                     ui.showGoodbye();
                     break;
-                } else if (command == Command.LIST) {
+                } else if (commandType == CommandType.LIST) {
                     ui.showTaskList(taskList);
-                } else if (command == Command.MARK) {
-                    int taskIndex = parser.parseTaskIndex(command, details, taskList.size());
+                } else if (commandType == CommandType.MARK) {
+                    int taskIndex = parser.parseTaskIndex(commandType, details, taskList.size());
                     Task markedTask = taskList.markTask(taskIndex);
                     ui.showTaskMarked(markedTask);
                     saveTasks(storage, taskList, ui);
-                } else if (command == Command.UNMARK) {
-                    int taskIndex = parser.parseTaskIndex(command, details, taskList.size());
+                } else if (commandType == CommandType.UNMARK) {
+                    int taskIndex = parser.parseTaskIndex(commandType, details, taskList.size());
                     Task selectedTask = taskList.getTask(taskIndex);
                     if (!selectedTask.isDone()) {
                         ui.showTaskAlreadyUnmarked(selectedTask);
@@ -64,22 +64,22 @@ public class Toothless {
                         ui.showTaskUnmarked(unmarkedTask);
                         saveTasks(storage, taskList, ui);
                     }
-                } else if (command == Command.DELETE) {
-                    int taskIndex = parser.parseTaskIndex(command, details, taskList.size());
+                } else if (commandType == CommandType.DELETE) {
+                    int taskIndex = parser.parseTaskIndex(commandType, details, taskList.size());
                     Task deletedTask = taskList.deleteTask(taskIndex);
                     ui.showTaskDeleted(deletedTask, taskList.size());
                     saveTasks(storage, taskList, ui);
-                } else if (command == Command.TODO) {
+                } else if (commandType == CommandType.TODO) {
                     Todo todo = parser.parseTodo(details);
                     taskList.addTask(todo);
                     ui.showTaskAdded(todo, taskList.size());
                     saveTasks(storage, taskList, ui);
-                } else if (command == Command.DEADLINE) {
+                } else if (commandType == CommandType.DEADLINE) {
                     Deadline deadline = parser.parseDeadline(details);
                     taskList.addTask(deadline);
                     ui.showTaskAdded(deadline, taskList.size());
                     saveTasks(storage, taskList, ui);
-                } else if (command == Command.EVENT) {
+                } else if (commandType == CommandType.EVENT) {
                     Event event = parser.parseEvent(details);
                     taskList.addTask(event);
                     ui.showTaskAdded(event, taskList.size());

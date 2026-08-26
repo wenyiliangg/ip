@@ -1,7 +1,7 @@
 /**
- * Represents a command understood by the Toothless chatbot.
+ * Identifies a command keyword understood by the Toothless chatbot.
  */
-public enum Command {
+public enum CommandType {
     TODO("todo"),
     DEADLINE("deadline"),
     EVENT("event"),
@@ -14,20 +14,20 @@ public enum Command {
 
     private final String keyword;
 
-    Command(String keyword) {
+    CommandType(String keyword) {
         this.keyword = keyword;
     }
 
     /**
-     * Converts a user-entered keyword into its corresponding command.
+     * Converts a user-entered keyword into its corresponding command type.
      *
      * @param keyword first word entered by the user
-     * @return matching command, or {@link #UNKNOWN} when there is no match
+     * @return matching command type, or {@link #UNKNOWN} when there is no match
      */
-    public static Command fromKeyword(String keyword) {
-        for (Command command : values()) {
-            if (command.keyword.equals(keyword)) {
-                return command;
+    public static CommandType fromKeyword(String keyword) {
+        for (CommandType commandType : values()) {
+            if (commandType.keyword.equals(keyword)) {
+                return commandType;
             }
         }
         return UNKNOWN;
