@@ -39,6 +39,22 @@ public class Storage {
     }
 
     /**
+     * Loads every saved task from the data file.
+     *
+     * <p>The data file is expected to exist and contain valid data at this stage.</p>
+     *
+     * @return task list reconstructed from the saved file
+     * @throws IOException if the file cannot be read
+     */
+    public TaskList load() throws IOException {
+        TaskList taskList = new TaskList();
+        for (String line : Files.readAllLines(dataFile, StandardCharsets.UTF_8)) {
+            taskList.addTask(deserialize(line));
+        }
+        return taskList;
+    }
+
+    /**
      * Converts one task into its reversible saved representation.
      */
     private String serialize(Task task) {
@@ -58,6 +74,63 @@ public class Storage {
     }
 
     /**
+     * Reconstructs one task from its saved representation.
+     */
+    private Task deserialize(String line) {
+        List<String> fields = splitFields(line);
+        String taskType = fields.get(0);
+        int expectedFieldCount = switch (taskType) {
+        case "T" -> 3;
+        case "D" -> 4;
+        case "E" -> 5;
+        default -> throw new IllegalArgumentException("Unknown saved task type: " + taskType);
+        };
+        if (fields.size() != expectedFieldCount) {
+            throw new IllegalArgumentException("Unexpected number of saved task fields");
+        }
+
+        Task task = switch (taskType) {
+        case "T" -> new Todo(unescape(fields.get(2)));
+        case "D" -> new Deadline(unescape(fields.get(2)), unescape(fields.get(3)));
+        case "E" -> new Event(unescape(fields.get(2)), unescape(fields.get(3)),
+                unescape(fields.get(4)));
+        default -> throw new IllegalStateException("Task type was already validated");
+        };
+        if (fields.get(1).equals("1")) {
+            task.markAsDone();
+        } else if (!fields.get(1).equals("0")) {
+            throw new IllegalArgumentException("Unknown saved completion status");
+        }
+        return task;
+    }
+
+    /**
+     * Splits fields only at separators that have not been escaped.
+     */
+    private List<String> splitFields(String line) {
+        List<String> fields = new ArrayList<>();
+        StringBuilder field = new StringBuilder();
+        boolean escaping = false;
+        for (int i = 0; i < line.length(); i++) {
+            char character = line.charAt(i);
+            if (escaping) {
+                field.append(character);
+                escaping = false;
+            } else if (character == '\\') {
+                field.append(character);
+                escaping = true;
+            } else if (character == '|') {
+                fields.add(field.toString().trim());
+                field.setLength(0);
+            } else {
+                field.append(character);
+            }
+        }
+        fields.add(field.toString().trim());
+        return fields;
+    }
+
+    /**
      * Joins saved fields using the storage format's visible separator.
      */
     private String joinFields(String... fields) {
@@ -72,5 +145,30 @@ public class Storage {
                 .replace("|", "\\|")
                 .replace("\n", "\\n")
                 .replace("\r", "\\r");
+    }
+
+    /**
+     * Restores escaped task data without treating it as storage syntax.
+     */
+    private String unescape(String value) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < value.length(); i++) {
+            char character = value.charAt(i);
+            if (character != '\\') {
+                result.append(character);
+                continue;
+            }
+            if (i + 1 >= value.length()) {
+                throw new IllegalArgumentException("Incomplete escape sequence");
+            }
+            char escapedCharacter = value.charAt(++i);
+            switch (escapedCharacter) {
+            case '\\', '|' -> result.append(escapedCharacter);
+            case 'n' -> result.append('\n');
+            case 'r' -> result.append('\r');
+            default -> throw new IllegalArgumentException("Unknown escape sequence");
+            }
+        }
+        return result.toString();
     }
 }

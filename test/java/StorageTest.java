@@ -1,7 +1,7 @@
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,6 +21,9 @@ public class StorageTest {
     public static void main(String[] args) throws Exception {
         writesEveryTaskTypeAndCompletionStatus();
         savesAfterEveryMutatingCommand();
+        loadsEveryTaskTypeAndCompletionStatus();
+        roundTripsAMixedTaskList();
+        loadsSavedTasksWhenToothlessStarts();
         System.out.println("All Storage tests passed.");
     }
 
@@ -61,6 +64,8 @@ public class StorageTest {
     private static void savesAfterEveryMutatingCommand() throws Exception {
         Path testDirectory = Files.createTempDirectory("toothless-command-save-");
         CountingStorage storage = new CountingStorage(testDirectory.resolve("tasks.txt"));
+        storage.save(new TaskList());
+        storage.resetSaveCount();
 
         runWithInput(storage, "todo first task\n"
                 + "deadline second task /by Sunday\n"
@@ -80,20 +85,95 @@ public class StorageTest {
     }
 
     /**
+     * Verifies loading all concrete task types, values, and completion states.
+     */
+    private static void loadsEveryTaskTypeAndCompletionStatus() throws IOException {
+        Path testDirectory = Files.createTempDirectory("toothless-storage-load-");
+        Path dataFile = testDirectory.resolve("tasks.txt");
+        Files.write(dataFile, List.of(
+                "T | 0 | read \\| chapter \\\\ one",
+                "D | 1 | return book | Sunday 5pm",
+                "E | 1 | project meeting | Monday 2pm | Monday 3pm"),
+                StandardCharsets.UTF_8);
+
+        TaskList loadedTasks = new Storage(dataFile).load();
+
+        assertEquals(3, loadedTasks.size(), "every valid line should load");
+        assertTrue(loadedTasks.getTask(0) instanceof Todo, "the todo type should be restored");
+        assertEquals("read | chapter \\ one", loadedTasks.getTask(0).getDescription(),
+                "escaped todo text should be restored exactly");
+        assertTrue(loadedTasks.getTask(1) instanceof Deadline,
+                "the deadline type should be restored");
+        Deadline deadline = (Deadline) loadedTasks.getTask(1);
+        assertEquals("Sunday 5pm", deadline.getBy(), "the deadline time should be restored");
+        assertTrue(deadline.isDone(), "a completed deadline should remain completed");
+        assertTrue(loadedTasks.getTask(2) instanceof Event, "the event type should be restored");
+        Event event = (Event) loadedTasks.getTask(2);
+        assertEquals("Monday 2pm", event.getFrom(), "the event start should be restored");
+        assertEquals("Monday 3pm", event.getTo(), "the event end should be restored");
+        assertTrue(event.isDone(), "a completed event should remain completed");
+    }
+
+    /**
+     * Verifies that saving and loading a mixed list is reversible.
+     */
+    private static void roundTripsAMixedTaskList() throws IOException {
+        Path testDirectory = Files.createTempDirectory("toothless-storage-round-trip-");
+        Path dataFile = testDirectory.resolve("tasks.txt");
+        Storage storage = new Storage(dataFile);
+        TaskList originalTasks = new TaskList();
+        originalTasks.addTask(new Todo("borrow book"));
+        originalTasks.addTask(new Deadline("return book", "Friday 6pm"));
+        originalTasks.addTask(new Event("team meeting", "Tuesday 2pm", "Tuesday 3pm"));
+        originalTasks.markTask(0);
+        originalTasks.markTask(2);
+
+        storage.save(originalTasks);
+        TaskList loadedTasks = storage.load();
+
+        assertEquals(originalTasks.size(), loadedTasks.size(),
+                "the round trip should preserve the task count");
+        for (int i = 0; i < originalTasks.size(); i++) {
+            assertEquals(originalTasks.getTask(i).toString(), loadedTasks.getTask(i).toString(),
+                    "the round trip should preserve task " + (i + 1));
+        }
+    }
+
+    /**
+     * Verifies that Toothless displays tasks loaded during startup.
+     */
+    private static void loadsSavedTasksWhenToothlessStarts() throws Exception {
+        Path testDirectory = Files.createTempDirectory("toothless-startup-load-");
+        Path dataFile = testDirectory.resolve("tasks.txt");
+        Storage storage = new Storage(dataFile);
+        TaskList tasks = new TaskList();
+        Todo todo = new Todo("borrow book");
+        todo.markAsDone();
+        tasks.addTask(todo);
+        storage.save(tasks);
+
+        String output = runWithInput(storage, "list\nbye\n");
+
+        assertTrue(output.contains("1.[T][★] borrow book"),
+                "startup loading should preserve the completed-task display");
+    }
+
+    /**
      * Runs Toothless with isolated input and output streams.
      */
-    private static void runWithInput(Storage storage, String input) throws IOException {
+    private static String runWithInput(Storage storage, String input) throws IOException {
         InputStream originalInput = System.in;
         PrintStream originalOutput = System.out;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             System.setIn(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
-            System.setOut(new PrintStream(OutputStream.nullOutputStream(), true,
-                    StandardCharsets.UTF_8));
+            System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));
             Toothless.run(storage);
         } finally {
             System.setIn(originalInput);
             System.setOut(originalOutput);
         }
+        return output.toString(StandardCharsets.UTF_8);
     }
 
     /**
@@ -134,6 +214,10 @@ public class StorageTest {
 
         int getSaveCount() {
             return saveCount;
+        }
+
+        void resetSaveCount() {
+            saveCount = 0;
         }
 
         Path getDataFile() {

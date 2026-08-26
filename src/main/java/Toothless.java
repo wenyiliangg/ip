@@ -233,7 +233,7 @@ public class Toothless {
         System.out.println(DIVIDER);
 
         Scanner scanner = new Scanner(System.in);
-        TaskList taskList = new TaskList();
+        TaskList taskList = storage.load();
 
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine().trim();

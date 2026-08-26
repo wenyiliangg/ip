@@ -7,7 +7,7 @@ Aim: Verify empty and unknown input, every task format, malformed separators, al
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && touch "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Console input:
@@ -354,7 +354,7 @@ Aim: Verify deletion from an empty list; invalid, missing, decimal, negative, ze
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && touch "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Console input:
@@ -614,6 +614,88 @@ ____________________________________________________________
 A tiny farewell roar! Toothless has removed this task:
   [T][ ] new task
 Now you have 0 tasks in the list.
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+Exit code: `0` (expected `0`)
+
+## TC-03: Load valid saved tasks at startup — PASS
+
+Aim: Verify startup restores every task type, its date or time values, and the completed-task display.
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "D | 0 | return book | Sunday 5pm" "E | 1 | project meeting | Monday 2pm | Monday 3pm" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+```
+
+Console input:
+
+```text
+list
+bye
+```
+
+Actual console output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [DATE_OR_TIME]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][★] borrow book
+2.[D][ ] return book (by: Sunday 5pm)
+3.[E][★] project meeting (from: Monday 2pm to: Monday 3pm)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [DATE_OR_TIME]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][★] borrow book
+2.[D][ ] return book (by: Sunday 5pm)
+3.[E][★] project meeting (from: Monday 2pm to: Monday 3pm)
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
