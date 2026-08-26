@@ -4,6 +4,7 @@ import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class Storage {
             for (String line : Files.readAllLines(dataFile, StandardCharsets.UTF_8)) {
                 try {
                     taskList.addTask(deserialize(line));
-                } catch (IllegalArgumentException exception) {
+                } catch (IllegalArgumentException | DateTimeParseException exception) {
                     malformedLineCount++;
                 }
             }
@@ -118,7 +119,7 @@ public class Storage {
         }
         if (task instanceof Deadline deadline) {
             return joinFields("D", status, escape(deadline.getDescription()),
-                    escape(deadline.getBy()));
+                    deadline.getBy().toString());
         }
         if (task instanceof Event event) {
             return joinFields("E", status, escape(event.getDescription()),
@@ -153,13 +154,12 @@ public class Storage {
 
         Task task = switch (taskType) {
         case "T" -> new Todo(unescape(fields.get(2)));
-        case "D" -> new Deadline(unescape(fields.get(2)), unescape(fields.get(3)));
+        case "D" -> new Deadline(unescape(fields.get(2)), DeadlineDate.parse(fields.get(3)));
         case "E" -> new Event(unescape(fields.get(2)), unescape(fields.get(3)),
                 unescape(fields.get(4)));
         default -> throw new IllegalStateException("Task type was already validated");
         };
         if (task.getDescription().isEmpty()
-                || task instanceof Deadline deadline && deadline.getBy().isEmpty()
                 || task instanceof Event event
                         && (event.getFrom().isEmpty() || event.getTo().isEmpty())) {
             throw new IllegalArgumentException("Saved task has an empty required field");

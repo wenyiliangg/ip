@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class StorageTest {
         TaskList tasks = new TaskList();
 
         Todo todo = new Todo("read | chapter \\ one");
-        Deadline deadline = new Deadline("return book", "Sunday 5pm");
+        Deadline deadline = new Deadline("return book", LocalDate.of(2019, 12, 2));
         Event event = new Event("project meeting", "Monday 2pm", "Monday 3pm");
         deadline.markAsDone();
         tasks.addTask(todo);
@@ -56,7 +57,7 @@ public class StorageTest {
         List<String> savedLines = Files.readAllLines(dataFile, StandardCharsets.UTF_8);
         assertEquals(List.of(
                 "T | 0 | read \\| chapter \\\\ one",
-                "D | 1 | return book | Sunday 5pm",
+                "D | 1 | return book | 2019-12-02",
                 "E | 0 | project meeting | Monday 2pm | Monday 3pm"),
                 savedLines, "all task fields should be saved");
         assertTrue(deadline.toString().contains("★"),
@@ -75,7 +76,7 @@ public class StorageTest {
         storage.resetSaveCount();
 
         runWithInput(storage, "todo first task\n"
-                + "deadline second task /by Sunday\n"
+                + "deadline second task /by 2019-12-02\n"
                 + "event third task /from 2pm /to 3pm\n"
                 + "mark 1\n"
                 + "unmark 1\n"
@@ -86,7 +87,7 @@ public class StorageTest {
                 "add, mark, unmark, and delete commands should each save once");
         assertEquals(List.of(
                 "T | 0 | first task",
-                "D | 0 | second task | Sunday"),
+                "D | 0 | second task | 2019-12-02"),
                 Files.readAllLines(storage.getDataFile(), StandardCharsets.UTF_8),
                 "the last save should contain the final task list");
     }
@@ -99,7 +100,7 @@ public class StorageTest {
         Path dataFile = testDirectory.resolve("tasks.txt");
         Files.write(dataFile, List.of(
                 "T | 0 | read \\| chapter \\\\ one",
-                "D | 1 | return book | Sunday 5pm",
+                "D | 1 | return book | 2019-12-02",
                 "E | 1 | project meeting | Monday 2pm | Monday 3pm"),
                 StandardCharsets.UTF_8);
 
@@ -112,7 +113,8 @@ public class StorageTest {
         assertTrue(loadedTasks.getTask(1) instanceof Deadline,
                 "the deadline type should be restored");
         Deadline deadline = (Deadline) loadedTasks.getTask(1);
-        assertEquals("Sunday 5pm", deadline.getBy(), "the deadline time should be restored");
+        assertEquals(LocalDate.of(2019, 12, 2), deadline.getBy(),
+                "the deadline date should be restored");
         assertTrue(deadline.isDone(), "a completed deadline should remain completed");
         assertTrue(loadedTasks.getTask(2) instanceof Event, "the event type should be restored");
         Event event = (Event) loadedTasks.getTask(2);
@@ -130,7 +132,7 @@ public class StorageTest {
         Storage storage = new Storage(dataFile);
         TaskList originalTasks = new TaskList();
         originalTasks.addTask(new Todo("borrow book"));
-        originalTasks.addTask(new Deadline("return book", "Friday 6pm"));
+        originalTasks.addTask(new Deadline("return book", LocalDate.of(2019, 12, 6)));
         originalTasks.addTask(new Event("team meeting", "Tuesday 2pm", "Tuesday 3pm"));
         originalTasks.markTask(0);
         originalTasks.markTask(2);
@@ -268,18 +270,20 @@ public class StorageTest {
                 "T | 0 | unexpected data | extra field",
                 "T | 0 | invalid \\q escape",
                 "T | 0 | ",
-                "D | 0 | return book | Friday 6pm");
+                "D | 0 | wrong date | 02-12-2019",
+                "D | 0 | impossible date | 2019-02-30",
+                "D | 0 | return book | 2019-12-06");
         Files.write(dataFile, originalLines, StandardCharsets.UTF_8);
 
         StorageLoadResult loadResult = new Storage(dataFile).load();
 
-        assertEquals(8, loadResult.getMalformedLineCount(),
+        assertEquals(10, loadResult.getMalformedLineCount(),
                 "every malformed saved entry should be counted");
         assertEquals(2, loadResult.getTaskList().size(),
                 "valid entries around malformed data should be preserved");
         assertEquals("[T][★] borrow book", loadResult.getTaskList().getTask(0).toString(),
                 "the valid completed todo should load unchanged");
-        assertEquals("[D][ ] return book (by: Friday 6pm)",
+        assertEquals("[D][ ] return book (by: Dec 6 2019)",
                 loadResult.getTaskList().getTask(1).toString(),
                 "the valid deadline after malformed entries should load unchanged");
         assertEquals(originalLines, Files.readAllLines(dataFile, StandardCharsets.UTF_8),

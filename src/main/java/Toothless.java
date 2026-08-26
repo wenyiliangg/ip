@@ -1,4 +1,6 @@
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
@@ -63,7 +65,7 @@ public class Toothless {
     }
 
     /**
-     * Parses a Deadline and validates its description and finishing time.
+     * Parses a Deadline and validates its description and finishing date.
      *
      * @param details text following the deadline command
      * @return validated Deadline
@@ -73,25 +75,31 @@ public class Toothless {
         String trimmed = details.trim();
         int byIndex = findSeparator(trimmed, "/by", 0);
         if (byIndex < 0) {
-            throw new ToothlessException("This deadline is missing '/by' and its finishing time.\n"
-                    + "Try: deadline return book /by Sunday");
+            throw new ToothlessException("This deadline is missing '/by' and its date.\n"
+                    + "Try: deadline return book /by 2019-12-02");
         }
         if (findSeparator(trimmed, "/by", byIndex + 3) >= 0 || containsSeparator(trimmed, "/from")
                 || containsSeparator(trimmed, "/to")) {
             throw new ToothlessException("This deadline's format has Toothless puzzled.\n"
-                    + "Try: deadline DESCRIPTION /by TIME");
+                    + "Please use: deadline DESCRIPTION /by yyyy-MM-dd");
         }
         String description = trimmed.substring(0, byIndex).trim();
         String by = trimmed.substring(byIndex + 3).trim();
         if (description.isEmpty()) {
             throw new ToothlessException("Toothless couldn’t find a description for that deadline.\n"
-                    + "Try: deadline return book /by Sunday");
+                    + "Try: deadline return book /by 2019-12-02");
         }
         if (by.isEmpty()) {
-            throw new ToothlessException("This deadline is missing its finishing time.\n"
-                    + "Try: deadline return book /by Sunday");
+            throw new ToothlessException("This deadline is missing its date.\n"
+                    + "Try: deadline return book /by 2019-12-02");
         }
-        return new Deadline(description, by);
+        try {
+            LocalDate date = DeadlineDate.parse(by);
+            return new Deadline(description, date);
+        } catch (DateTimeParseException exception) {
+            throw new ToothlessException("That deadline date made Toothless tilt his head.\n"
+                    + "Please use a real date in yyyy-MM-dd format.");
+        }
     }
 
     /**
@@ -225,7 +233,7 @@ public class Toothless {
         System.out.println("What can I do for you today?");
         System.out.println("Ready for our next little adventure? Tell me what to remember:");
         System.out.println("  - todo [DESCRIPTION]");
-        System.out.println("  - deadline [DESCRIPTION] /by [DATE_OR_TIME]");
+        System.out.println("  - deadline [DESCRIPTION] /by [yyyy-MM-dd]");
         System.out.println("  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]");
         System.out.println("You can also type list to see all our quests. Tiny roar! ★");
         System.out.println(DIVIDER);
