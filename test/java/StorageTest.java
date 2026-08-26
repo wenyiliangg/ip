@@ -270,12 +270,14 @@ public class StorageTest {
                 "T | 0 | unexpected data | extra field",
                 "T | 0 | invalid \\q escape",
                 "T | 0 | ",
+                "D | 0 | wrong date | 02-12-2019",
+                "D | 0 | impossible date | 2019-02-30",
                 "D | 0 | return book | 2019-12-06");
         Files.write(dataFile, originalLines, StandardCharsets.UTF_8);
 
         StorageLoadResult loadResult = new Storage(dataFile).load();
 
-        assertEquals(8, loadResult.getMalformedLineCount(),
+        assertEquals(10, loadResult.getMalformedLineCount(),
                 "every malformed saved entry should be counted");
         assertEquals(2, loadResult.getTaskList().size(),
                 "valid entries around malformed data should be preserved");

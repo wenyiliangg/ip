@@ -4,6 +4,7 @@ import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class Storage {
             for (String line : Files.readAllLines(dataFile, StandardCharsets.UTF_8)) {
                 try {
                     taskList.addTask(deserialize(line));
-                } catch (IllegalArgumentException exception) {
+                } catch (IllegalArgumentException | DateTimeParseException exception) {
                     malformedLineCount++;
                 }
             }

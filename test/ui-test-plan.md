@@ -98,20 +98,20 @@ Got it! Toothless has added this task for you:
   [T][ ] read book
 Now you have 1 task in the list. ★
 ____________________________________________________________
-This deadline is missing '/by' and its finishing time.
-Try: deadline return book /by Sunday
+This deadline is missing '/by' and its date.
+Try: deadline return book /by 2019-12-02
 ____________________________________________________________
-This deadline is missing '/by' and its finishing time.
-Try: deadline return book /by Sunday
+This deadline is missing '/by' and its date.
+Try: deadline return book /by 2019-12-02
 ____________________________________________________________
 Toothless couldn’t find a description for that deadline.
-Try: deadline return book /by Sunday
+Try: deadline return book /by 2019-12-02
 ____________________________________________________________
-This deadline is missing its finishing time.
-Try: deadline return book /by Sunday
+This deadline is missing its date.
+Try: deadline return book /by 2019-12-02
 ____________________________________________________________
 This deadline's format has Toothless puzzled.
-Try: deadline DESCRIPTION /by TIME
+Please use: deadline DESCRIPTION /by yyyy-MM-dd
 ____________________________________________________________
 Got it! Toothless has added this task for you:
   [D][ ] return book (by: Dec 2 2019)
@@ -200,7 +200,114 @@ ____________________________________________________________
 ```
 
 
-## TC-02: Delete tasks safely from an ArrayList
+## TC-02: Validate deadline dates without changing task state
+
+Aim: Verify missing, incorrectly formatted, impossible, non-leap, and malformed dates are rejected without stack traces or task-list changes; leap-day and whitespace-surrounded dates remain usable through listing, marking, unmarking, and deletion.
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+```
+
+Input:
+
+```text
+deadline no separator
+deadline no date /by
+deadline wrong format /by 02-12-2019
+deadline impossible /by 2019-02-30
+deadline extra content /by 2019-12-02 evening
+deadline extra separator /by 2019-12-02 /to evening
+deadline leap day /by 2020-02-29
+deadline non-leap day /by 2019-02-29
+deadline    spaced date    /by    2019-12-02
+list
+mark 1
+unmark 1
+mark 2
+delete 1
+list
+bye
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+This deadline is missing '/by' and its date.
+Try: deadline return book /by 2019-12-02
+____________________________________________________________
+This deadline is missing its date.
+Try: deadline return book /by 2019-12-02
+____________________________________________________________
+That deadline date made Toothless tilt his head.
+Please use a real date in yyyy-MM-dd format.
+____________________________________________________________
+That deadline date made Toothless tilt his head.
+Please use a real date in yyyy-MM-dd format.
+____________________________________________________________
+That deadline date made Toothless tilt his head.
+Please use a real date in yyyy-MM-dd format.
+____________________________________________________________
+This deadline's format has Toothless puzzled.
+Please use: deadline DESCRIPTION /by yyyy-MM-dd
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [D][ ] leap day (by: Feb 29 2020)
+Now you have 1 task in the list. ★
+____________________________________________________________
+That deadline date made Toothless tilt his head.
+Please use a real date in yyyy-MM-dd format.
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [D][ ] spaced date (by: Dec 2 2019)
+Now you have 2 tasks in the list. ★
+____________________________________________________________
+Here are the tasks in your list:
+1.[D][ ] leap day (by: Feb 29 2020)
+2.[D][ ] spaced date (by: Dec 2 2019)
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [D][★] leap day (by: Feb 29 2020)
+____________________________________________________________
+All right, little rider! I've unstarred this task for now:
+  [D][ ] leap day (by: Feb 29 2020)
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [D][★] spaced date (by: Dec 2 2019)
+____________________________________________________________
+A tiny farewell roar! Toothless has removed this task:
+  [D][ ] leap day (by: Feb 29 2020)
+Now you have 1 task in the list.
+____________________________________________________________
+Here are the tasks in your list:
+1.[D][★] spaced date (by: Dec 2 2019)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+
+## TC-03: Delete tasks safely from an ArrayList
 
 Aim: Verify deletion from an empty list; invalid, missing, decimal, negative, zero, out-of-range, and extra arguments; deletion of first, middle, and last Todo, Deadline, and Event tasks; completed-task deletion; re-numbering; order; singular/plural counts; multiple deletions; and other commands after deletion.
 
@@ -357,7 +464,7 @@ ____________________________________________________________
 ```
 
 
-## TC-03: Load valid saved tasks at startup
+## TC-04: Load valid saved tasks at startup
 
 Aim: Verify startup restores every task type, its date or time values, and the completed-task display.
 
@@ -406,7 +513,7 @@ ____________________________________________________________
 ```
 
 
-## TC-04: Keep tasks usable after storage failures
+## TC-05: Keep tasks usable after storage failures
 
 Aim: Verify expected read and write failures show friendly messages without a stack trace or loss of in-memory task state.
 
@@ -466,7 +573,7 @@ ____________________________________________________________
 ```
 
 
-## TC-05: Skip malformed saved tasks safely
+## TC-06: Skip malformed saved tasks safely
 
 Aim: Verify malformed saved entries produce one friendly warning while valid entries retain their type, values, order, and completion display.
 
