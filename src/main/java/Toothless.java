@@ -1,4 +1,6 @@
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
@@ -91,7 +93,13 @@ public class Toothless {
             throw new ToothlessException("This deadline is missing its finishing time.\n"
                     + "Try: deadline return book /by Sunday");
         }
-        return new Deadline(description, by);
+        try {
+            LocalDate date = DeadlineDate.parse(by);
+            return new Deadline(description, date);
+        } catch (DateTimeParseException exception) {
+            throw new ToothlessException("That deadline date made Toothless tilt his head.\n"
+                    + "Please use a real date in yyyy-MM-dd format.");
+        }
     }
 
     /**
@@ -225,7 +233,7 @@ public class Toothless {
         System.out.println("What can I do for you today?");
         System.out.println("Ready for our next little adventure? Tell me what to remember:");
         System.out.println("  - todo [DESCRIPTION]");
-        System.out.println("  - deadline [DESCRIPTION] /by [DATE_OR_TIME]");
+        System.out.println("  - deadline [DESCRIPTION] /by [yyyy-MM-dd]");
         System.out.println("  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]");
         System.out.println("You can also type list to see all our quests. Tiny roar! ★");
         System.out.println(DIVIDER);
