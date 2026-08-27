@@ -43,6 +43,7 @@ mark -1
 mark 2.5
 mark 999
 mark 1
+   mark    1
 unmark hello
 unmark 1
 mark 2
@@ -165,6 +166,9 @@ Please use a whole number, like: mark 1
 ____________________________________________________________
 Toothless can’t find task 999 in the cave.
 Please choose a number from 1 to 3.
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [T][★] read book
 ____________________________________________________________
 A happy little roar! I've starred this task as done:
   [T][★] read book

@@ -78,8 +78,15 @@ public class StorageTest {
         runWithInput(storage, "todo first task\n"
                 + "deadline second task /by 2019-12-02\n"
                 + "event third task /from 2pm /to 3pm\n"
+                + "mark 0\n"
+                + "mark -1\n"
+                + "mark 99\n"
+                + "mark nope\n"
+                + "mark\n"
+                + "mark 1\n"
                 + "mark 1\n"
                 + "unmark 1\n"
+                + "mark 1\n"
                 + "delete 0\n"
                 + "delete -1\n"
                 + "delete 99\n"
@@ -88,10 +95,10 @@ public class StorageTest {
                 + "delete 3\n"
                 + "bye\n");
 
-        assertEquals(6, storage.getSaveCount(),
+        assertEquals(8, storage.getSaveCount(),
                 "only successful add, mark, unmark, and delete commands should save");
         assertEquals(List.of(
-                "T | 0 | first task",
+                "T | 1 | first task",
                 "D | 0 | second task | 2019-12-02"),
                 Files.readAllLines(storage.getDataFile(), StandardCharsets.UTF_8),
                 "the last save should contain the final task list");
@@ -101,6 +108,8 @@ public class StorageTest {
                 "the deleted task should remain absent after reloading");
         assertEquals("first task", reloadedTasks.getTask(0).getDescription(),
                 "the first remaining task should keep its position");
+        assertTrue(reloadedTasks.getTask(0).isDone(),
+                "the marked task should remain marked after reloading");
         assertEquals("second task", reloadedTasks.getTask(1).getDescription(),
                 "the second remaining task should keep its position");
     }
@@ -147,8 +156,8 @@ public class StorageTest {
         originalTasks.addTask(new Todo("borrow book"));
         originalTasks.addTask(new Deadline("return book", LocalDate.of(2019, 12, 6)));
         originalTasks.addTask(new Event("team meeting", "Tuesday 2pm", "Tuesday 3pm"));
-        originalTasks.markTask(0);
-        originalTasks.markTask(2);
+        originalTasks.markTask(1);
+        originalTasks.markTask(3);
 
         storage.save(originalTasks);
         TaskList loadedTasks = storage.load().getTaskList();

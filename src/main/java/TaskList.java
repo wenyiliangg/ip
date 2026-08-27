@@ -34,13 +34,23 @@ public class TaskList {
     }
 
     /**
-     * Marks a task as completed and returns it for display.
+     * Marks the task with the given one-based number as completed.
      *
-     * @param index zero-based task index
+     * @param taskNumber one-based task number
      * @return marked task
+     * @throws ToothlessException if the task number is outside the task list
      */
-    public Task markTask(int index) {
-        Task task = tasks.get(index);
+    public Task markTask(int taskNumber) throws ToothlessException {
+        if (tasks.isEmpty()) {
+            throw new ToothlessException("Toothless's cave is empty, so there is no task to "
+                    + "mark.\nAdd a task first, then try again.");
+        }
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new ToothlessException(
+                    "Toothless can’t find task " + taskNumber + " in the cave.\n"
+                            + "Please choose a number from 1 to " + tasks.size() + ".");
+        }
+        Task task = tasks.get(taskNumber - 1);
         task.markAsDone();
         return task;
     }
