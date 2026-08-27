@@ -62,26 +62,6 @@ public class Parser {
     }
 
     /**
-     * Validates and returns the task index supplied to a task command.
-     *
-     * @param commandType command type whose argument is being checked
-     * @param argument text following the command name
-     * @param taskCount current number of tasks
-     * @return zero-based index of the selected task
-     * @throws ToothlessException if the task number is absent or invalid
-     */
-    public int parseTaskIndex(CommandType commandType, String argument, int taskCount)
-            throws ToothlessException {
-        int taskNumber = parseTaskNumber(commandType, argument, taskCount);
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new ToothlessException(
-                    "Toothless can’t find task " + taskNumber + " in the cave.\n"
-                            + "Please choose a number from 1 to " + taskCount + ".");
-        }
-        return taskNumber - 1;
-    }
-
-    /**
      * Parses the one-based task number supplied to a task command.
      *
      * @param commandType command type whose argument is being checked
@@ -90,7 +70,7 @@ public class Parser {
      * @return parsed one-based task number
      * @throws ToothlessException if the task number is absent or not numeric
      */
-    public int parseTaskNumber(CommandType commandType, String argument, int taskCount)
+    private int parseTaskNumber(CommandType commandType, String argument, int taskCount)
             throws ToothlessException {
         String commandName = commandType.toString();
         if (taskCount == 0) {
@@ -123,7 +103,7 @@ public class Parser {
      * @return validated todo description
      * @throws ToothlessException if the description is empty
      */
-    public String parseTodoDescription(String details) throws ToothlessException {
+    private String parseTodoDescription(String details) throws ToothlessException {
         if (details.isBlank()) {
             throw new ToothlessException("Toothless couldn’t find a description for that todo.\n"
                     + "Try: todo borrow book");
@@ -138,7 +118,7 @@ public class Parser {
      * @return validated deadline details
      * @throws ToothlessException if the command structure is incomplete or ambiguous
      */
-    public ParsedDeadline parseDeadlineDetails(String details) throws ToothlessException {
+    private ParsedDeadline parseDeadlineDetails(String details) throws ToothlessException {
         String trimmed = details.trim();
         int byIndex = findSeparator(trimmed, "/by", 0);
         if (byIndex < 0) {
@@ -173,7 +153,7 @@ public class Parser {
     /**
      * Holds validated values parsed from a deadline command.
      */
-    public static final class ParsedDeadline {
+    private static final class ParsedDeadline {
         private final String description;
         private final LocalDate by;
 
@@ -187,7 +167,7 @@ public class Parser {
          *
          * @return deadline description
          */
-        public String getDescription() {
+        private String getDescription() {
             return description;
         }
 
@@ -196,7 +176,7 @@ public class Parser {
          *
          * @return deadline date
          */
-        public LocalDate getBy() {
+        private LocalDate getBy() {
             return by;
         }
     }
@@ -208,7 +188,7 @@ public class Parser {
      * @return validated event details
      * @throws ToothlessException if the command structure is incomplete or ambiguous
      */
-    public ParsedEvent parseEventDetails(String details) throws ToothlessException {
+    private ParsedEvent parseEventDetails(String details) throws ToothlessException {
         String trimmed = details.trim();
         int fromIndex = findSeparator(trimmed, "/from", 0);
         int toIndex = findSeparator(trimmed, "/to", 0);
@@ -251,7 +231,7 @@ public class Parser {
     /**
      * Holds validated values parsed from an event command.
      */
-    public static final class ParsedEvent {
+    private static final class ParsedEvent {
         private final String description;
         private final String from;
         private final String to;
@@ -267,7 +247,7 @@ public class Parser {
          *
          * @return event description
          */
-        public String getDescription() {
+        private String getDescription() {
             return description;
         }
 
@@ -276,7 +256,7 @@ public class Parser {
          *
          * @return event starting time
          */
-        public String getFrom() {
+        private String getFrom() {
             return from;
         }
 
@@ -285,7 +265,7 @@ public class Parser {
          *
          * @return event ending time
          */
-        public String getTo() {
+        private String getTo() {
             return to;
         }
     }
