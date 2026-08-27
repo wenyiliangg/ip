@@ -94,18 +94,18 @@ public class Parser {
     }
 
     /**
-     * Parses a Todo only after confirming that its description is present.
+     * Parses a todo description after confirming that it is present.
      *
      * @param details text following the todo command
-     * @return validated Todo
+     * @return validated todo description
      * @throws ToothlessException if the description is empty
      */
-    public Todo parseTodo(String details) throws ToothlessException {
+    public String parseTodoDescription(String details) throws ToothlessException {
         if (details.isBlank()) {
             throw new ToothlessException("Toothless couldn’t find a description for that todo.\n"
                     + "Try: todo borrow book");
         }
-        return new Todo(details.trim());
+        return details.trim();
     }
 
     /**
