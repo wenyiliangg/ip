@@ -1,45 +1,24 @@
 /**
- * Represents a command understood by the Toothless chatbot.
+ * Represents an executable command in the Toothless chatbot.
  */
-public enum Command {
-    TODO("todo"),
-    DEADLINE("deadline"),
-    EVENT("event"),
-    LIST("list"),
-    MARK("mark"),
-    UNMARK("unmark"),
-    DELETE("delete"),
-    BYE("bye"),
-    UNKNOWN("");
-
-    private final String keyword;
-
-    Command(String keyword) {
-        this.keyword = keyword;
-    }
+public abstract class Command {
+    /**
+     * Performs this command using the application's collaborators.
+     *
+     * @param taskList tasks available to the command
+     * @param ui user interface used to present command results
+     * @param storage storage used to persist task changes
+     * @throws ToothlessException if the command cannot be completed
+     */
+    public abstract void execute(TaskList taskList, Ui ui, Storage storage)
+            throws ToothlessException;
 
     /**
-     * Converts a user-entered keyword into its corresponding command.
+     * Returns whether this command should end the application loop.
      *
-     * @param keyword first word entered by the user
-     * @return matching command, or {@link #UNKNOWN} when there is no match
+     * @return true when the application should stop after execution
      */
-    public static Command fromKeyword(String keyword) {
-        for (Command command : values()) {
-            if (command.keyword.equals(keyword)) {
-                return command;
-            }
-        }
-        return UNKNOWN;
-    }
-
-    /**
-     * Returns the command keyword used in user-facing instructions.
-     *
-     * @return lowercase command keyword
-     */
-    @Override
-    public String toString() {
-        return keyword;
+    public boolean isExit() {
+        return false;
     }
 }

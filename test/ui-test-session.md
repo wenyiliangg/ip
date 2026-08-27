@@ -17,6 +17,7 @@ Console input:
 blah
 list extra
 mark
+unmark
 todo
 todo
 todo    read book
@@ -43,8 +44,15 @@ mark -1
 mark 2.5
 mark 999
 mark 1
+   mark    1
+unmark
 unmark hello
+unmark 0
+unmark -1
+unmark 2.5
+unmark 999
 unmark 1
+   unmark    1
 mark 2
 delete
 delete 0
@@ -86,6 +94,9 @@ The list command doesn't need extra words.
 Try: list
 ____________________________________________________________
 Toothless's cave is empty, so there is no task to mark.
+Add a task first, then try again.
+____________________________________________________________
+Toothless's cave is empty, so there is no task to unmark.
 Add a task first, then try again.
 ____________________________________________________________
 Toothless couldn’t find a description for that todo.
@@ -169,10 +180,31 @@ ____________________________________________________________
 A happy little roar! I've starred this task as done:
   [T][★] read book
 ____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [T][★] read book
+____________________________________________________________
+Toothless needs a task number to unmark.
+Try: unmark 1
+____________________________________________________________
 That task number looks a little unusual.
 Please use a whole number, like: unmark 1
 ____________________________________________________________
+Toothless can’t find task 0 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
+Toothless can’t find task -1 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
+That task number looks a little unusual.
+Please use a whole number, like: unmark 1
+____________________________________________________________
+Toothless can’t find task 999 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
 All right, little rider! I've unstarred this task for now:
+  [T][ ] read book
+____________________________________________________________
+This task wasn't marked as done before, little rider:
   [T][ ] read book
 ____________________________________________________________
 A happy little roar! I've starred this task as done:
@@ -234,6 +266,9 @@ ____________________________________________________________
 Toothless's cave is empty, so there is no task to mark.
 Add a task first, then try again.
 ____________________________________________________________
+Toothless's cave is empty, so there is no task to unmark.
+Add a task first, then try again.
+____________________________________________________________
 Toothless couldn’t find a description for that todo.
 Try: todo borrow book
 ____________________________________________________________
@@ -315,10 +350,31 @@ ____________________________________________________________
 A happy little roar! I've starred this task as done:
   [T][★] read book
 ____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [T][★] read book
+____________________________________________________________
+Toothless needs a task number to unmark.
+Try: unmark 1
+____________________________________________________________
 That task number looks a little unusual.
 Please use a whole number, like: unmark 1
 ____________________________________________________________
+Toothless can’t find task 0 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
+Toothless can’t find task -1 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
+That task number looks a little unusual.
+Please use a whole number, like: unmark 1
+____________________________________________________________
+Toothless can’t find task 999 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
 All right, little rider! I've unstarred this task for now:
+  [T][ ] read book
+____________________________________________________________
+This task wasn't marked as done before, little rider:
   [T][ ] read book
 ____________________________________________________________
 A happy little roar! I've starred this task as done:
@@ -373,6 +429,7 @@ list
 mark 1
 unmark 1
 mark 2
+unmark 2
 delete 1
 list
 bye
@@ -442,12 +499,15 @@ ____________________________________________________________
 A happy little roar! I've starred this task as done:
   [D][★] spaced date (by: Dec 2 2019)
 ____________________________________________________________
+All right, little rider! I've unstarred this task for now:
+  [D][ ] spaced date (by: Dec 2 2019)
+____________________________________________________________
 A tiny farewell roar! Toothless has removed this task:
   [D][ ] leap day (by: Feb 29 2020)
 Now you have 1 task in the list.
 ____________________________________________________________
 Here are the tasks in your list:
-1.[D][★] spaced date (by: Dec 2 2019)
+1.[D][ ] spaced date (by: Dec 2 2019)
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
@@ -518,12 +578,15 @@ ____________________________________________________________
 A happy little roar! I've starred this task as done:
   [D][★] spaced date (by: Dec 2 2019)
 ____________________________________________________________
+All right, little rider! I've unstarred this task for now:
+  [D][ ] spaced date (by: Dec 2 2019)
+____________________________________________________________
 A tiny farewell roar! Toothless has removed this task:
   [D][ ] leap day (by: Feb 29 2020)
 Now you have 1 task in the list.
 ____________________________________________________________
 Here are the tasks in your list:
-1.[D][★] spaced date (by: Dec 2 2019)
+1.[D][ ] spaced date (by: Dec 2 2019)
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
@@ -558,7 +621,7 @@ delete -1
 delete 99
 delete 2 extra
 list
-delete 2
+   delete    2
 list
 delete 1
 delete 2
