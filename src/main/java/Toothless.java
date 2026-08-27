@@ -36,33 +36,22 @@ public class Toothless {
         }
 
         Parser parser = new Parser();
-        while (ui.hasNextCommand()) {
+        boolean isExit = false;
+        while (!isExit && ui.hasNextCommand()) {
             String input = ui.readCommand();
 
             try {
                 Command command = parser.parse(input, taskList.size());
-                if (command.isExit()) {
-                    command.execute(taskList, ui, storage);
-                    break;
-                }
                 command.execute(taskList, ui, storage);
+                isExit = command.isExit();
             } catch (ToothlessException exception) {
                 ui.showError(exception.getMessage());
             }
-            ui.showDivider();
+            if (!isExit) {
+                ui.showDivider();
+            }
         }
 
         ui.close();
-    }
-
-    /**
-     * Saves a changed task list while keeping it available after an expected failure.
-     */
-    private static void saveTasks(Storage storage, TaskList taskList, Ui ui) {
-        try {
-            storage.save(taskList);
-        } catch (StorageException exception) {
-            ui.showSaveError();
-        }
     }
 }
