@@ -558,7 +558,7 @@ delete -1
 delete 99
 delete 2 extra
 list
-delete 2
+   delete    2
 list
 delete 1
 delete 2

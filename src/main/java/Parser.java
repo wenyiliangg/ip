@@ -49,6 +49,26 @@ public class Parser {
      */
     public int parseTaskIndex(CommandType commandType, String argument, int taskCount)
             throws ToothlessException {
+        int taskNumber = parseTaskNumber(commandType, argument, taskCount);
+        if (taskNumber < 1 || taskNumber > taskCount) {
+            throw new ToothlessException(
+                    "Toothless can’t find task " + taskNumber + " in the cave.\n"
+                            + "Please choose a number from 1 to " + taskCount + ".");
+        }
+        return taskNumber - 1;
+    }
+
+    /**
+     * Parses the one-based task number supplied to a task command.
+     *
+     * @param commandType command type whose argument is being checked
+     * @param argument text following the command name
+     * @param taskCount current number of tasks
+     * @return parsed one-based task number
+     * @throws ToothlessException if the task number is absent or not numeric
+     */
+    public int parseTaskNumber(CommandType commandType, String argument, int taskCount)
+            throws ToothlessException {
         String commandName = commandType.toString();
         if (taskCount == 0) {
             throw new ToothlessException("Toothless's cave is empty, so there is no task to "
@@ -70,12 +90,7 @@ public class Parser {
             throw new ToothlessException("That task number is too large for Toothless to count.\n"
                     + "Please choose a number from 1 to " + taskCount + ".");
         }
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new ToothlessException(
-                    "Toothless can’t find task " + taskNumber + " in the cave.\n"
-                            + "Please choose a number from 1 to " + taskCount + ".");
-        }
-        return taskNumber - 1;
+        return taskNumber;
     }
 
     /**

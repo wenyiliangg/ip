@@ -80,16 +80,29 @@ public class StorageTest {
                 + "event third task /from 2pm /to 3pm\n"
                 + "mark 1\n"
                 + "unmark 1\n"
+                + "delete 0\n"
+                + "delete -1\n"
+                + "delete 99\n"
+                + "delete nope\n"
+                + "delete\n"
                 + "delete 3\n"
                 + "bye\n");
 
         assertEquals(6, storage.getSaveCount(),
-                "add, mark, unmark, and delete commands should each save once");
+                "only successful add, mark, unmark, and delete commands should save");
         assertEquals(List.of(
                 "T | 0 | first task",
                 "D | 0 | second task | 2019-12-02"),
                 Files.readAllLines(storage.getDataFile(), StandardCharsets.UTF_8),
                 "the last save should contain the final task list");
+
+        TaskList reloadedTasks = new Storage(storage.getDataFile()).load().getTaskList();
+        assertEquals(2, reloadedTasks.size(),
+                "the deleted task should remain absent after reloading");
+        assertEquals("first task", reloadedTasks.getTask(0).getDescription(),
+                "the first remaining task should keep its position");
+        assertEquals("second task", reloadedTasks.getTask(1).getDescription(),
+                "the second remaining task should keep its position");
     }
 
     /**

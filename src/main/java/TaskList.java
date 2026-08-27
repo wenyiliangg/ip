@@ -58,13 +58,23 @@ public class TaskList {
     }
 
     /**
-     * Removes and returns the task at the given zero-based index.
+     * Removes and returns the task with the given one-based number.
      *
-     * @param index zero-based task index
+     * @param taskNumber one-based task number
      * @return removed task
+     * @throws ToothlessException if the task number is outside the task list
      */
-    public Task deleteTask(int index) {
-        return tasks.remove(index);
+    public Task deleteTask(int taskNumber) throws ToothlessException {
+        if (tasks.isEmpty()) {
+            throw new ToothlessException("Toothless's cave is empty, so there is no task to "
+                    + "delete.\nAdd a task first, then try again.");
+        }
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new ToothlessException(
+                    "Toothless can’t find task " + taskNumber + " in the cave.\n"
+                            + "Please choose a number from 1 to " + tasks.size() + ".");
+        }
+        return tasks.remove(taskNumber - 1);
     }
 
     /**
