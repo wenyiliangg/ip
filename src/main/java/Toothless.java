@@ -51,7 +51,8 @@ public class Toothless {
                         break;
                     }
                 } else if (commandType == CommandType.LIST) {
-                    ui.showTaskList(taskList);
+                    Command command = new ListCommand();
+                    command.execute(taskList, ui, storage);
                 } else if (commandType == CommandType.MARK) {
                     int taskIndex = parser.parseTaskIndex(commandType, details, taskList.size());
                     Task markedTask = taskList.markTask(taskIndex);
