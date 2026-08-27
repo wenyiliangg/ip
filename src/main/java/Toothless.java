@@ -58,15 +58,9 @@ public class Toothless {
                     Command command = new MarkCommand(taskNumber);
                     command.execute(taskList, ui, storage);
                 } else if (commandType == CommandType.UNMARK) {
-                    int taskIndex = parser.parseTaskIndex(commandType, details, taskList.size());
-                    Task selectedTask = taskList.getTask(taskIndex);
-                    if (!selectedTask.isDone()) {
-                        ui.showTaskAlreadyUnmarked(selectedTask);
-                    } else {
-                        Task unmarkedTask = taskList.unmarkTask(taskIndex);
-                        ui.showTaskUnmarked(unmarkedTask);
-                        saveTasks(storage, taskList, ui);
-                    }
+                    int taskNumber = parser.parseTaskNumber(commandType, details, taskList.size());
+                    Command command = new UnmarkCommand(taskNumber);
+                    command.execute(taskList, ui, storage);
                 } else if (commandType == CommandType.DELETE) {
                     int taskNumber = parser.parseTaskNumber(commandType, details, taskList.size());
                     Command command = new DeleteCommand(taskNumber);

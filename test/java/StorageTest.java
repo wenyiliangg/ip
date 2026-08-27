@@ -87,6 +87,13 @@ public class StorageTest {
                 + "mark 1\n"
                 + "unmark 1\n"
                 + "mark 1\n"
+                + "unmark 0\n"
+                + "unmark -1\n"
+                + "unmark 99\n"
+                + "unmark nope\n"
+                + "unmark\n"
+                + "unmark 1\n"
+                + "unmark 1\n"
                 + "delete 0\n"
                 + "delete -1\n"
                 + "delete 99\n"
@@ -95,10 +102,10 @@ public class StorageTest {
                 + "delete 3\n"
                 + "bye\n");
 
-        assertEquals(8, storage.getSaveCount(),
+        assertEquals(9, storage.getSaveCount(),
                 "only successful add, mark, unmark, and delete commands should save");
         assertEquals(List.of(
-                "T | 1 | first task",
+                "T | 0 | first task",
                 "D | 0 | second task | 2019-12-02"),
                 Files.readAllLines(storage.getDataFile(), StandardCharsets.UTF_8),
                 "the last save should contain the final task list");
@@ -108,8 +115,8 @@ public class StorageTest {
                 "the deleted task should remain absent after reloading");
         assertEquals("first task", reloadedTasks.getTask(0).getDescription(),
                 "the first remaining task should keep its position");
-        assertTrue(reloadedTasks.getTask(0).isDone(),
-                "the marked task should remain marked after reloading");
+        assertTrue(!reloadedTasks.getTask(0).isDone(),
+                "the unmarked task should remain unmarked after reloading");
         assertEquals("second task", reloadedTasks.getTask(1).getDescription(),
                 "the second remaining task should keep its position");
     }

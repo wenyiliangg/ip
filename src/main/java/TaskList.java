@@ -56,15 +56,29 @@ public class TaskList {
     }
 
     /**
-     * Marks a task as incomplete and returns it for display.
+     * Unmarks the task with the given one-based number when it is completed.
      *
-     * @param index zero-based task index
-     * @return unmarked task
+     * @param taskNumber one-based task number
+     * @return the selected task and whether its completion state changed
+     * @throws ToothlessException if the task number is outside the task list
      */
-    public Task unmarkTask(int index) {
-        Task task = tasks.get(index);
+    public UnmarkResult unmarkTask(int taskNumber) throws ToothlessException {
+        if (tasks.isEmpty()) {
+            throw new ToothlessException("Toothless's cave is empty, so there is no task to "
+                    + "unmark.\nAdd a task first, then try again.");
+        }
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new ToothlessException(
+                    "Toothless can’t find task " + taskNumber + " in the cave.\n"
+                            + "Please choose a number from 1 to " + tasks.size() + ".");
+        }
+
+        Task task = tasks.get(taskNumber - 1);
+        if (!task.isDone()) {
+            return new UnmarkResult(task, false);
+        }
         task.unmarkAsDone();
-        return task;
+        return new UnmarkResult(task, true);
     }
 
     /**
@@ -103,5 +117,42 @@ public class TaskList {
      */
     public boolean isEmpty() {
         return tasks.isEmpty();
+    }
+
+    /**
+     * Describes the outcome of attempting to unmark a task.
+     */
+    public static class UnmarkResult {
+        private final Task task;
+        private final boolean wasChanged;
+
+        /**
+         * Creates an unmark result for a selected task.
+         *
+         * @param task selected task
+         * @param wasChanged whether the task changed from marked to unmarked
+         */
+        private UnmarkResult(Task task, boolean wasChanged) {
+            this.task = task;
+            this.wasChanged = wasChanged;
+        }
+
+        /**
+         * Returns the task selected by the unmark operation.
+         *
+         * @return selected task
+         */
+        public Task getTask() {
+            return task;
+        }
+
+        /**
+         * Returns whether unmarking changed the task's completion state.
+         *
+         * @return true when a marked task became unmarked
+         */
+        public boolean wasChanged() {
+            return wasChanged;
+        }
     }
 }
