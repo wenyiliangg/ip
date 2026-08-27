@@ -179,13 +179,13 @@ public class Parser {
     }
 
     /**
-     * Parses an Event and validates its description, start, and end.
+     * Parses and validates an event description, start, and end.
      *
      * @param details text following the event command
-     * @return validated Event
+     * @return validated event details
      * @throws ToothlessException if the command structure is incomplete or ambiguous
      */
-    public Event parseEvent(String details) throws ToothlessException {
+    public ParsedEvent parseEventDetails(String details) throws ToothlessException {
         String trimmed = details.trim();
         int fromIndex = findSeparator(trimmed, "/from", 0);
         int toIndex = findSeparator(trimmed, "/to", 0);
@@ -222,7 +222,49 @@ public class Parser {
             throw new ToothlessException("This event is missing its ending time.\n"
                     + "Try: event DESCRIPTION /from START /to END");
         }
-        return new Event(description, from, to);
+        return new ParsedEvent(description, from, to);
+    }
+
+    /**
+     * Holds validated values parsed from an event command.
+     */
+    public static final class ParsedEvent {
+        private final String description;
+        private final String from;
+        private final String to;
+
+        private ParsedEvent(String description, String from, String to) {
+            this.description = description;
+            this.from = from;
+            this.to = to;
+        }
+
+        /**
+         * Returns the parsed event description.
+         *
+         * @return event description
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * Returns the parsed event starting time.
+         *
+         * @return event starting time
+         */
+        public String getFrom() {
+            return from;
+        }
+
+        /**
+         * Returns the parsed event ending time.
+         *
+         * @return event ending time
+         */
+        public String getTo() {
+            return to;
+        }
     }
 
     /**

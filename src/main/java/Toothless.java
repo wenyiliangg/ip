@@ -75,10 +75,10 @@ public class Toothless {
                             deadline.getDescription(), deadline.getBy());
                     command.execute(taskList, ui, storage);
                 } else if (commandType == CommandType.EVENT) {
-                    Event event = parser.parseEvent(details);
-                    taskList.addTask(event);
-                    ui.showTaskAdded(event, taskList.size());
-                    saveTasks(storage, taskList, ui);
+                    Parser.ParsedEvent event = parser.parseEventDetails(details);
+                    Command command = new EventCommand(
+                            event.getDescription(), event.getFrom(), event.getTo());
+                    command.execute(taskList, ui, storage);
                 } else {
                     throw new IllegalStateException("Parser returned an unsupported command");
                 }
