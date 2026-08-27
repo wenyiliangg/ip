@@ -1,7 +1,7 @@
 /**
  * Coordinates creating an event and persisting the updated task list.
  */
-public class EventCommand extends Command {
+public class EventCommand extends AddCommand {
     private final String description;
     private final String from;
     private final String to;
@@ -20,17 +20,12 @@ public class EventCommand extends Command {
     }
 
     /**
-     * Creates and adds the event, displays it, and saves the task list.
+     * Creates the event handled by the shared add workflow.
+     *
+     * @return event created from the parsed description and timing values
      */
     @Override
-    public void execute(TaskList taskList, Ui ui, Storage storage) {
-        Event event = new Event(description, from, to);
-        taskList.addTask(event);
-        ui.showTaskAdded(event, taskList.size());
-        try {
-            storage.save(taskList);
-        } catch (StorageException exception) {
-            ui.showSaveError();
-        }
+    protected Task createTask() {
+        return new Event(description, from, to);
     }
 }

@@ -3,7 +3,7 @@ import java.time.LocalDate;
 /**
  * Coordinates creating a deadline and persisting the updated task list.
  */
-public class DeadlineCommand extends Command {
+public class DeadlineCommand extends AddCommand {
     private final String description;
     private final LocalDate by;
 
@@ -19,17 +19,12 @@ public class DeadlineCommand extends Command {
     }
 
     /**
-     * Creates and adds the deadline, displays it, and saves the task list.
+     * Creates the deadline handled by the shared add workflow.
+     *
+     * @return deadline created from the parsed description and date
      */
     @Override
-    public void execute(TaskList taskList, Ui ui, Storage storage) {
-        Deadline deadline = new Deadline(description, by);
-        taskList.addTask(deadline);
-        ui.showTaskAdded(deadline, taskList.size());
-        try {
-            storage.save(taskList);
-        } catch (StorageException exception) {
-            ui.showSaveError();
-        }
+    protected Task createTask() {
+        return new Deadline(description, by);
     }
 }

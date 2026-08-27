@@ -1,7 +1,7 @@
 /**
  * Coordinates creating a todo and persisting the updated task list.
  */
-public class TodoCommand extends Command {
+public class TodoCommand extends AddCommand {
     private final String description;
 
     /**
@@ -14,17 +14,12 @@ public class TodoCommand extends Command {
     }
 
     /**
-     * Creates and adds the todo, displays it, and saves the updated task list.
+     * Creates the todo handled by the shared add workflow.
+     *
+     * @return todo created from the parsed description
      */
     @Override
-    public void execute(TaskList taskList, Ui ui, Storage storage) {
-        Todo todo = new Todo(description);
-        taskList.addTask(todo);
-        ui.showTaskAdded(todo, taskList.size());
-        try {
-            storage.save(taskList);
-        } catch (StorageException exception) {
-            ui.showSaveError();
-        }
+    protected Task createTask() {
+        return new Todo(description);
     }
 }
