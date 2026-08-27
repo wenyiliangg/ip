@@ -9,13 +9,14 @@ public class Parser {
             "todo, deadline, event, list, mark, unmark, delete, or bye";
 
     /**
-     * Splits one line of user input into its command and remaining details.
+     * Interprets one line of input and constructs its executable command.
      *
      * @param input complete line entered by the user
-     * @return parsed command and its details
-     * @throws ToothlessException if the input is empty or does not name a valid command
+     * @param taskCount current number of tasks
+     * @return executable command represented by the input
+     * @throws ToothlessException if the input is empty, unknown, or malformed
      */
-    public ParsedCommand parse(String input) throws ToothlessException {
+    public Command parse(String input, int taskCount) throws ToothlessException {
         String trimmedInput = input.trim();
         if (trimmedInput.isEmpty()) {
             throw new ToothlessException("Toothless heard a tiny silence. What should he do?\n"
@@ -35,7 +36,29 @@ public class Parser {
             throw new ToothlessException("The list command doesn't need extra words.\n"
                     + "Try: list");
         }
-        return new ParsedCommand(commandType, details);
+
+        switch (commandType) {
+        case BYE:
+            return new ExitCommand();
+        case LIST:
+            return new ListCommand();
+        case MARK:
+            return new MarkCommand(parseTaskNumber(commandType, details, taskCount));
+        case UNMARK:
+            return new UnmarkCommand(parseTaskNumber(commandType, details, taskCount));
+        case DELETE:
+            return new DeleteCommand(parseTaskNumber(commandType, details, taskCount));
+        case TODO:
+            return new TodoCommand(parseTodoDescription(details));
+        case DEADLINE:
+            ParsedDeadline deadline = parseDeadlineDetails(details);
+            return new DeadlineCommand(deadline.getDescription(), deadline.getBy());
+        case EVENT:
+            ParsedEvent event = parseEventDetails(details);
+            return new EventCommand(event.getDescription(), event.getFrom(), event.getTo());
+        default:
+            throw new IllegalStateException("Unsupported command type: " + commandType);
+        }
     }
 
     /**
@@ -296,34 +319,4 @@ public class Parser {
         return index;
     }
 
-    /**
-     * Holds the command keyword and remaining details parsed from one input line.
-     */
-    public static final class ParsedCommand {
-        private final CommandType commandType;
-        private final String details;
-
-        private ParsedCommand(CommandType commandType, String details) {
-            this.commandType = commandType;
-            this.details = details;
-        }
-
-        /**
-         * Returns the command type selected by the user.
-         *
-         * @return parsed command type
-         */
-        public CommandType getCommandType() {
-            return commandType;
-        }
-
-        /**
-         * Returns the trimmed text that followed the command keyword.
-         *
-         * @return command details, or an empty string when none were supplied
-         */
-        public String getDetails() {
-            return details;
-        }
-    }
 }

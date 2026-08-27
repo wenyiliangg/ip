@@ -40,48 +40,12 @@ public class Toothless {
             String input = ui.readCommand();
 
             try {
-                Parser.ParsedCommand parsedCommand = parser.parse(input);
-                CommandType commandType = parsedCommand.getCommandType();
-                String details = parsedCommand.getDetails();
-
-                if (commandType == CommandType.BYE) {
-                    Command command = new ExitCommand();
+                Command command = parser.parse(input, taskList.size());
+                if (command.isExit()) {
                     command.execute(taskList, ui, storage);
-                    if (command.isExit()) {
-                        break;
-                    }
-                } else if (commandType == CommandType.LIST) {
-                    Command command = new ListCommand();
-                    command.execute(taskList, ui, storage);
-                } else if (commandType == CommandType.MARK) {
-                    int taskNumber = parser.parseTaskNumber(commandType, details, taskList.size());
-                    Command command = new MarkCommand(taskNumber);
-                    command.execute(taskList, ui, storage);
-                } else if (commandType == CommandType.UNMARK) {
-                    int taskNumber = parser.parseTaskNumber(commandType, details, taskList.size());
-                    Command command = new UnmarkCommand(taskNumber);
-                    command.execute(taskList, ui, storage);
-                } else if (commandType == CommandType.DELETE) {
-                    int taskNumber = parser.parseTaskNumber(commandType, details, taskList.size());
-                    Command command = new DeleteCommand(taskNumber);
-                    command.execute(taskList, ui, storage);
-                } else if (commandType == CommandType.TODO) {
-                    String description = parser.parseTodoDescription(details);
-                    Command command = new TodoCommand(description);
-                    command.execute(taskList, ui, storage);
-                } else if (commandType == CommandType.DEADLINE) {
-                    Parser.ParsedDeadline deadline = parser.parseDeadlineDetails(details);
-                    Command command = new DeadlineCommand(
-                            deadline.getDescription(), deadline.getBy());
-                    command.execute(taskList, ui, storage);
-                } else if (commandType == CommandType.EVENT) {
-                    Parser.ParsedEvent event = parser.parseEventDetails(details);
-                    Command command = new EventCommand(
-                            event.getDescription(), event.getFrom(), event.getTo());
-                    command.execute(taskList, ui, storage);
-                } else {
-                    throw new IllegalStateException("Parser returned an unsupported command");
+                    break;
                 }
+                command.execute(taskList, ui, storage);
             } catch (ToothlessException exception) {
                 ui.showError(exception.getMessage());
             }
