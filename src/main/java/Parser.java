@@ -109,13 +109,13 @@ public class Parser {
     }
 
     /**
-     * Parses a Deadline and validates its description and finishing date.
+     * Parses and validates a deadline description and finishing date.
      *
      * @param details text following the deadline command
-     * @return validated Deadline
+     * @return validated deadline details
      * @throws ToothlessException if the command structure is incomplete or ambiguous
      */
-    public Deadline parseDeadline(String details) throws ToothlessException {
+    public ParsedDeadline parseDeadlineDetails(String details) throws ToothlessException {
         String trimmed = details.trim();
         int byIndex = findSeparator(trimmed, "/by", 0);
         if (byIndex < 0) {
@@ -140,10 +140,41 @@ public class Parser {
         }
         try {
             LocalDate date = DeadlineDate.parse(by);
-            return new Deadline(description, date);
+            return new ParsedDeadline(description, date);
         } catch (DateTimeParseException exception) {
             throw new ToothlessException("That deadline date made Toothless tilt his head.\n"
                     + "Please use a real date in yyyy-MM-dd format.");
+        }
+    }
+
+    /**
+     * Holds validated values parsed from a deadline command.
+     */
+    public static final class ParsedDeadline {
+        private final String description;
+        private final LocalDate by;
+
+        private ParsedDeadline(String description, LocalDate by) {
+            this.description = description;
+            this.by = by;
+        }
+
+        /**
+         * Returns the parsed deadline description.
+         *
+         * @return deadline description
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * Returns the parsed deadline date.
+         *
+         * @return deadline date
+         */
+        public LocalDate getBy() {
+            return by;
         }
     }
 

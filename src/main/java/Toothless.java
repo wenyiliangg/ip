@@ -70,10 +70,10 @@ public class Toothless {
                     Command command = new TodoCommand(description);
                     command.execute(taskList, ui, storage);
                 } else if (commandType == CommandType.DEADLINE) {
-                    Deadline deadline = parser.parseDeadline(details);
-                    taskList.addTask(deadline);
-                    ui.showTaskAdded(deadline, taskList.size());
-                    saveTasks(storage, taskList, ui);
+                    Parser.ParsedDeadline deadline = parser.parseDeadlineDetails(details);
+                    Command command = new DeadlineCommand(
+                            deadline.getDescription(), deadline.getBy());
+                    command.execute(taskList, ui, storage);
                 } else if (commandType == CommandType.EVENT) {
                     Event event = parser.parseEvent(details);
                     taskList.addTask(event);
