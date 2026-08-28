@@ -35,8 +35,8 @@ public class Ui {
     /**
      * Creates a UI using the supplied streams.
      *
-     * @param input stream containing user commands
-     * @param output stream receiving application responses
+     * @param input stream containing user commands.
+     * @param output stream receiving application responses.
      */
     public Ui(InputStream input, PrintStream output) {
         this.scanner = new Scanner(input);
@@ -81,7 +81,7 @@ public class Ui {
     /**
      * Displays a warning when some saved task lines could not be understood.
      *
-     * @param malformedLineCount number of saved lines that were skipped
+     * @param malformedLineCount number of saved lines that were skipped.
      */
     public void showMalformedDataWarning(int malformedLineCount) {
         String lineWord = malformedLineCount == 1 ? "line" : "lines";
@@ -103,7 +103,7 @@ public class Ui {
     /**
      * Displays all current tasks with one-based numbering.
      *
-     * @param taskList tasks to display
+     * @param taskList tasks to display.
      */
     public void showTaskList(TaskList taskList) {
         if (taskList.isEmpty()) {
@@ -119,7 +119,7 @@ public class Ui {
     /**
      * Confirms that a task was marked as completed.
      *
-     * @param task task that was marked
+     * @param task task that was marked.
      */
     public void showTaskMarked(Task task) {
         output.println("A happy little roar! I've starred this task as done:");
@@ -129,7 +129,7 @@ public class Ui {
     /**
      * Explains that an incomplete task did not need to be unmarked.
      *
-     * @param task task that was already incomplete
+     * @param task task that was already incomplete.
      */
     public void showTaskAlreadyUnmarked(Task task) {
         output.println("This task wasn't marked as done before, little rider:");
@@ -139,7 +139,7 @@ public class Ui {
     /**
      * Confirms that a task was changed back to incomplete.
      *
-     * @param task task that was unmarked
+     * @param task task that was unmarked.
      */
     public void showTaskUnmarked(Task task) {
         output.println("All right, little rider! I've unstarred this task for now:");
@@ -149,8 +149,8 @@ public class Ui {
     /**
      * Confirms that a task was removed and displays the remaining task count.
      *
-     * @param task task that was removed
-     * @param taskCount number of tasks remaining
+     * @param task task that was removed.
+     * @param taskCount number of tasks remaining.
      */
     public void showTaskDeleted(Task task, int taskCount) {
         output.println("A tiny farewell roar! Toothless has removed this task:");
@@ -161,8 +161,8 @@ public class Ui {
     /**
      * Confirms that a task was added and displays the new task count.
      *
-     * @param task task that was added
-     * @param taskCount current number of tasks
+     * @param task task that was added.
+     * @param taskCount current number of tasks.
      */
     public void showTaskAdded(Task task, int taskCount) {
         output.println("Got it! Toothless has added this task for you:");
@@ -181,7 +181,7 @@ public class Ui {
     /**
      * Displays a validation or command error reported by the parser.
      *
-     * @param message error message to display
+     * @param message error message to display.
      */
     public void showError(String message) {
         output.println(message);
@@ -212,7 +212,7 @@ public class Ui {
     /**
      * Formats the current task count with correct singular or plural grammar.
      *
-     * @param taskCount current number of tasks
+     * @param taskCount current number of tasks.
      * @return sentence describing the current task count
      */
     private String formatTaskCount(int taskCount) {

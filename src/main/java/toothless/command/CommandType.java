@@ -23,7 +23,7 @@ public enum CommandType {
     /**
      * Converts a user-entered keyword into its corresponding command type.
      *
-     * @param keyword first word entered by the user
+     * @param keyword first word entered by the user.
      * @return matching command type, or {@link #UNKNOWN} when there is no match
      */
     public static CommandType fromKeyword(String keyword) {

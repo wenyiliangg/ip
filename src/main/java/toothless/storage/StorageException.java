@@ -9,8 +9,8 @@ public class StorageException extends Exception {
     /**
      * Creates a storage error while preserving its file-system cause.
      *
-     * @param message summary of the failed storage operation
-     * @param cause underlying file-system failure
+     * @param message summary of the failed storage operation.
+     * @param cause underlying file-system failure.
      */
     public StorageException(String message, Throwable cause) {
         super(message, cause);

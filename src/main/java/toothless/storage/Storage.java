@@ -28,7 +28,7 @@ public class Storage {
     /**
      * Creates storage that writes to the given data file.
      *
-     * @param dataFile file used to store tasks
+     * @param dataFile file used to store tasks.
      */
     public Storage(Path dataFile) {
         this.dataFile = dataFile;
@@ -37,7 +37,7 @@ public class Storage {
     /**
      * Replaces the saved file with the current tasks.
      *
-     * @param taskList tasks to save
+     * @param taskList tasks to save.
      * @throws StorageException if the file cannot be written safely
      */
     public void save(TaskList taskList) throws StorageException {
@@ -147,10 +147,10 @@ public class Storage {
         List<String> fields = splitFields(line);
         String taskType = fields.get(0);
         int expectedFieldCount = switch (taskType) {
-        case "T" -> 3;
-        case "D" -> 4;
-        case "E" -> 5;
-        default -> throw new IllegalArgumentException("Unknown saved task type: " + taskType);
+            case "T" -> 3;
+            case "D" -> 4;
+            case "E" -> 5;
+            default -> throw new IllegalArgumentException("Unknown saved task type: " + taskType);
         };
         if (fields.size() != expectedFieldCount) {
             throw new IllegalArgumentException("Unexpected number of saved task fields");
@@ -162,11 +162,11 @@ public class Storage {
         }
 
         Task task = switch (taskType) {
-        case "T" -> new Todo(unescape(fields.get(2)));
-        case "D" -> new Deadline(unescape(fields.get(2)), DeadlineDate.parse(fields.get(3)));
-        case "E" -> new Event(unescape(fields.get(2)), unescape(fields.get(3)),
-                unescape(fields.get(4)));
-        default -> throw new IllegalStateException("Task type was already validated");
+            case "T" -> new Todo(unescape(fields.get(2)));
+            case "D" -> new Deadline(unescape(fields.get(2)), DeadlineDate.parse(fields.get(3)));
+            case "E" -> new Event(unescape(fields.get(2)), unescape(fields.get(3)),
+                    unescape(fields.get(4)));
+            default -> throw new IllegalStateException("Task type was already validated");
         };
         if (task.getDescription().isEmpty()
                 || task instanceof Event event
@@ -185,15 +185,15 @@ public class Storage {
     private List<String> splitFields(String line) {
         List<String> fields = new ArrayList<>();
         StringBuilder field = new StringBuilder();
-        boolean escaping = false;
+        boolean isEscaping = false;
         for (int i = 0; i < line.length(); i++) {
             char character = line.charAt(i);
-            if (escaping) {
+            if (isEscaping) {
                 field.append(character);
-                escaping = false;
+                isEscaping = false;
             } else if (character == '\\') {
                 field.append(character);
-                escaping = true;
+                isEscaping = true;
             } else if (character == '|') {
                 fields.add(field.toString().trim());
                 field.setLength(0);
@@ -238,10 +238,10 @@ public class Storage {
             }
             char escapedCharacter = value.charAt(++i);
             switch (escapedCharacter) {
-            case '\\', '|' -> result.append(escapedCharacter);
-            case 'n' -> result.append('\n');
-            case 'r' -> result.append('\r');
-            default -> throw new IllegalArgumentException("Unknown escape sequence");
+                case '\\', '|' -> result.append(escapedCharacter);
+                case 'n' -> result.append('\n');
+                case 'r' -> result.append('\r');
+                default -> throw new IllegalArgumentException("Unknown escape sequence");
             }
         }
         return result.toString();

@@ -20,7 +20,7 @@ public class Toothless {
     /**
      * Runs the chatbot and responds to commands entered by the user.
      *
-     * @param args command-line arguments; they are not used
+     * @param args command-line arguments; they are not used.
      */
     public static void main(String[] args) {
         run(new Storage(DATA_FILE));
@@ -29,7 +29,7 @@ public class Toothless {
     /**
      * Runs the chatbot using the supplied storage destination.
      *
-     * @param storage storage used after task-list changes
+     * @param storage storage used after task-list changes.
      */
     static void run(Storage storage) {
         Ui ui = new Ui();

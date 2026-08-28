@@ -15,7 +15,7 @@ public class UnmarkCommand extends Command {
     /**
      * Creates an unmark command for a parsed one-based task number.
      *
-     * @param taskNumber one-based task number obtained from the parser
+     * @param taskNumber one-based task number obtained from the parser.
      */
     public UnmarkCommand(int taskNumber) {
         this.taskNumber = taskNumber;

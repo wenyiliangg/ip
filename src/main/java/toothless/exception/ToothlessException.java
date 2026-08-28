@@ -9,7 +9,7 @@ public class ToothlessException extends Exception {
     /**
      * Creates an input error with a friendly message for the user.
      *
-     * @param message message explaining how to correct the input
+     * @param message message explaining how to correct the input.
      */
     public ToothlessException(String message) {
         super(message);

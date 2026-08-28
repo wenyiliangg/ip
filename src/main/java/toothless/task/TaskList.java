@@ -21,7 +21,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task task to add
+     * @param task task to add.
      */
     public void addTask(Task task) {
         tasks.add(task);
@@ -30,7 +30,7 @@ public class TaskList {
     /**
      * Returns the task at the given zero-based index.
      *
-     * @param index zero-based task index
+     * @param index zero-based task index.
      * @return selected task
      */
     public Task getTask(int index) {
@@ -40,7 +40,7 @@ public class TaskList {
     /**
      * Marks the task with the given one-based number as completed.
      *
-     * @param taskNumber one-based task number
+     * @param taskNumber one-based task number.
      * @return marked task
      * @throws ToothlessException if the task number is outside the task list
      */
@@ -62,7 +62,7 @@ public class TaskList {
     /**
      * Unmarks the task with the given one-based number when it is completed.
      *
-     * @param taskNumber one-based task number
+     * @param taskNumber one-based task number.
      * @return the selected task and whether its completion state changed
      * @throws ToothlessException if the task number is outside the task list
      */
@@ -88,7 +88,7 @@ public class TaskList {
     /**
      * Removes and returns the task with the given one-based number.
      *
-     * @param taskNumber one-based task number
+     * @param taskNumber one-based task number.
      * @return removed task
      * @throws ToothlessException if the task number is outside the task list
      */
@@ -133,8 +133,8 @@ public class TaskList {
         /**
          * Creates an unmark result for a selected task.
          *
-         * @param task selected task
-         * @param wasChanged whether the task changed from marked to unmarked
+         * @param task selected task.
+         * @param wasChanged whether the task changed from marked to unmarked.
          */
         private UnmarkResult(Task task, boolean wasChanged) {
             this.task = task;

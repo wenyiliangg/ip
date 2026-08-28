@@ -15,8 +15,8 @@ public class DeadlineCommand extends AddCommand {
     /**
      * Creates a deadline command from validated task details.
      *
-     * @param description deadline description obtained from the parser
-     * @param by date obtained from the parser
+     * @param description deadline description obtained from the parser.
+     * @param by date obtained from the parser.
      */
     public DeadlineCommand(String description, LocalDate by) {
         this.description = description;
