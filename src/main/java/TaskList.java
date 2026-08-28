@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import toothless.exception.ToothlessException;
+
 /**
  * Stores tasks and provides focused operations for changing the task list.
  */

@@ -1,3 +1,5 @@
+import toothless.exception.ToothlessException;
+
 /**
  * Represents an executable command in the Toothless chatbot.
  */

@@ -1,6 +1,8 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+import toothless.exception.ToothlessException;
+
 /**
  * Interprets user input and validates the details supplied to Toothless commands.
  */

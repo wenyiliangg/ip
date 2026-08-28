@@ -1,3 +1,5 @@
+import toothless.exception.ToothlessException;
+
 /**
  * Coordinates marking one task and persisting the updated task list.
  */

@@ -7,7 +7,7 @@ Aim: Verify empty and unknown input, every task format, malformed separators, al
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Input:
@@ -239,7 +239,7 @@ Aim: Verify missing, incorrectly formatted, impossible, non-leap, and malformed 
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Input:
@@ -350,7 +350,7 @@ Aim: Verify deletion from an empty list; invalid, missing, decimal, negative, ze
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Input:
@@ -507,7 +507,7 @@ Aim: Verify startup restores every task type, its date or time values, and the c
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "D | 0 | return book | 2019-12-02" "E | 1 | project meeting | Monday 2pm | Monday 3pm" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "D | 0 | return book | 2019-12-02" "E | 1 | project meeting | Monday 2pm | Monday 3pm" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Input:
@@ -556,7 +556,7 @@ Aim: Verify expected read and write failures show friendly messages without a st
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir -p "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && mkdir -p "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Input:
@@ -616,7 +616,7 @@ Aim: Verify malformed saved entries produce one friendly warning while valid ent
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" src/main/java/*.java && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "X | 0 | unknown type" "D | 0 | missing time" "T | maybe | invalid status" "E | 0 | truncated event | 2pm" "" "T | 0 | unexpected data | extra field" "D | 0 | return book | 2019-12-06" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "X | 0 | unknown type" "D | 0 | missing time" "T | maybe | invalid status" "E | 0 | truncated event | 2pm" "" "T | 0 | unexpected data | extra field" "D | 0 | return book | 2019-12-06" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes Toothless'
 ```
 
 Input:

@@ -1,5 +1,7 @@
 import java.nio.file.Path;
 
+import toothless.exception.ToothlessException;
+
 /**
  * Starts the Toothless chatbot application.
  */
