@@ -1,3 +1,5 @@
+package toothless;
+
 import java.nio.file.Path;
 
 import toothless.command.Command;
