@@ -1,4 +1,6 @@
 import toothless.exception.ToothlessException;
+import toothless.task.Task;
+import toothless.task.TaskList;
 
 /**
  * Coordinates deleting one task and persisting the updated task list.

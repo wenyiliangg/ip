@@ -1,3 +1,5 @@
+import toothless.task.TaskList;
+
 /**
  * Coordinates displaying the current task list.
  */

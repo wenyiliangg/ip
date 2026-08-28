@@ -1,4 +1,5 @@
 import toothless.exception.ToothlessException;
+import toothless.task.TaskList;
 
 /**
  * Represents an executable command in the Toothless chatbot.

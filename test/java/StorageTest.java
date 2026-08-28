@@ -8,6 +8,11 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
+import toothless.task.Deadline;
+import toothless.task.Event;
+import toothless.task.TaskList;
+import toothless.task.Todo;
+
 /**
  * Runs focused storage tests without requiring an external test framework.
  */

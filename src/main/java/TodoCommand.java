@@ -1,3 +1,6 @@
+import toothless.task.Task;
+import toothless.task.Todo;
+
 /**
  * Coordinates creating a todo and persisting the updated task list.
  */

@@ -1,3 +1,6 @@
+import toothless.task.Task;
+import toothless.task.TaskList;
+
 /**
  * Provides the shared workflow for commands that create and add a task.
  */

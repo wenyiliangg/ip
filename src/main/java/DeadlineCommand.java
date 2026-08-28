@@ -1,5 +1,8 @@
 import java.time.LocalDate;
 
+import toothless.task.Deadline;
+import toothless.task.Task;
+
 /**
  * Coordinates creating a deadline and persisting the updated task list.
  */

@@ -1,4 +1,5 @@
 import toothless.exception.ToothlessException;
+import toothless.task.TaskList;
 
 /**
  * Coordinates unmarking one task and persisting the updated task list.

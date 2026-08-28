@@ -1,3 +1,5 @@
+import toothless.task.TaskList;
+
 /**
  * Contains tasks recovered from storage and the number of entries skipped.
  */

@@ -1,3 +1,6 @@
+import toothless.task.Event;
+import toothless.task.Task;
+
 /**
  * Coordinates creating an event and persisting the updated task list.
  */

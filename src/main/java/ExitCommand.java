@@ -1,3 +1,5 @@
+import toothless.task.TaskList;
+
 /**
  * Displays Toothless's farewell and ends the current application session.
  */

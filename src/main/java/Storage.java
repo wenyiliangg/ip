@@ -8,6 +8,13 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import toothless.task.Deadline;
+import toothless.task.DeadlineDate;
+import toothless.task.Event;
+import toothless.task.Task;
+import toothless.task.TaskList;
+import toothless.task.Todo;
+
 /**
  * Saves Toothless tasks in a text file that is separate from chatbot input.
  */
