@@ -24,6 +24,9 @@ public class UnmarkCommand extends Command {
     /**
      * Unmarks the selected task, displays the result, and saves changed state.
      *
+     * @param taskList list containing the task selected for unmarking
+     * @param ui user interface used to display the result or report a save failure
+     * @param storage storage used to persist the updated task list when it changes
      * @throws ToothlessException if the selected task does not exist
      */
     @Override

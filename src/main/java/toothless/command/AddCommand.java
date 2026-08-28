@@ -19,6 +19,10 @@ public abstract class AddCommand extends Command {
 
     /**
      * Adds the created task, displays it, and saves the updated task list.
+     *
+     * @param taskList list that receives the newly created task
+     * @param ui user interface used to confirm the addition or report a save failure
+     * @param storage storage used to persist the updated task list
      */
     @Override
     public final void execute(TaskList taskList, Ui ui, Storage storage) {

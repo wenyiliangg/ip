@@ -16,6 +16,11 @@ public enum CommandType {
 
     private final String keyword;
 
+    /**
+     * Creates a command type associated with the keyword entered by Toothless users.
+     *
+     * @param keyword lowercase keyword that identifies the command
+     */
     CommandType(String keyword) {
         this.keyword = keyword;
     }

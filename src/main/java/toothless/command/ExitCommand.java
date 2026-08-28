@@ -10,6 +10,10 @@ import toothless.ui.Ui;
 public class ExitCommand extends Command {
     /**
      * Displays the farewell message for this session.
+     *
+     * @param taskList current tasks, which remain unchanged by this command
+     * @param ui user interface used to display Toothless's farewell
+     * @param storage configured storage, which is not needed by this command
      */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage) {
