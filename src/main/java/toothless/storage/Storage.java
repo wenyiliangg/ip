@@ -1,3 +1,5 @@
+package toothless.storage;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -7,6 +9,13 @@ import java.nio.file.StandardCopyOption;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import toothless.task.Deadline;
+import toothless.task.DeadlineDate;
+import toothless.task.Event;
+import toothless.task.Task;
+import toothless.task.TaskList;
+import toothless.task.Todo;
 
 /**
  * Saves Toothless tasks in a text file that is separate from chatbot input.

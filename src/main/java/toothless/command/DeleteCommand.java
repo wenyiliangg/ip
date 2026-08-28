@@ -1,3 +1,12 @@
+package toothless.command;
+
+import toothless.exception.ToothlessException;
+import toothless.storage.Storage;
+import toothless.storage.StorageException;
+import toothless.task.Task;
+import toothless.task.TaskList;
+import toothless.ui.Ui;
+
 /**
  * Coordinates deleting one task and persisting the updated task list.
  */

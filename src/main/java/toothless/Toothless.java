@@ -1,4 +1,15 @@
+package toothless;
+
 import java.nio.file.Path;
+
+import toothless.command.Command;
+import toothless.exception.ToothlessException;
+import toothless.parser.Parser;
+import toothless.storage.Storage;
+import toothless.storage.StorageException;
+import toothless.storage.StorageLoadResult;
+import toothless.task.TaskList;
+import toothless.ui.Ui;
 
 /**
  * Starts the Toothless chatbot application.

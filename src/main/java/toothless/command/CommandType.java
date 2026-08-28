@@ -1,3 +1,5 @@
+package toothless.command;
+
 /**
  * Identifies a command keyword understood by the Toothless chatbot.
  */

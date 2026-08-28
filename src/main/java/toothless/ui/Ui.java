@@ -1,6 +1,11 @@
+package toothless.ui;
+
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
+
+import toothless.task.Task;
+import toothless.task.TaskList;
 
 /**
  * Handles console input and presents Toothless's responses to the user.

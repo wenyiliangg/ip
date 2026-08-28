@@ -1,3 +1,5 @@
+package toothless;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -7,6 +9,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
+
+import toothless.storage.Storage;
+import toothless.storage.StorageException;
+import toothless.storage.StorageLoadResult;
+import toothless.task.Deadline;
+import toothless.task.Event;
+import toothless.task.TaskList;
+import toothless.task.Todo;
 
 /**
  * Runs focused storage tests without requiring an external test framework.
