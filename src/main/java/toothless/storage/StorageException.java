@@ -1,3 +1,5 @@
+package toothless.storage;
+
 /**
  * Represents an expected failure while reading or writing Toothless's data.
  */

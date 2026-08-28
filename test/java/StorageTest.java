@@ -8,6 +8,9 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
+import toothless.storage.Storage;
+import toothless.storage.StorageException;
+import toothless.storage.StorageLoadResult;
 import toothless.task.Deadline;
 import toothless.task.Event;
 import toothless.task.TaskList;

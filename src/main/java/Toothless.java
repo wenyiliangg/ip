@@ -1,6 +1,9 @@
 import java.nio.file.Path;
 
 import toothless.exception.ToothlessException;
+import toothless.storage.Storage;
+import toothless.storage.StorageException;
+import toothless.storage.StorageLoadResult;
 import toothless.task.TaskList;
 
 /**

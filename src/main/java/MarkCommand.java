@@ -1,4 +1,6 @@
 import toothless.exception.ToothlessException;
+import toothless.storage.Storage;
+import toothless.storage.StorageException;
 import toothless.task.Task;
 import toothless.task.TaskList;
 

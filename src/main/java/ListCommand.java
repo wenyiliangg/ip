@@ -1,3 +1,4 @@
+import toothless.storage.Storage;
 import toothless.task.TaskList;
 
 /**
