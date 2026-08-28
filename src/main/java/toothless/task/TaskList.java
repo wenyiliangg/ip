@@ -32,6 +32,7 @@ public class TaskList {
      *
      * @param index zero-based task index
      * @return selected task
+     * @throws IndexOutOfBoundsException if the index is outside the task list
      */
     public Task getTask(int index) {
         return tasks.get(index);

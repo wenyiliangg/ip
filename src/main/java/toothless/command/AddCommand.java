@@ -11,6 +11,12 @@ import toothless.ui.Ui;
  */
 public abstract class AddCommand extends Command {
     /**
+     * Creates the shared base for a command that adds one task to Toothless's list.
+     */
+    public AddCommand() {
+    }
+
+    /**
      * Creates the command-specific task before it is added to the task list.
      *
      * @return task created by the concrete command

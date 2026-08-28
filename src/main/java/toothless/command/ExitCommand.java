@@ -9,6 +9,12 @@ import toothless.ui.Ui;
  */
 public class ExitCommand extends Command {
     /**
+     * Creates a command that ends the current Toothless session.
+     */
+    public ExitCommand() {
+    }
+
+    /**
      * Displays the farewell message for this session.
      *
      * @param taskList current tasks, which remain unchanged by this command

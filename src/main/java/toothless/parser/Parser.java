@@ -24,6 +24,12 @@ public class Parser {
             "todo, deadline, event, list, mark, unmark, delete, or bye";
 
     /**
+     * Creates a stateless parser for commands entered during a Toothless session.
+     */
+    public Parser() {
+    }
+
+    /**
      * Interprets one line of input and constructs its executable command.
      *
      * @param input complete line entered by the user
@@ -172,6 +178,12 @@ public class Parser {
         private final String description;
         private final LocalDate by;
 
+        /**
+         * Groups a validated deadline description with its parsed due date.
+         *
+         * @param description validated text describing the deadline task
+         * @param by parsed date by which the task should be completed
+         */
         private ParsedDeadline(String description, LocalDate by) {
             this.description = description;
             this.by = by;
@@ -251,6 +263,13 @@ public class Parser {
         private final String from;
         private final String to;
 
+        /**
+         * Groups the validated text fields needed to create an event task.
+         *
+         * @param description validated text describing the event
+         * @param from validated event starting time
+         * @param to validated event ending time
+         */
         private ParsedEvent(String description, String from, String to) {
             this.description = description;
             this.from = from;
@@ -287,6 +306,11 @@ public class Parser {
 
     /**
      * Returns whether a separator occurs as a separate input token.
+     *
+     * @param text complete command details being inspected
+     * @param index starting index of the separator occurrence
+     * @param separator separator token expected at the given index
+     * @return true when whitespace or a text boundary surrounds the separator
      */
     private boolean isSeparatorAt(String text, int index, String separator) {
         boolean hasLeftBoundary = index == 0 || Character.isWhitespace(text.charAt(index - 1));
@@ -298,6 +322,10 @@ public class Parser {
 
     /**
      * Returns whether the text contains the given separator token.
+     *
+     * @param text complete command details being inspected
+     * @param separator separator token to locate
+     * @return true when the separator occurs as a complete token
      */
     private boolean containsSeparator(String text, String separator) {
         return findSeparator(text, separator, 0) >= 0;
@@ -305,6 +333,11 @@ public class Parser {
 
     /**
      * Finds a separator that occurs as a complete token rather than inside a value.
+     *
+     * @param text complete command details being searched
+     * @param separator separator token to locate
+     * @param fromIndex index from which to begin searching
+     * @return index of the next complete separator token, or {@code -1} if none exists
      */
     private int findSeparator(String text, String separator, int fromIndex) {
         int index = text.indexOf(separator, fromIndex);

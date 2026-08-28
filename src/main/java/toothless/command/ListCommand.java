@@ -9,6 +9,12 @@ import toothless.ui.Ui;
  */
 public class ListCommand extends Command {
     /**
+     * Creates a command that displays Toothless's current task list.
+     */
+    public ListCommand() {
+    }
+
+    /**
      * Asks the user interface to display the tasks without changing them.
      *
      * @param taskList tasks to display in their current order

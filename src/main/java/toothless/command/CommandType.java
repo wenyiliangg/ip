@@ -4,14 +4,23 @@ package toothless.command;
  * Identifies a command keyword understood by the Toothless chatbot.
  */
 public enum CommandType {
+    /** Adds a task that has no associated date or time. */
     TODO("todo"),
+    /** Adds a task that must be completed by a specified date. */
     DEADLINE("deadline"),
+    /** Adds a task that takes place between specified times. */
     EVENT("event"),
+    /** Displays every task currently kept by Toothless. */
     LIST("list"),
+    /** Changes a selected task to completed. */
     MARK("mark"),
+    /** Changes a selected task back to incomplete. */
     UNMARK("unmark"),
+    /** Removes a selected task from Toothless's list. */
     DELETE("delete"),
+    /** Ends the current Toothless session. */
     BYE("bye"),
+    /** Represents input that does not match a supported command keyword. */
     UNKNOWN("");
 
     private final String keyword;
