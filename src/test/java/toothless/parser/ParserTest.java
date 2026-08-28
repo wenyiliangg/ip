@@ -19,6 +19,7 @@ import org.junit.jupiter.api.io.TempDir;
 import toothless.command.Command;
 import toothless.command.DeleteCommand;
 import toothless.command.ExitCommand;
+import toothless.command.FindCommand;
 import toothless.command.ListCommand;
 import toothless.command.MarkCommand;
 import toothless.command.UnmarkCommand;
@@ -36,7 +37,7 @@ import toothless.ui.Ui;
 public class ParserTest {
     private static final String UNKNOWN_COMMAND_MESSAGE =
             "Toothless tilted his head—he doesn’t recognise that command.\n"
-                    + "Try todo, deadline, event, list, mark, unmark, delete, or bye.";
+                    + "Try todo, deadline, event, list, find, mark, unmark, delete, or bye.";
 
     @TempDir
     private Path temporaryDirectory;
@@ -130,6 +131,26 @@ public class ParserTest {
     }
 
     /**
+     * Verifies a find keyword is trimmed and carried into a read-only find command.
+     */
+    @Test
+    public void parse_findWithKeyword_returnsCommandUsingTrimmedKeyword()
+            throws ToothlessException {
+        Parser parser = new Parser();
+        TaskList taskList = new TaskList();
+        taskList.addTask(new Todo("read book"));
+
+        Command command = parser.parse("   find    READ book   ", taskList.size());
+        String output = execute(command, taskList);
+
+        assertInstanceOf(FindCommand.class, command);
+        assertEquals("Here are the matching tasks in your list:\n"
+                + "1.[T][ ] read book\n", output);
+        assertEquals(1, taskList.size());
+        assertFalse(taskList.getTask(0).isDone());
+    }
+
+    /**
      * Verifies blank input and unknown command words produce distinct guidance.
      */
     @Test
@@ -142,7 +163,7 @@ public class ParserTest {
                 () -> parser.parse("fly", 0));
 
         assertEquals("Toothless heard a tiny silence. What should he do?\n"
-                + "Try todo, deadline, event, list, mark, unmark, delete, or bye.",
+                + "Try todo, deadline, event, list, find, mark, unmark, delete, or bye.",
                 blankException.getMessage());
         assertEquals(UNKNOWN_COMMAND_MESSAGE, unknownException.getMessage());
     }
@@ -255,6 +276,24 @@ public class ParserTest {
 
         assertEquals("Toothless couldn’t find a description for that todo.\n"
                 + "Try: todo borrow book", exception.getMessage());
+    }
+
+    /**
+     * Verifies a missing or blank find keyword produces focused guidance.
+     */
+    @Test
+    public void parse_findWithoutKeyword_throwsKeywordError() {
+        Parser parser = new Parser();
+        String expectedMessage = "Toothless needs a keyword to sniff out matching tasks.\n"
+                + "Try: find book";
+
+        ToothlessException missingException = assertThrows(ToothlessException.class,
+                () -> parser.parse("find", 0));
+        ToothlessException blankException = assertThrows(ToothlessException.class,
+                () -> parser.parse("   find     ", 2));
+
+        assertEquals(expectedMessage, missingException.getMessage());
+        assertEquals(expectedMessage, blankException.getMessage());
     }
 
     /**
@@ -397,13 +436,14 @@ public class ParserTest {
     /**
      * Executes a parsed command with isolated output and temporary storage.
      */
-    private void execute(Command command, TaskList taskList) throws ToothlessException {
+    private String execute(Command command, TaskList taskList) throws ToothlessException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Ui ui = new Ui(new ByteArrayInputStream(new byte[0]),
                 new PrintStream(output, true, StandardCharsets.UTF_8));
         Storage storage = new Storage(temporaryDirectory.resolve("parser-tasks.txt"));
 
         command.execute(taskList, ui, storage);
+        return output.toString(StandardCharsets.UTF_8);
     }
 
     /**

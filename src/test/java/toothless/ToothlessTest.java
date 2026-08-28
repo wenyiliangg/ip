@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.parallel.Resources;
 
 import toothless.storage.Storage;
 import toothless.storage.StorageException;
+import toothless.task.Deadline;
 import toothless.task.TaskList;
 import toothless.task.Todo;
 
@@ -143,6 +145,47 @@ public class ToothlessTest {
         String restartedOutput = runWithInput(storage, "list\nbye\n");
 
         assertTrue(restartedOutput.contains("1.[T][★] borrow book"));
+    }
+
+    /**
+     * Verifies consecutive finds show fresh results without saving or changing tasks.
+     */
+    @Test
+    public void run_findCommands_displayFreshResultsWithoutSavingOrMutatingTasks()
+            throws Exception {
+        CountingStorage storage = new CountingStorage(temporaryDirectory.resolve("tasks.txt"));
+        TaskList tasks = new TaskList();
+        Todo todo = new Todo("read book");
+        todo.markAsDone();
+        tasks.addTask(todo);
+        tasks.addTask(new Deadline("return book", LocalDate.of(2019, 12, 6)));
+        tasks.addTask(new Todo("write report"));
+        storage.save(tasks);
+        storage.resetSaveCount();
+
+        String output = runWithInput(storage, "find Book\n"
+                + "find dragon\n"
+                + "find return book\n"
+                + "list\n"
+                + "bye\n");
+
+        assertTrue(output.contains("Here are the matching tasks in your list:\n"
+                + "1.[T][★] read book\n"
+                + "2.[D][ ] return book (by: Dec 6 2019)"));
+        assertTrue(output.contains("Toothless couldn’t find any matching tasks in the cave.\n"
+                + "Try another keyword and he'll sniff around again!"));
+        assertTrue(output.contains("Here are the matching tasks in your list:\n"
+                + "1.[D][ ] return book (by: Dec 6 2019)"));
+        assertTrue(output.contains("Here are the tasks in your list:\n"
+                + "1.[T][★] read book\n"
+                + "2.[D][ ] return book (by: Dec 6 2019)\n"
+                + "3.[T][ ] write report"));
+        assertEquals(0, storage.getSaveCount());
+        assertEquals(List.of(
+                "T | 1 | read book",
+                "D | 0 | return book | 2019-12-06",
+                "T | 0 | write report"),
+                Files.readAllLines(storage.getDataFile(), StandardCharsets.UTF_8));
     }
 
     /**

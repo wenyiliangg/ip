@@ -2,6 +2,7 @@ package toothless.ui;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Scanner;
 
 import toothless.task.Task;
@@ -113,6 +114,23 @@ public class Ui {
         output.println("Here are the tasks in your list:");
         for (int i = 0; i < taskList.size(); i++) {
             output.println((i + 1) + "." + taskList.getTask(i));
+        }
+    }
+
+    /**
+     * Displays tasks matching the latest search with fresh one-based numbering.
+     *
+     * @param matchingTasks tasks found in their original list order
+     */
+    public void showMatchingTasks(List<Task> matchingTasks) {
+        if (matchingTasks.isEmpty()) {
+            output.println("Toothless couldn’t find any matching tasks in the cave.");
+            output.println("Try another keyword and he'll sniff around again!");
+            return;
+        }
+        output.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            output.println((i + 1) + "." + matchingTasks.get(i));
         }
     }
 

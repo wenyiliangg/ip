@@ -9,6 +9,7 @@ import toothless.command.DeadlineCommand;
 import toothless.command.DeleteCommand;
 import toothless.command.EventCommand;
 import toothless.command.ExitCommand;
+import toothless.command.FindCommand;
 import toothless.command.ListCommand;
 import toothless.command.MarkCommand;
 import toothless.command.TodoCommand;
@@ -21,7 +22,7 @@ import toothless.task.DeadlineDate;
  */
 public class Parser {
     private static final String COMMANDS =
-            "todo, deadline, event, list, mark, unmark, delete, or bye";
+            "todo, deadline, event, list, find, mark, unmark, delete, or bye";
 
     /**
      * Interprets one line of input and constructs its executable command.
@@ -57,6 +58,8 @@ public class Parser {
             return new ExitCommand();
         case LIST:
             return new ListCommand();
+        case FIND:
+            return new FindCommand(parseFindKeyword(details));
         case MARK:
             return new MarkCommand(parseTaskNumber(commandType, details, taskCount));
         case UNMARK:
@@ -122,6 +125,21 @@ public class Parser {
         if (details.isBlank()) {
             throw new ToothlessException("Toothless couldn’t find a description for that todo.\n"
                     + "Try: todo borrow book");
+        }
+        return details.trim();
+    }
+
+    /**
+     * Parses a search keyword after confirming that it is present.
+     *
+     * @param details text following the find command
+     * @return validated search keyword
+     * @throws ToothlessException if the keyword is empty
+     */
+    private String parseFindKeyword(String details) throws ToothlessException {
+        if (details.isBlank()) {
+            throw new ToothlessException("Toothless needs a keyword to sniff out matching tasks.\n"
+                    + "Try: find book");
         }
         return details.trim();
     }
