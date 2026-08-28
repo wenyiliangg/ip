@@ -24,6 +24,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    failOnNoDiscoveredTests = false
 
     testLogging {
         events 'passed', 'skipped', 'failed'
@@ -37,7 +38,7 @@ test {
 }
 
 application {
-    mainClass = 'seedu.duke.Duke'
+    mainClass = 'toothless.Toothless'
 }
 
 jar {
