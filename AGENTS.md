@@ -36,6 +36,12 @@ After every code update:
 2. Invoke the project-specific `$test-ui` skill and run the UI test plan. Do not consider the code update complete until this has been done.
 3. If a UI test fails, stop the test session immediately and report the actual and expected outputs, as required by the skill.
 
+## JUnit test coverage
+
+Maintain JUnit tests for approximately the top 50% of high-value methods, prioritising core parsing, task-management, storage, date-handling, and command logic over trivial accessors.
+
+After code changes, review and update the JUnit tests so this high-value coverage target remains satisfied, then run the complete Gradle test suite.
+
 ## Git
 
 Use lightweight tags unless the user requests an annotated tag.
