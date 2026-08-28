@@ -2,6 +2,7 @@ import toothless.storage.Storage;
 import toothless.storage.StorageException;
 import toothless.task.Task;
 import toothless.task.TaskList;
+import toothless.ui.Ui;
 
 /**
  * Provides the shared workflow for commands that create and add a task.

@@ -1,5 +1,6 @@
 import toothless.storage.Storage;
 import toothless.task.TaskList;
+import toothless.ui.Ui;
 
 /**
  * Displays Toothless's farewell and ends the current application session.

@@ -2,6 +2,7 @@ import toothless.exception.ToothlessException;
 import toothless.storage.Storage;
 import toothless.storage.StorageException;
 import toothless.task.TaskList;
+import toothless.ui.Ui;
 
 /**
  * Coordinates unmarking one task and persisting the updated task list.
