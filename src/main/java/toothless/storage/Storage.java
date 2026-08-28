@@ -94,6 +94,9 @@ public class Storage {
 
     /**
      * Replaces the data file atomically when the file system supports it.
+     *
+     * @param temporaryFile completed temporary file that should become the data file
+     * @throws IOException if neither an atomic nor a regular replacement succeeds
      */
     private void replaceDataFile(Path temporaryFile) throws IOException {
         try {
@@ -106,6 +109,8 @@ public class Storage {
 
     /**
      * Removes an incomplete temporary file without hiding the original failure.
+     *
+     * @param temporaryFile temporary file to remove, or {@code null} if none was created
      */
     private void deleteTemporaryFile(Path temporaryFile) {
         if (temporaryFile == null) {
@@ -120,6 +125,10 @@ public class Storage {
 
     /**
      * Converts one task into its reversible saved representation.
+     *
+     * @param task Toothless task to convert into one storage line
+     * @return escaped storage line containing the task type, state, and details
+     * @throws IllegalArgumentException if the task type is not supported by the storage format
      */
     private String serialize(Task task) {
         String status = task.isDone() ? "1" : "0";
@@ -139,6 +148,11 @@ public class Storage {
 
     /**
      * Reconstructs one task from its saved representation.
+     *
+     * @param line one complete line read from Toothless's data file
+     * @return task reconstructed from the validated stored fields
+     * @throws IllegalArgumentException if the line has invalid fields or escape sequences
+     * @throws DateTimeParseException if a stored deadline date is invalid
      */
     private Task deserialize(String line) {
         if (line.isBlank()) {
@@ -181,6 +195,9 @@ public class Storage {
 
     /**
      * Splits fields only at separators that have not been escaped.
+     *
+     * @param line one escaped task storage line
+     * @return stored fields in their original order, with escape sequences still intact
      */
     private List<String> splitFields(String line) {
         List<String> fields = new ArrayList<>();
@@ -207,6 +224,9 @@ public class Storage {
 
     /**
      * Joins saved fields using the storage format's visible separator.
+     *
+     * @param fields escaped task fields to join in storage order
+     * @return one complete task storage line
      */
     private String joinFields(String... fields) {
         return String.join(FIELD_SEPARATOR, fields);
@@ -214,6 +234,9 @@ public class Storage {
 
     /**
      * Escapes characters that otherwise conflict with line or field boundaries.
+     *
+     * @param value task text to make safe for the line-based storage format
+     * @return text with backslashes, separators, and line endings escaped
      */
     private String escape(String value) {
         return value.replace("\\", "\\\\")
@@ -224,6 +247,10 @@ public class Storage {
 
     /**
      * Restores escaped task data without treating it as storage syntax.
+     *
+     * @param value escaped task field read from storage
+     * @return task text with supported escape sequences restored
+     * @throws IllegalArgumentException if an escape sequence is incomplete or unsupported
      */
     private String unescape(String value) {
         StringBuilder result = new StringBuilder();

@@ -18,6 +18,13 @@ public class Toothless {
     private static final Path DATA_FILE = Path.of("data", "toothless.txt");
 
     /**
+     * Creates a Toothless application entry-point object.
+     * Application sessions are normally started through {@link #main(String[])}.
+     */
+    public Toothless() {
+    }
+
+    /**
      * Runs the chatbot and responds to commands entered by the user.
      *
      * @param args command-line arguments; they are not used

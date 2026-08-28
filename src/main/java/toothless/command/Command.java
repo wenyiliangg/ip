@@ -10,6 +10,12 @@ import toothless.ui.Ui;
  */
 public abstract class Command {
     /**
+     * Creates the shared base of an executable Toothless command.
+     */
+    public Command() {
+    }
+
+    /**
      * Performs this command using the application's collaborators.
      *
      * @param taskList tasks available to the command

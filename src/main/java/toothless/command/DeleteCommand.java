@@ -25,6 +25,9 @@ public class DeleteCommand extends Command {
     /**
      * Deletes the selected task, displays it, and saves the updated task list.
      *
+     * @param taskList list containing the task selected for deletion
+     * @param ui user interface used to confirm the deletion or report a save failure
+     * @param storage storage used to persist the updated task list
      * @throws ToothlessException if the selected task no longer exists
      */
     @Override
