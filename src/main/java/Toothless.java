@@ -2,6 +2,7 @@ import java.nio.file.Path;
 
 import toothless.command.Command;
 import toothless.exception.ToothlessException;
+import toothless.parser.Parser;
 import toothless.storage.Storage;
 import toothless.storage.StorageException;
 import toothless.storage.StorageLoadResult;
