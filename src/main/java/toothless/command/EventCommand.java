@@ -14,9 +14,9 @@ public class EventCommand extends AddCommand {
     /**
      * Creates an event command from validated task details.
      *
-     * @param description event description obtained from the parser
-     * @param from event starting time obtained from the parser
-     * @param to event ending time obtained from the parser
+     * @param description event description obtained from the parser.
+     * @param from event starting time obtained from the parser.
+     * @param to event ending time obtained from the parser.
      */
     public EventCommand(String description, String from, String to) {
         this.description = description;

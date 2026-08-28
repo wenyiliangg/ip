@@ -12,7 +12,7 @@ public class TodoCommand extends AddCommand {
     /**
      * Creates a todo command for a validated description.
      *
-     * @param description todo description obtained from the parser
+     * @param description todo description obtained from the parser.
      */
     public TodoCommand(String description) {
         this.description = description;

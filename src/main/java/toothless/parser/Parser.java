@@ -32,8 +32,8 @@ public class Parser {
     /**
      * Interprets one line of input and constructs its executable command.
      *
-     * @param input complete line entered by the user
-     * @param taskCount current number of tasks
+     * @param input complete line entered by the user.
+     * @param taskCount current number of tasks.
      * @return executable command represented by the input
      * @throws ToothlessException if the input is empty, unknown, or malformed
      */
@@ -59,35 +59,35 @@ public class Parser {
         }
 
         switch (commandType) {
-        case BYE:
-            return new ExitCommand();
-        case LIST:
-            return new ListCommand();
-        case MARK:
-            return new MarkCommand(parseTaskNumber(commandType, details, taskCount));
-        case UNMARK:
-            return new UnmarkCommand(parseTaskNumber(commandType, details, taskCount));
-        case DELETE:
-            return new DeleteCommand(parseTaskNumber(commandType, details, taskCount));
-        case TODO:
-            return new TodoCommand(parseTodoDescription(details));
-        case DEADLINE:
-            ParsedDeadline deadline = parseDeadlineDetails(details);
-            return new DeadlineCommand(deadline.getDescription(), deadline.getBy());
-        case EVENT:
-            ParsedEvent event = parseEventDetails(details);
-            return new EventCommand(event.getDescription(), event.getFrom(), event.getTo());
-        default:
-            throw new IllegalStateException("Unsupported command type: " + commandType);
+            case BYE:
+                return new ExitCommand();
+            case LIST:
+                return new ListCommand();
+            case MARK:
+                return new MarkCommand(parseTaskNumber(commandType, details, taskCount));
+            case UNMARK:
+                return new UnmarkCommand(parseTaskNumber(commandType, details, taskCount));
+            case DELETE:
+                return new DeleteCommand(parseTaskNumber(commandType, details, taskCount));
+            case TODO:
+                return new TodoCommand(parseTodoDescription(details));
+            case DEADLINE:
+                ParsedDeadline deadline = parseDeadlineDetails(details);
+                return new DeadlineCommand(deadline.getDescription(), deadline.getBy());
+            case EVENT:
+                ParsedEvent event = parseEventDetails(details);
+                return new EventCommand(event.getDescription(), event.getFrom(), event.getTo());
+            default:
+                throw new IllegalStateException("Unsupported command type: " + commandType);
         }
     }
 
     /**
      * Parses the one-based task number supplied to a task command.
      *
-     * @param commandType command type whose argument is being checked
-     * @param argument text following the command name
-     * @param taskCount current number of tasks
+     * @param commandType command type whose argument is being checked.
+     * @param argument text following the command name.
+     * @param taskCount current number of tasks.
      * @return parsed one-based task number
      * @throws ToothlessException if the task number is absent or not numeric
      */
@@ -120,7 +120,7 @@ public class Parser {
     /**
      * Parses a todo description after confirming that it is present.
      *
-     * @param details text following the todo command
+     * @param details text following the todo command.
      * @return validated todo description
      * @throws ToothlessException if the description is empty
      */
@@ -135,7 +135,7 @@ public class Parser {
     /**
      * Parses and validates a deadline description and finishing date.
      *
-     * @param details text following the deadline command
+     * @param details text following the deadline command.
      * @return validated deadline details
      * @throws ToothlessException if the command structure is incomplete or ambiguous
      */
@@ -211,7 +211,7 @@ public class Parser {
     /**
      * Parses and validates an event description, start, and end.
      *
-     * @param details text following the event command
+     * @param details text following the event command.
      * @return validated event details
      * @throws ToothlessException if the command structure is incomplete or ambiguous
      */

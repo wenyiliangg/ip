@@ -18,9 +18,9 @@ public abstract class Command {
     /**
      * Performs this command using the application's collaborators.
      *
-     * @param taskList tasks available to the command
-     * @param ui user interface used to present command results
-     * @param storage storage used to persist task changes
+     * @param taskList tasks available to the command.
+     * @param ui user interface used to present command results.
+     * @param storage storage used to persist task changes.
      * @throws ToothlessException if the command cannot be completed
      */
     public abstract void execute(TaskList taskList, Ui ui, Storage storage)

@@ -12,8 +12,8 @@ public class StorageLoadResult {
     /**
      * Creates the result of reading a complete task data file.
      *
-     * @param taskList valid tasks recovered from the file
-     * @param malformedLineCount number of invalid lines skipped
+     * @param taskList valid tasks recovered from the file.
+     * @param malformedLineCount number of invalid lines skipped.
      */
     public StorageLoadResult(TaskList taskList, int malformedLineCount) {
         this.taskList = taskList;
