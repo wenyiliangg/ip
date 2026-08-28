@@ -85,10 +85,10 @@ Ready for our next little adventure? Tell me what to remember:
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless heard a tiny silence. What should he do?
-Try todo, deadline, event, list, mark, unmark, delete, or bye.
+Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
 ____________________________________________________________
 Toothless tilted his head—he doesn’t recognise that command.
-Try todo, deadline, event, list, mark, unmark, delete, or bye.
+Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
 ____________________________________________________________
 The list command doesn't need extra words.
 Try: list
@@ -255,10 +255,10 @@ Ready for our next little adventure? Tell me what to remember:
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless heard a tiny silence. What should he do?
-Try todo, deadline, event, list, mark, unmark, delete, or bye.
+Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
 ____________________________________________________________
 Toothless tilted his head—he doesn’t recognise that command.
-Try todo, deadline, event, list, mark, unmark, delete, or bye.
+Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
 ____________________________________________________________
 The list command doesn't need extra words.
 Try: list
@@ -1131,6 +1131,209 @@ ____________________________________________________________
 Here are the tasks in your list:
 1.[T][★] borrow book
 2.[D][ ] return book (by: Dec 6 2019)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+Exit code: `0` (expected `0`)
+
+## TC-07: Find tasks by description without changing state — PASS
+
+Aim: Verify missing and blank keywords, one and multiple matches, no matches, case-insensitive partial and multi-word searches, description-only matching, fresh ordered result numbering, unchanged completion state, and existing list behavior.
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes toothless.Toothless'
+```
+
+Console input:
+
+```text
+find
+   find
+todo read book
+deadline return book /by 2019-12-06
+event book club /from Monday 2pm /to Monday 3pm
+todo notebook ideas
+mark 2
+find Book
+find monday
+find read bo
+find 2019
+find book club
+find [D]
+find ★
+find dragon
+list
+bye
+```
+
+Actual console output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Toothless needs a keyword to sniff out matching tasks.
+Try: find book
+____________________________________________________________
+Toothless needs a keyword to sniff out matching tasks.
+Try: find book
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] read book
+Now you have 1 task in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [D][ ] return book (by: Dec 6 2019)
+Now you have 2 tasks in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [E][ ] book club (from: Monday 2pm to: Monday 3pm)
+Now you have 3 tasks in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] notebook ideas
+Now you have 4 tasks in the list. ★
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [D][★] return book (by: Dec 6 2019)
+____________________________________________________________
+Here are the matching tasks in your list:
+1.[T][ ] read book
+2.[D][★] return book (by: Dec 6 2019)
+3.[E][ ] book club (from: Monday 2pm to: Monday 3pm)
+4.[T][ ] notebook ideas
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Here are the matching tasks in your list:
+1.[T][ ] read book
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Here are the matching tasks in your list:
+1.[E][ ] book club (from: Monday 2pm to: Monday 3pm)
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] read book
+2.[D][★] return book (by: Dec 6 2019)
+3.[E][ ] book club (from: Monday 2pm to: Monday 3pm)
+4.[T][ ] notebook ideas
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Toothless needs a keyword to sniff out matching tasks.
+Try: find book
+____________________________________________________________
+Toothless needs a keyword to sniff out matching tasks.
+Try: find book
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] read book
+Now you have 1 task in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [D][ ] return book (by: Dec 6 2019)
+Now you have 2 tasks in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [E][ ] book club (from: Monday 2pm to: Monday 3pm)
+Now you have 3 tasks in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] notebook ideas
+Now you have 4 tasks in the list. ★
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [D][★] return book (by: Dec 6 2019)
+____________________________________________________________
+Here are the matching tasks in your list:
+1.[T][ ] read book
+2.[D][★] return book (by: Dec 6 2019)
+3.[E][ ] book club (from: Monday 2pm to: Monday 3pm)
+4.[T][ ] notebook ideas
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Here are the matching tasks in your list:
+1.[T][ ] read book
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Here are the matching tasks in your list:
+1.[E][ ] book club (from: Monday 2pm to: Monday 3pm)
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Toothless couldn’t find any matching tasks in the cave.
+Try another keyword and he'll sniff around again!
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] read book
+2.[D][★] return book (by: Dec 6 2019)
+3.[E][ ] book club (from: Monday 2pm to: Monday 3pm)
+4.[T][ ] notebook ideas
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________

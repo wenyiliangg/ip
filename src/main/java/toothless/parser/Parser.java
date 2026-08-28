@@ -9,6 +9,7 @@ import toothless.command.DeadlineCommand;
 import toothless.command.DeleteCommand;
 import toothless.command.EventCommand;
 import toothless.command.ExitCommand;
+import toothless.command.FindCommand;
 import toothless.command.ListCommand;
 import toothless.command.MarkCommand;
 import toothless.command.TodoCommand;
@@ -21,7 +22,7 @@ import toothless.task.DeadlineDate;
  */
 public class Parser {
     private static final String COMMANDS =
-            "todo, deadline, event, list, mark, unmark, delete, or bye";
+            "todo, deadline, event, list, find, mark, unmark, delete, or bye";
 
     /**
      * Creates a stateless parser for commands entered during a Toothless session.
@@ -59,26 +60,28 @@ public class Parser {
         }
 
         switch (commandType) {
-            case BYE:
-                return new ExitCommand();
-            case LIST:
-                return new ListCommand();
-            case MARK:
-                return new MarkCommand(parseTaskNumber(commandType, details, taskCount));
-            case UNMARK:
-                return new UnmarkCommand(parseTaskNumber(commandType, details, taskCount));
-            case DELETE:
-                return new DeleteCommand(parseTaskNumber(commandType, details, taskCount));
-            case TODO:
-                return new TodoCommand(parseTodoDescription(details));
-            case DEADLINE:
-                ParsedDeadline deadline = parseDeadlineDetails(details);
-                return new DeadlineCommand(deadline.getDescription(), deadline.getBy());
-            case EVENT:
-                ParsedEvent event = parseEventDetails(details);
-                return new EventCommand(event.getDescription(), event.getFrom(), event.getTo());
-            default:
-                throw new IllegalStateException("Unsupported command type: " + commandType);
+        case BYE:
+            return new ExitCommand();
+        case LIST:
+            return new ListCommand();
+        case FIND:
+            return new FindCommand(parseFindKeyword(details));
+        case MARK:
+            return new MarkCommand(parseTaskNumber(commandType, details, taskCount));
+        case UNMARK:
+            return new UnmarkCommand(parseTaskNumber(commandType, details, taskCount));
+        case DELETE:
+            return new DeleteCommand(parseTaskNumber(commandType, details, taskCount));
+        case TODO:
+            return new TodoCommand(parseTodoDescription(details));
+        case DEADLINE:
+            ParsedDeadline deadline = parseDeadlineDetails(details);
+            return new DeadlineCommand(deadline.getDescription(), deadline.getBy());
+        case EVENT:
+            ParsedEvent event = parseEventDetails(details);
+            return new EventCommand(event.getDescription(), event.getFrom(), event.getTo());
+        default:
+            throw new IllegalStateException("Unsupported command type: " + commandType);
         }
     }
 
@@ -128,6 +131,21 @@ public class Parser {
         if (details.isBlank()) {
             throw new ToothlessException("Toothless couldn’t find a description for that todo.\n"
                     + "Try: todo borrow book");
+        }
+        return details.trim();
+    }
+
+    /**
+     * Parses a search keyword after confirming that it is present.
+     *
+     * @param details text following the find command
+     * @return validated search keyword
+     * @throws ToothlessException if the keyword is empty
+     */
+    private String parseFindKeyword(String details) throws ToothlessException {
+        if (details.isBlank()) {
+            throw new ToothlessException("Toothless needs a keyword to sniff out matching tasks.\n"
+                    + "Try: find book");
         }
         return details.trim();
     }

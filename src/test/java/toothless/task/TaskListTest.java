@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import toothless.exception.ToothlessException;
@@ -174,6 +177,73 @@ public class TaskListTest {
         assertEquals("first", taskList.getTask(0).getDescription());
         assertEquals("second", taskList.getTask(1).getDescription());
         assertEquals("third", taskList.getTask(2).getDescription());
+    }
+
+    /**
+     * Verifies a partial-word search ignores case and can return one match.
+     */
+    @Test
+    public void findTasks_caseInsensitivePartialKeyword_returnsOneMatch() {
+        TaskList taskList = createThreeTaskList();
+
+        List<Task> matchingTasks = taskList.findTasks("IrS");
+
+        assertEquals(1, matchingTasks.size());
+        assertSame(taskList.getTask(0), matchingTasks.get(0));
+    }
+
+    /**
+     * Verifies a multi-word search returns every match in its original order.
+     */
+    @Test
+    public void findTasks_multiWordKeyword_returnsMatchesInOriginalOrder() {
+        TaskList taskList = new TaskList();
+        taskList.addTask(new Todo("read project book"));
+        taskList.addTask(new Todo("write project plan"));
+        taskList.addTask(new Todo("review project book notes"));
+
+        List<Task> matchingTasks = taskList.findTasks("project book");
+
+        assertEquals(2, matchingTasks.size());
+        assertSame(taskList.getTask(0), matchingTasks.get(0));
+        assertSame(taskList.getTask(2), matchingTasks.get(1));
+    }
+
+    /**
+     * Verifies searches inspect only descriptions and never mutate task state or order.
+     */
+    @Test
+    public void findTasks_interleavedMatchesAndNoMatches_preservesTaskList()
+            throws ToothlessException {
+        TaskList taskList = new TaskList();
+        Todo todo = new Todo("read book");
+        Deadline deadline = new Deadline("return book", LocalDate.of(2019, 12, 6));
+        Event event = new Event("book club", "Monday 2pm", "Monday 3pm");
+        taskList.addTask(todo);
+        taskList.addTask(deadline);
+        taskList.addTask(event);
+        taskList.markTask(2);
+
+        List<Task> bookMatches = taskList.findTasks("BOOK");
+        List<Task> dateMatches = taskList.findTasks("2019");
+        List<Task> periodMatches = taskList.findTasks("Monday");
+        List<Task> typeMatches = taskList.findTasks("[D]");
+        List<Task> statusMatches = taskList.findTasks("★");
+        List<Task> laterMatches = taskList.findTasks("club");
+
+        assertEquals(List.of(todo, deadline, event), bookMatches);
+        assertTrue(dateMatches.isEmpty());
+        assertTrue(periodMatches.isEmpty());
+        assertTrue(typeMatches.isEmpty());
+        assertTrue(statusMatches.isEmpty());
+        assertEquals(List.of(event), laterMatches);
+        assertEquals(3, taskList.size());
+        assertSame(todo, taskList.getTask(0));
+        assertSame(deadline, taskList.getTask(1));
+        assertSame(event, taskList.getTask(2));
+        assertFalse(todo.isDone());
+        assertTrue(deadline.isDone());
+        assertFalse(event.isDone());
     }
 
     /**

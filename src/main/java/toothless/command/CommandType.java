@@ -12,7 +12,7 @@ public enum CommandType {
     EVENT("event"),
     /** Displays every task currently kept by Toothless. */
     LIST("list"),
-    /** Changes a selected task to completed. */
+    FIND("find"),
     MARK("mark"),
     /** Changes a selected task back to incomplete. */
     UNMARK("unmark"),
