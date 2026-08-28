@@ -1,35 +1,41 @@
+package toothless.command;
+
 import toothless.exception.ToothlessException;
 import toothless.storage.Storage;
 import toothless.storage.StorageException;
-import toothless.task.Task;
 import toothless.task.TaskList;
 import toothless.ui.Ui;
 
 /**
- * Coordinates marking one task and persisting the updated task list.
+ * Coordinates unmarking one task and persisting the updated task list.
  */
-public class MarkCommand extends Command {
+public class UnmarkCommand extends Command {
     private final int taskNumber;
 
     /**
-     * Creates a mark command for a parsed one-based task number.
+     * Creates an unmark command for a parsed one-based task number.
      *
      * @param taskNumber one-based task number obtained from the parser
      */
-    public MarkCommand(int taskNumber) {
+    public UnmarkCommand(int taskNumber) {
         this.taskNumber = taskNumber;
     }
 
     /**
-     * Marks the selected task, displays it, and saves the updated task list.
+     * Unmarks the selected task, displays the result, and saves changed state.
      *
      * @throws ToothlessException if the selected task does not exist
      */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage)
             throws ToothlessException {
-        Task markedTask = taskList.markTask(taskNumber);
-        ui.showTaskMarked(markedTask);
+        TaskList.UnmarkResult result = taskList.unmarkTask(taskNumber);
+        if (!result.wasChanged()) {
+            ui.showTaskAlreadyUnmarked(result.getTask());
+            return;
+        }
+
+        ui.showTaskUnmarked(result.getTask());
         try {
             storage.save(taskList);
         } catch (StorageException exception) {

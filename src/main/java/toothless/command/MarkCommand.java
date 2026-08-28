@@ -1,3 +1,5 @@
+package toothless.command;
+
 import toothless.exception.ToothlessException;
 import toothless.storage.Storage;
 import toothless.storage.StorageException;
@@ -6,30 +8,30 @@ import toothless.task.TaskList;
 import toothless.ui.Ui;
 
 /**
- * Coordinates deleting one task and persisting the updated task list.
+ * Coordinates marking one task and persisting the updated task list.
  */
-public class DeleteCommand extends Command {
+public class MarkCommand extends Command {
     private final int taskNumber;
 
     /**
-     * Creates a delete command for a parsed one-based task number.
+     * Creates a mark command for a parsed one-based task number.
      *
      * @param taskNumber one-based task number obtained from the parser
      */
-    public DeleteCommand(int taskNumber) {
+    public MarkCommand(int taskNumber) {
         this.taskNumber = taskNumber;
     }
 
     /**
-     * Deletes the selected task, displays it, and saves the updated task list.
+     * Marks the selected task, displays it, and saves the updated task list.
      *
-     * @throws ToothlessException if the selected task no longer exists
+     * @throws ToothlessException if the selected task does not exist
      */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage)
             throws ToothlessException {
-        Task deletedTask = taskList.deleteTask(taskNumber);
-        ui.showTaskDeleted(deletedTask, taskList.size());
+        Task markedTask = taskList.markTask(taskNumber);
+        ui.showTaskMarked(markedTask);
         try {
             storage.save(taskList);
         } catch (StorageException exception) {

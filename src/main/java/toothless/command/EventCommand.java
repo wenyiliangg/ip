@@ -1,3 +1,5 @@
+package toothless.command;
+
 import toothless.task.Event;
 import toothless.task.Task;
 

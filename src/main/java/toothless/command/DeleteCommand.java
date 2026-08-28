@@ -1,39 +1,37 @@
+package toothless.command;
+
 import toothless.exception.ToothlessException;
 import toothless.storage.Storage;
 import toothless.storage.StorageException;
+import toothless.task.Task;
 import toothless.task.TaskList;
 import toothless.ui.Ui;
 
 /**
- * Coordinates unmarking one task and persisting the updated task list.
+ * Coordinates deleting one task and persisting the updated task list.
  */
-public class UnmarkCommand extends Command {
+public class DeleteCommand extends Command {
     private final int taskNumber;
 
     /**
-     * Creates an unmark command for a parsed one-based task number.
+     * Creates a delete command for a parsed one-based task number.
      *
      * @param taskNumber one-based task number obtained from the parser
      */
-    public UnmarkCommand(int taskNumber) {
+    public DeleteCommand(int taskNumber) {
         this.taskNumber = taskNumber;
     }
 
     /**
-     * Unmarks the selected task, displays the result, and saves changed state.
+     * Deletes the selected task, displays it, and saves the updated task list.
      *
-     * @throws ToothlessException if the selected task does not exist
+     * @throws ToothlessException if the selected task no longer exists
      */
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage)
             throws ToothlessException {
-        TaskList.UnmarkResult result = taskList.unmarkTask(taskNumber);
-        if (!result.wasChanged()) {
-            ui.showTaskAlreadyUnmarked(result.getTask());
-            return;
-        }
-
-        ui.showTaskUnmarked(result.getTask());
+        Task deletedTask = taskList.deleteTask(taskNumber);
+        ui.showTaskDeleted(deletedTask, taskList.size());
         try {
             storage.save(taskList);
         } catch (StorageException exception) {

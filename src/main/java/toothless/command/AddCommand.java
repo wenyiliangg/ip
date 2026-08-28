@@ -1,3 +1,5 @@
+package toothless.command;
+
 import toothless.storage.Storage;
 import toothless.storage.StorageException;
 import toothless.task.Task;
