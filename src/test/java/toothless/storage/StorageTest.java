@@ -205,16 +205,18 @@ public class StorageTest {
             throws Exception {
         Path directoryAsFile = Files.createDirectory(
                 temporaryDirectory.resolve("directory-as-file"));
-        StorageException loadException = assertThrows(StorageException.class,
-                () -> new Storage(directoryAsFile).load());
+        StorageException loadException = assertThrows(
+                StorageException.class, () ->
+                new Storage(directoryAsFile).load());
 
         Path blockingParent = temporaryDirectory.resolve("blocking-parent");
         Files.writeString(blockingParent, "unrelated state", StandardCharsets.UTF_8);
         Storage failingStorage = new Storage(blockingParent.resolve("tasks.txt"));
         TaskList tasks = new TaskList();
         tasks.addTask(new Todo("keep in memory"));
-        StorageException saveException = assertThrows(StorageException.class,
-                () -> failingStorage.save(tasks));
+        StorageException saveException = assertThrows(
+                StorageException.class, () ->
+                failingStorage.save(tasks));
 
         assertEquals("Unable to load tasks", loadException.getMessage());
         assertEquals("Unable to save tasks", saveException.getMessage());
