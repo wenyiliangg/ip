@@ -15,6 +15,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import toothless.DisplaySymbols;
 import toothless.task.Deadline;
 import toothless.task.Event;
 import toothless.task.TaskList;
@@ -50,8 +51,8 @@ public class StorageTest {
                 "T | 0 | read \\| chapter \\\\ one",
                 "D | 1 | return book | 2019-12-02",
                 "E | 0 | project meeting | Monday 2pm | Monday 3pm"), savedLines);
-        assertTrue(deadline.toString().contains("★"));
-        assertFalse(savedLines.get(1).contains("★"));
+        assertTrue(deadline.toString().contains(DisplaySymbols.getDoneMark()));
+        assertFalse(savedLines.get(1).contains(DisplaySymbols.getDoneMark()));
     }
 
     /**
@@ -252,7 +253,8 @@ public class StorageTest {
 
         assertEquals(11, result.getMalformedLineCount());
         assertEquals(2, result.getTaskList().size());
-        assertEquals("[T][★] borrow book", result.getTaskList().getTask(0).toString());
+        assertEquals("[T][" + DisplaySymbols.getDoneMark() + "] borrow book",
+                result.getTaskList().getTask(0).toString());
         assertEquals("[D][ ] return book (by: Dec 6 2019)",
                 result.getTaskList().getTask(1).toString());
         assertEquals(originalLines, Files.readAllLines(dataFile, StandardCharsets.UTF_8));

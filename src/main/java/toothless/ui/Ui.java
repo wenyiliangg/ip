@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
 
+import toothless.DisplaySymbols;
 import toothless.task.Task;
 import toothless.task.TaskList;
 
@@ -57,7 +58,8 @@ public class Ui {
         output.println("  - todo [DESCRIPTION]");
         output.println("  - deadline [DESCRIPTION] /by [yyyy-MM-dd]");
         output.println("  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]");
-        output.println("You can also type list to see all our quests. Tiny roar! ★");
+        output.println("You can also type list to see all our quests. Tiny roar! "
+                + DisplaySymbols.getDecorativeMark());
         showDivider();
     }
 
@@ -185,7 +187,7 @@ public class Ui {
     public void showTaskAdded(Task task, int taskCount) {
         output.println("Got it! Toothless has added this task for you:");
         output.println("  " + task);
-        output.println(formatTaskCount(taskCount) + " ★");
+        output.println(formatTaskCount(taskCount) + " " + DisplaySymbols.getDecorativeMark());
     }
 
     /**

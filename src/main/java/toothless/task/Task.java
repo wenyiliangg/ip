@@ -1,10 +1,11 @@
 package toothless.task;
 
+import toothless.DisplaySymbols;
+
 /**
  * Represents a task and whether it has been completed.
  */
 public class Task {
-    private static final String DONE_MARK = "★";
     private static final String NOT_DONE_MARK = " ";
 
     private final String description;
@@ -46,10 +47,10 @@ public class Task {
     /**
      * Returns the symbol used to display this task's completion status.
      *
-     * @return a star when completed, or a space when incomplete
+     * @return the platform-compatible completed marker, or a space when incomplete
      */
     public String getStatusIcon() {
-        return isDone ? DONE_MARK : NOT_DONE_MARK;
+        return isDone ? DisplaySymbols.getDoneMark() : NOT_DONE_MARK;
     }
 
     /**
