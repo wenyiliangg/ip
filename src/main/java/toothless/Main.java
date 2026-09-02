@@ -1,31 +1,40 @@
 package toothless;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Objects;
+
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import toothless.ui.MainWindow;
 
 /**
  * Displays the Toothless JavaFX application.
  */
 public class Main extends Application {
-    /**
-     * Creates a JavaFX application that can be instantiated by the runtime.
-     */
-    public Main() {
-    }
-
     @Override
     public void start(Stage stage) {
-        Label welcomeLabel = new Label("Toothless is getting ready for an adventure!");
-        StackPane root = new StackPane(welcomeLabel);
-        Scene scene = new Scene(root, 520, 680);
+        URL mainWindowResource = Objects.requireNonNull(
+                Main.class.getResource("/view/MainWindow.fxml"),
+                "MainWindow.fxml must be available on the classpath");
+        FXMLLoader fxmlLoader = new FXMLLoader(mainWindowResource);
 
-        stage.setTitle("Toothless");
-        stage.setMinWidth(420);
-        stage.setMinHeight(560);
-        stage.setScene(scene);
-        stage.show();
+        try {
+            Parent root = fxmlLoader.load();
+            MainWindow controller = fxmlLoader.getController();
+            controller.setToothless(new Toothless());
+
+            Scene scene = new Scene(root, 560, 720);
+            stage.setTitle("Toothless");
+            stage.setMinWidth(440);
+            stage.setMinHeight(560);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to load the Toothless window", exception);
+        }
     }
 }
