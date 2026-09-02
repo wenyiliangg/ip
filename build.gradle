@@ -62,6 +62,7 @@ test {
 
 application {
     mainClass = 'toothless.Launcher'
+    applicationDefaultJvmArgs = ['--enable-native-access=javafx.graphics']
 }
 
 jar {

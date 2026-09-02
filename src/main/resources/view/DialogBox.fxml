@@ -13,9 +13,9 @@
         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
     </padding>
     <children>
-        <Label fx:id="dialog" maxWidth="360.0" minHeight="-Infinity"
+        <Label fx:id="dialog" maxWidth="320.0" minHeight="-Infinity"
                styleClass="dialog-bubble" wrapText="true" />
         <ImageView fx:id="displayPicture" fitHeight="54.0" fitWidth="54.0"
-                   pickOnBounds="true" preserveRatio="true" />
+                   pickOnBounds="true" preserveRatio="true" styleClass="avatar" />
     </children>
 </fx:root>

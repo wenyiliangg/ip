@@ -1,30 +1,45 @@
 # Toothless User Guide
 
-// Update the title above to match the actual product name
+Toothless helps you remember todos, deadlines, and events through a friendly chat interface.
 
-// Product screenshot goes here
+## Getting started
 
-// Product intro goes here
+1. Start Toothless with `./gradlew run`.
+2. Type a command in the box at the bottom.
+3. Press Enter or select **Send**.
+4. Select **Help** at any time to reveal clickable command examples.
 
-## Adding deadlines
+Selecting a Help example fills the input box without sending it. Edit the example if needed, then send it when ready.
 
-// Describe the action and its outcome.
+## Commands
 
-// Give examples of usage
+| Purpose | Format | Example |
+| --- | --- | --- |
+| Show every task | `list` | `list` |
+| Add a todo | `todo DESCRIPTION` | `todo read a book` |
+| Add a deadline | `deadline DESCRIPTION /by yyyy-MM-dd` | `deadline return book /by 2026-12-31` |
+| Add an event | `event DESCRIPTION /from START /to END` | `event project meeting /from 2pm /to 4pm` |
+| Find matching tasks | `find KEYWORD` | `find book` |
+| Mark a task done | `mark TASK_NUMBER` | `mark 1` |
+| Mark a task not done | `unmark TASK_NUMBER` | `unmark 1` |
+| Delete a task | `delete TASK_NUMBER` | `delete 1` |
+| End the session | `bye` | `bye` |
 
-Example: `keyword (optional arguments)`
+Task numbers come from `list`. Toothless responds with a friendly explanation when a command is incomplete or uses
+an invalid task number.
 
-// A description of the expected outcome goes here
+## Dates and saved tasks
 
+Deadline dates use the ISO `yyyy-MM-dd` format. For example:
+
+```text
+deadline submit report /by 2026-10-15
 ```
-expected output
-```
 
-## Feature ABC
+Tasks are saved automatically after a successful add, mark, unmark, or delete command. Toothless loads them the next
+time the application starts.
 
-// Feature details
+## Ending a session
 
-
-## Feature XYZ
-
-// Feature details
+Send `bye` to receive Toothless's farewell. The input field, Send button, and command examples are then disabled for
+that finished session. Close and reopen the window to begin a new session.

@@ -1,5 +1,22 @@
 # UI Test Plan
 
+### Manual JavaFX checks
+
+Aim: Verify the FXML chat window loads, explains the available commands, responds through both input routes,
+remains readable after resizing, scrolls to new messages, and ends input cleanly after `bye`.
+
+Launch command: `./gradlew run` under Java 25.
+
+Actions: Show and hide the Help panel; click several suggestion buttons and edit their examples; enter a mix
+of valid and invalid commands using both the Enter key and Send button; add enough tasks to exceed the visible
+conversation height; resize the window to its minimum dimensions; finish with `bye`.
+
+Expected observations: The illustrated header, opening greeting, avatars, and Help button appear; the command list
+stays hidden until Help is clicked; each suggestion fills the command box without sending immediately; every
+non-blank command produces the same response as the console application; blank input adds no bubbles; the newest
+exchange remains visible; text wraps without clipping; and the input controls and command suggestions become
+disabled after the farewell response.
+
 ## TC-01: Interleaved valid and invalid commands preserve task state
 
 Aim: Verify empty and unknown input, every task format, malformed separators, all task-number errors, additional spaces, continuation after errors, and unchanged task count, ordering, and star statuses.

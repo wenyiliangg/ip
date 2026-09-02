@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -18,13 +19,60 @@
         <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                     AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
-                <VBox spacing="4.0" styleClass="app-header">
-                    <padding>
-                        <Insets bottom="15.0" left="22.0" right="22.0" top="17.0" />
-                    </padding>
+                <VBox styleClass="top-region">
                     <children>
-                        <Label styleClass="app-title" text="TOOTHLESS" />
-                        <Label styleClass="app-subtitle" text="Your tiny task-taming companion" />
+                        <AnchorPane prefHeight="112.0" styleClass="app-header">
+                            <children>
+                                <Label styleClass="app-title" text="TOOTHLESS"
+                                       AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="22.0" />
+                                <Button onAction="#toggleHelp" styleClass="help-button" text="Help"
+                                        AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="18.0" />
+                            </children>
+                        </AnchorPane>
+                        <VBox fx:id="commandHelp" managed="false" spacing="9.0"
+                              styleClass="command-help" visible="false">
+                            <padding>
+                                <Insets bottom="12.0" left="14.0" right="14.0" top="10.0" />
+                            </padding>
+                            <children>
+                                <Label maxWidth="1.7976931348623157E308"
+                                       styleClass="command-help-copy"
+                                       text="Tap an example to place it in the command box, then edit or send it."
+                                       wrapText="true" />
+                                <FlowPane fx:id="commandButtons" hgap="7.0" vgap="7.0"
+                                          prefWrapLength="510.0">
+                                    <children>
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="☰  List quests"
+                                                userData="list" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="＋  Add todo"
+                                                userData="todo read a book" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="◷  Deadline"
+                                                userData="deadline return book /by 2026-12-31" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="✦  Event"
+                                                userData="event project meeting /from 2pm /to 4pm" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="⌕  Find"
+                                                userData="find book" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="★  Mark done"
+                                                userData="mark 1" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="☆  Unmark"
+                                                userData="unmark 1" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="−  Delete"
+                                                userData="delete 1" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="☾  Say bye"
+                                                userData="bye" />
+                                    </children>
+                                </FlowPane>
+                            </children>
+                        </VBox>
                     </children>
                 </VBox>
             </top>

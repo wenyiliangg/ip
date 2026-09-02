@@ -4,11 +4,13 @@ import java.io.InputStream;
 import java.util.Objects;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import toothless.Toothless;
 
@@ -17,7 +19,8 @@ import toothless.Toothless;
  */
 public class MainWindow {
     private static final String GREETING = "Hi there! I'm Toothless. It's wonderful to meet you!\n"
-            + "What can I do for you today?\nTiny roar! ★";
+            + "Ready to tame some quests? Tap Help above whenever you want a command example.\n"
+            + "Tiny roar! ★";
     private static final Image TOOTHLESS_IMAGE = loadImage("/images/toothless-avatar.png");
     private static final Image USER_IMAGE = loadImage("/images/user-avatar.png");
 
@@ -31,6 +34,10 @@ public class MainWindow {
     private TextField userInput;
     @FXML
     private Button sendButton;
+    @FXML
+    private FlowPane commandButtons;
+    @FXML
+    private VBox commandHelp;
 
     /**
      * Configures scrolling and keyboard focus after the FXML fields are loaded.
@@ -81,8 +88,36 @@ public class MainWindow {
             userInput.setPromptText("The adventure continues another day!");
             userInput.setDisable(true);
             sendButton.setDisable(true);
+            commandButtons.setDisable(true);
         }
         scrollToLatestMessage();
+    }
+
+    /**
+     * Places a friendly example command into the composer so the user can edit or send it.
+     *
+     * @param event click from one of the Help panel's suggestion buttons.
+     */
+    @FXML
+    private void useCommandSuggestion(ActionEvent event) {
+        Button suggestionButton = (Button) event.getSource();
+        String suggestedCommand = Objects.toString(suggestionButton.getUserData(), "");
+        userInput.setText(suggestedCommand);
+        userInput.positionCaret(suggestedCommand.length());
+        userInput.requestFocus();
+    }
+
+    /**
+     * Shows or hides the command examples beneath the header.
+     */
+    @FXML
+    private void toggleHelp() {
+        boolean shouldShowHelp = !commandHelp.isVisible();
+        commandHelp.setVisible(shouldShowHelp);
+        commandHelp.setManaged(shouldShowHelp);
+        if (shouldShowHelp) {
+            Platform.runLater(userInput::requestFocus);
+        }
     }
 
     /**

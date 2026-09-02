@@ -28,6 +28,10 @@ public class Main extends Application {
             controller.setToothless(new Toothless());
 
             Scene scene = new Scene(root, 560, 720);
+            URL stylesheetResource = Objects.requireNonNull(
+                    Main.class.getResource("/css/toothless.css"),
+                    "toothless.css must be available on the classpath");
+            scene.getStylesheets().add(stylesheetResource.toExternalForm());
             stage.setTitle("Toothless");
             stage.setMinWidth(440);
             stage.setMinHeight(560);
