@@ -7,7 +7,7 @@ Aim: Verify empty and unknown input, every task format, malformed separators, al
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes toothless.Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp classes toothless.Toothless'
 ```
 
 Console input:
@@ -410,7 +410,7 @@ Aim: Verify missing, incorrectly formatted, impossible, non-leap, and malformed 
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes toothless.Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp classes toothless.Toothless'
 ```
 
 Console input:
@@ -601,7 +601,7 @@ Aim: Verify deletion from an empty list; invalid, missing, decimal, negative, ze
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes toothless.Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp classes toothless.Toothless'
 ```
 
 Console input:
@@ -875,7 +875,7 @@ Aim: Verify startup restores every task type, its date or time values, and the c
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "D | 0 | return book | 2019-12-02" "E | 1 | project meeting | Monday 2pm | Monday 3pm" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes toothless.Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "D | 0 | return book | 2019-12-02" "E | 1 | project meeting | Monday 2pm | Monday 3pm" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp classes toothless.Toothless'
 ```
 
 Console input:
@@ -957,7 +957,7 @@ Aim: Verify expected read and write failures show friendly messages without a st
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && mkdir -p "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes toothless.Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && mkdir -p "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp classes toothless.Toothless'
 ```
 
 Console input:
@@ -1059,7 +1059,7 @@ Aim: Verify malformed saved entries produce one friendly warning while valid ent
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "X | 0 | unknown type" "D | 0 | missing time" "T | maybe | invalid status" "E | 0 | truncated event | 2pm" "" "T | 0 | unexpected data | extra field" "D | 0 | return book | 2019-12-06" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes toothless.Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && mkdir "$TOOTHLESS_TEST_ROOT/data" && printf "%s\n" "T | 1 | borrow book" "X | 0 | unknown type" "D | 0 | missing time" "T | maybe | invalid status" "E | 0 | truncated event | 2pm" "" "T | 0 | unexpected data | extra field" "D | 0 | return book | 2019-12-06" > "$TOOTHLESS_TEST_ROOT/data/toothless.txt" && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp classes toothless.Toothless'
 ```
 
 Console input:
@@ -1145,7 +1145,7 @@ Aim: Verify missing and blank keywords, one and multiple matches, no matches, ca
 Command:
 
 ```text
-/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -cp classes toothless.Toothless'
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp classes toothless.Toothless'
 ```
 
 Console input:
@@ -1334,6 +1334,100 @@ Here are the tasks in your list:
 2.[D][★] return book (by: Dec 6 2019)
 3.[E][ ] book club (from: Monday 2pm to: Monday 3pm)
 4.[T][ ] notebook ideas
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+Exit code: `0` (expected `0`)
+
+## TC-08: Use ASCII display symbols on Windows — PASS
+
+Aim: Verify Windows users see an ASCII completion marker and decoration instead of unsupported stars.
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && TOOTHLESS_TEST_ROOT=$(mktemp -d) && javac -d "$TOOTHLESS_TEST_ROOT/classes" $(find src/main/java -name "*.java") && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Windows 11" -cp classes toothless.Toothless'
+```
+
+Console input:
+
+```text
+todo windows task
+mark 1
+list
+bye
+```
+
+Actual console output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! *
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] windows task
+Now you have 1 task in the list. *
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [T][X] windows task
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][X] windows task
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! *
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] windows task
+Now you have 1 task in the list. *
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [T][X] windows task
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][X] windows task
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________

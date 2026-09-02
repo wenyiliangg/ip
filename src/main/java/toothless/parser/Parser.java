@@ -60,28 +60,28 @@ public class Parser {
         }
 
         switch (commandType) {
-        case BYE:
-            return new ExitCommand();
-        case LIST:
-            return new ListCommand();
-        case FIND:
-            return new FindCommand(parseFindKeyword(details));
-        case MARK:
-            return new MarkCommand(parseTaskNumber(commandType, details, taskCount));
-        case UNMARK:
-            return new UnmarkCommand(parseTaskNumber(commandType, details, taskCount));
-        case DELETE:
-            return new DeleteCommand(parseTaskNumber(commandType, details, taskCount));
-        case TODO:
-            return new TodoCommand(parseTodoDescription(details));
-        case DEADLINE:
-            ParsedDeadline deadline = parseDeadlineDetails(details);
-            return new DeadlineCommand(deadline.getDescription(), deadline.getBy());
-        case EVENT:
-            ParsedEvent event = parseEventDetails(details);
-            return new EventCommand(event.getDescription(), event.getFrom(), event.getTo());
-        default:
-            throw new IllegalStateException("Unsupported command type: " + commandType);
+            case BYE:
+                return new ExitCommand();
+            case LIST:
+                return new ListCommand();
+            case FIND:
+                return new FindCommand(parseFindKeyword(details));
+            case MARK:
+                return new MarkCommand(parseTaskNumber(commandType, details, taskCount));
+            case UNMARK:
+                return new UnmarkCommand(parseTaskNumber(commandType, details, taskCount));
+            case DELETE:
+                return new DeleteCommand(parseTaskNumber(commandType, details, taskCount));
+            case TODO:
+                return new TodoCommand(parseTodoDescription(details));
+            case DEADLINE:
+                ParsedDeadline deadline = parseDeadlineDetails(details);
+                return new DeadlineCommand(deadline.getDescription(), deadline.getBy());
+            case EVENT:
+                ParsedEvent event = parseEventDetails(details);
+                return new EventCommand(event.getDescription(), event.getFrom(), event.getTo());
+            default:
+                throw new IllegalStateException("Unsupported command type: " + commandType);
         }
     }
 

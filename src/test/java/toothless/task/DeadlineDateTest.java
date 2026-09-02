@@ -65,7 +65,8 @@ public class DeadlineDateTest {
      */
     @Test
     public void parse_dateWithAdditionalContent_throwsDateTimeParseException() {
-        assertThrows(DateTimeParseException.class,
-                () -> DeadlineDate.parse("2019-12-02 evening"));
+        assertThrows(
+                DateTimeParseException.class, () ->
+                DeadlineDate.parse("2019-12-02 evening"));
     }
 }

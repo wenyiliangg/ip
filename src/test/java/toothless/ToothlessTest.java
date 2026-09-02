@@ -98,7 +98,7 @@ public class ToothlessTest {
 
         String output = runWithInput(storage, "list\nbye\n");
 
-        assertTrue(output.contains("1.[T][★] borrow book"));
+        assertTrue(output.contains("1.[T][" + DisplaySymbols.getDoneMark() + "] borrow book"));
     }
 
     /**
@@ -144,7 +144,8 @@ public class ToothlessTest {
         runWithInput(storage, "todo borrow book\nmark 1\nbye\n");
         String restartedOutput = runWithInput(storage, "list\nbye\n");
 
-        assertTrue(restartedOutput.contains("1.[T][★] borrow book"));
+        assertTrue(restartedOutput.contains(
+                "1.[T][" + DisplaySymbols.getDoneMark() + "] borrow book"));
     }
 
     /**
@@ -168,16 +169,17 @@ public class ToothlessTest {
                 + "find return book\n"
                 + "list\n"
                 + "bye\n");
+        String completedTodo = "1.[T][" + DisplaySymbols.getDoneMark() + "] read book\n";
 
         assertTrue(output.contains("Here are the matching tasks in your list:\n"
-                + "1.[T][★] read book\n"
+                + completedTodo
                 + "2.[D][ ] return book (by: Dec 6 2019)"));
         assertTrue(output.contains("Toothless couldn’t find any matching tasks in the cave.\n"
                 + "Try another keyword and he'll sniff around again!"));
         assertTrue(output.contains("Here are the matching tasks in your list:\n"
                 + "1.[D][ ] return book (by: Dec 6 2019)"));
         assertTrue(output.contains("Here are the tasks in your list:\n"
-                + "1.[T][★] read book\n"
+                + completedTodo
                 + "2.[D][ ] return book (by: Dec 6 2019)\n"
                 + "3.[T][ ] write report"));
         assertEquals(0, storage.getSaveCount());

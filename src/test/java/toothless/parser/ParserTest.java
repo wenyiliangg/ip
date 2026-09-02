@@ -157,10 +157,12 @@ public class ParserTest {
     public void parse_blankAndUnknownInput_throwFocusedErrors() {
         Parser parser = new Parser();
 
-        ToothlessException blankException = assertThrows(ToothlessException.class,
-                () -> parser.parse("   ", 0));
-        ToothlessException unknownException = assertThrows(ToothlessException.class,
-                () -> parser.parse("fly", 0));
+        ToothlessException blankException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("   ", 0));
+        ToothlessException unknownException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("fly", 0));
 
         assertEquals("Toothless heard a tiny silence. What should he do?\n"
                 + "Try todo, deadline, event, list, find, mark, unmark, delete, or bye.",
@@ -175,10 +177,12 @@ public class ParserTest {
     public void parse_byeAndListWithExtraDetails_throwFocusedErrors() {
         Parser parser = new Parser();
 
-        ToothlessException byeException = assertThrows(ToothlessException.class,
-                () -> parser.parse("bye later", 1));
-        ToothlessException listException = assertThrows(ToothlessException.class,
-                () -> parser.parse("list now", 1));
+        ToothlessException byeException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("bye later", 1));
+        ToothlessException listException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("list now", 1));
 
         assertEquals(UNKNOWN_COMMAND_MESSAGE, byeException.getMessage());
         assertEquals("The list command doesn't need extra words.\nTry: list",
@@ -192,12 +196,15 @@ public class ParserTest {
     public void parse_taskNumberCommandsForEmptyList_throwCommandSpecificErrors() {
         Parser parser = new Parser();
 
-        ToothlessException markException = assertThrows(ToothlessException.class,
-                () -> parser.parse("mark", 0));
-        ToothlessException unmarkException = assertThrows(ToothlessException.class,
-                () -> parser.parse("unmark anything", 0));
-        ToothlessException deleteException = assertThrows(ToothlessException.class,
-                () -> parser.parse("delete 1", 0));
+        ToothlessException markException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("mark", 0));
+        ToothlessException unmarkException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("unmark anything", 0));
+        ToothlessException deleteException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("delete 1", 0));
 
         assertEquals("Toothless's cave is empty, so there is no task to mark.\n"
                 + "Add a task first, then try again.", markException.getMessage());
@@ -214,12 +221,15 @@ public class ParserTest {
     public void parse_taskNumberCommandsWithoutNumber_throwCommandSpecificErrors() {
         Parser parser = new Parser();
 
-        ToothlessException markException = assertThrows(ToothlessException.class,
-                () -> parser.parse("mark", 3));
-        ToothlessException unmarkException = assertThrows(ToothlessException.class,
-                () -> parser.parse("unmark", 3));
-        ToothlessException deleteException = assertThrows(ToothlessException.class,
-                () -> parser.parse("delete", 3));
+        ToothlessException markException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("mark", 3));
+        ToothlessException unmarkException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("unmark", 3));
+        ToothlessException deleteException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("delete", 3));
 
         assertEquals("Toothless needs a task number to mark.\nTry: mark 1",
                 markException.getMessage());
@@ -238,12 +248,15 @@ public class ParserTest {
         String expectedMessage = "That task number looks a little unusual.\n"
                 + "Please use a whole number, like: mark 1";
 
-        ToothlessException decimalException = assertThrows(ToothlessException.class,
-                () -> parser.parse("mark 1.5", 3));
-        ToothlessException wordException = assertThrows(ToothlessException.class,
-                () -> parser.parse("mark second", 3));
-        ToothlessException extraArgumentException = assertThrows(ToothlessException.class,
-                () -> parser.parse("mark 1 extra", 3));
+        ToothlessException decimalException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("mark 1.5", 3));
+        ToothlessException wordException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("mark second", 3));
+        ToothlessException extraArgumentException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("mark 1 extra", 3));
 
         assertEquals(expectedMessage, decimalException.getMessage());
         assertEquals(expectedMessage, wordException.getMessage());
@@ -257,8 +270,9 @@ public class ParserTest {
     public void parse_taskNumberLargerThanInteger_throwsTooLargeError() {
         Parser parser = new Parser();
 
-        ToothlessException exception = assertThrows(ToothlessException.class,
-                () -> parser.parse("delete 999999999999999999999", 3));
+        ToothlessException exception = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("delete 999999999999999999999", 3));
 
         assertEquals("That task number is too large for Toothless to count.\n"
                 + "Please choose a number from 1 to 3.", exception.getMessage());
@@ -271,8 +285,9 @@ public class ParserTest {
     public void parse_todoWithoutDescription_throwsDescriptionError() {
         Parser parser = new Parser();
 
-        ToothlessException exception = assertThrows(ToothlessException.class,
-                () -> parser.parse("todo", 0));
+        ToothlessException exception = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("todo", 0));
 
         assertEquals("Toothless couldn’t find a description for that todo.\n"
                 + "Try: todo borrow book", exception.getMessage());
@@ -287,10 +302,12 @@ public class ParserTest {
         String expectedMessage = "Toothless needs a keyword to sniff out matching tasks.\n"
                 + "Try: find book";
 
-        ToothlessException missingException = assertThrows(ToothlessException.class,
-                () -> parser.parse("find", 0));
-        ToothlessException blankException = assertThrows(ToothlessException.class,
-                () -> parser.parse("   find     ", 2));
+        ToothlessException missingException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("find", 0));
+        ToothlessException blankException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("   find     ", 2));
 
         assertEquals(expectedMessage, missingException.getMessage());
         assertEquals(expectedMessage, blankException.getMessage());
@@ -303,12 +320,15 @@ public class ParserTest {
     public void parse_deadlineWithMissingParts_throwsFocusedErrors() {
         Parser parser = new Parser();
 
-        ToothlessException separatorException = assertThrows(ToothlessException.class,
-                () -> parser.parse("deadline return book", 0));
-        ToothlessException descriptionException = assertThrows(ToothlessException.class,
-                () -> parser.parse("deadline /by 2019-12-02", 0));
-        ToothlessException dateException = assertThrows(ToothlessException.class,
-                () -> parser.parse("deadline return book /by", 0));
+        ToothlessException separatorException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("deadline return book", 0));
+        ToothlessException descriptionException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("deadline /by 2019-12-02", 0));
+        ToothlessException dateException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("deadline return book /by", 0));
 
         assertEquals("This deadline is missing '/by' and its date.\n"
                 + "Try: deadline return book /by 2019-12-02", separatorException.getMessage());
@@ -327,10 +347,12 @@ public class ParserTest {
         String expectedMessage = "This deadline's format has Toothless puzzled.\n"
                 + "Please use: deadline DESCRIPTION /by yyyy-MM-dd";
 
-        ToothlessException duplicateByException = assertThrows(ToothlessException.class,
-                () -> parser.parse("deadline task /by 2019-12-02 /by 2020-01-01", 0));
-        ToothlessException eventSeparatorException = assertThrows(ToothlessException.class,
-                () -> parser.parse("deadline task /by 2019-12-02 /to evening", 0));
+        ToothlessException duplicateByException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("deadline task /by 2019-12-02 /by 2020-01-01", 0));
+        ToothlessException eventSeparatorException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("deadline task /by 2019-12-02 /to evening", 0));
 
         assertEquals(expectedMessage, duplicateByException.getMessage());
         assertEquals(expectedMessage, eventSeparatorException.getMessage());
@@ -345,10 +367,12 @@ public class ParserTest {
         String expectedMessage = "That deadline date made Toothless tilt his head.\n"
                 + "Please use a real date in yyyy-MM-dd format.";
 
-        ToothlessException impossibleDateException = assertThrows(ToothlessException.class,
-                () -> parser.parse("deadline task /by 2019-02-30", 0));
-        ToothlessException wrongFormatException = assertThrows(ToothlessException.class,
-                () -> parser.parse("deadline task /by 02-12-2019", 0));
+        ToothlessException impossibleDateException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("deadline task /by 2019-02-30", 0));
+        ToothlessException wrongFormatException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("deadline task /by 02-12-2019", 0));
 
         assertEquals(expectedMessage, impossibleDateException.getMessage());
         assertEquals(expectedMessage, wrongFormatException.getMessage());
@@ -377,10 +401,12 @@ public class ParserTest {
     public void parse_eventWithMissingSeparators_throwsFocusedErrors() {
         Parser parser = new Parser();
 
-        ToothlessException fromException = assertThrows(ToothlessException.class,
-                () -> parser.parse("event meeting /to 3pm", 0));
-        ToothlessException toException = assertThrows(ToothlessException.class,
-                () -> parser.parse("event meeting /from 2pm", 0));
+        ToothlessException fromException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("event meeting /to 3pm", 0));
+        ToothlessException toException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("event meeting /from 2pm", 0));
 
         assertEquals("This event is missing its starting time after '/from'.\n"
                 + "Try: event DESCRIPTION /from START /to END", fromException.getMessage());
@@ -395,12 +421,15 @@ public class ParserTest {
     public void parse_eventWithEmptyValues_throwsFocusedErrors() {
         Parser parser = new Parser();
 
-        ToothlessException descriptionException = assertThrows(ToothlessException.class,
-                () -> parser.parse("event /from 2pm /to 3pm", 0));
-        ToothlessException fromException = assertThrows(ToothlessException.class,
-                () -> parser.parse("event meeting /from /to 3pm", 0));
-        ToothlessException toException = assertThrows(ToothlessException.class,
-                () -> parser.parse("event meeting /from 2pm /to", 0));
+        ToothlessException descriptionException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("event /from 2pm /to 3pm", 0));
+        ToothlessException fromException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("event meeting /from /to 3pm", 0));
+        ToothlessException toException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("event meeting /from 2pm /to", 0));
 
         assertEquals("Toothless couldn’t find a description for that event.\n"
                 + "Try: event DESCRIPTION /from START /to END", descriptionException.getMessage());
@@ -417,12 +446,15 @@ public class ParserTest {
     public void parse_eventWithConflictingSeparators_throwsStructureError() {
         Parser parser = new Parser();
 
-        ToothlessException orderException = assertThrows(ToothlessException.class,
-                () -> parser.parse("event meeting /to 3pm /from 2pm", 0));
-        ToothlessException duplicateException = assertThrows(ToothlessException.class,
-                () -> parser.parse("event meeting /from 1pm /from 2pm /to 3pm", 0));
-        ToothlessException deadlineSeparatorException = assertThrows(ToothlessException.class,
-                () -> parser.parse("event meeting /from 2pm /to 3pm /by Friday", 0));
+        ToothlessException orderException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("event meeting /to 3pm /from 2pm", 0));
+        ToothlessException duplicateException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("event meeting /from 1pm /from 2pm /to 3pm", 0));
+        ToothlessException deadlineSeparatorException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("event meeting /from 2pm /to 3pm /by Friday", 0));
 
         assertEquals("The event's '/from' must come before '/to'.\n"
                 + "Try: event DESCRIPTION /from START /to END", orderException.getMessage());

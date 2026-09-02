@@ -42,8 +42,9 @@ public class TaskListTest {
     public void markTask_emptyList_throwsToothlessException() {
         TaskList taskList = new TaskList();
 
-        ToothlessException exception = assertThrows(ToothlessException.class,
-                () -> taskList.markTask(1));
+        ToothlessException exception = assertThrows(
+                ToothlessException.class, () ->
+                taskList.markTask(1));
 
         assertEquals("Toothless's cave is empty, so there is no task to mark.\n"
                 + "Add a task first, then try again.", exception.getMessage());
@@ -57,10 +58,12 @@ public class TaskListTest {
     public void markTask_numbersOutsideRange_throwAndPreserveState() {
         TaskList taskList = createThreeTaskList();
 
-        ToothlessException zeroException = assertThrows(ToothlessException.class,
-                () -> taskList.markTask(0));
-        ToothlessException largeException = assertThrows(ToothlessException.class,
-                () -> taskList.markTask(4));
+        ToothlessException zeroException = assertThrows(
+                ToothlessException.class, () ->
+                taskList.markTask(0));
+        ToothlessException largeException = assertThrows(
+                ToothlessException.class, () ->
+                taskList.markTask(4));
 
         assertEquals("Toothless can’t find task 0 in the cave.\n"
                 + "Please choose a number from 1 to 3.", zeroException.getMessage());
@@ -111,10 +114,12 @@ public class TaskListTest {
         TaskList taskList = createThreeTaskList();
         taskList.markTask(1);
 
-        ToothlessException negativeException = assertThrows(ToothlessException.class,
-                () -> taskList.unmarkTask(-1));
-        ToothlessException largeException = assertThrows(ToothlessException.class,
-                () -> taskList.unmarkTask(99));
+        ToothlessException negativeException = assertThrows(
+                ToothlessException.class, () ->
+                taskList.unmarkTask(-1));
+        ToothlessException largeException = assertThrows(
+                ToothlessException.class, () ->
+                taskList.unmarkTask(99));
 
         assertEquals("Toothless can’t find task -1 in the cave.\n"
                 + "Please choose a number from 1 to 3.", negativeException.getMessage());
@@ -164,10 +169,12 @@ public class TaskListTest {
     public void deleteTask_numbersOutsideRange_throwAndPreserveOrder() {
         TaskList taskList = createThreeTaskList();
 
-        ToothlessException zeroException = assertThrows(ToothlessException.class,
-                () -> taskList.deleteTask(0));
-        ToothlessException largeException = assertThrows(ToothlessException.class,
-                () -> taskList.deleteTask(4));
+        ToothlessException zeroException = assertThrows(
+                ToothlessException.class, () ->
+                taskList.deleteTask(0));
+        ToothlessException largeException = assertThrows(
+                ToothlessException.class, () ->
+                taskList.deleteTask(4));
 
         assertEquals("Toothless can’t find task 0 in the cave.\n"
                 + "Please choose a number from 1 to 3.", zeroException.getMessage());
