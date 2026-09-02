@@ -165,7 +165,7 @@ public class Parser {
                     + "Try: deadline return book /by 2019-12-02");
         }
         if (findSeparator(trimmed, "/by", byIndex + 3) >= 0
-                || containsSeparator(trimmed, "/from") || containsSeparator(trimmed, "/to")) {
+                || containsAnySeparator(trimmed, "/from", "/to")) {
             throw new ToothlessException("This deadline's format has Toothless puzzled.\n"
                     + "Please use: deadline DESCRIPTION /by yyyy-MM-dd");
         }
@@ -251,7 +251,7 @@ public class Parser {
         }
         if (findSeparator(trimmed, "/from", fromIndex + 5) >= 0
                 || findSeparator(trimmed, "/to", toIndex + 3) >= 0
-                || containsSeparator(trimmed, "/by")) {
+                || containsAnySeparator(trimmed, "/by")) {
             throw new ToothlessException("This event's format has Toothless puzzled.\n"
                     + "Try: event DESCRIPTION /from START /to END");
         }
@@ -339,14 +339,19 @@ public class Parser {
     }
 
     /**
-     * Returns whether the text contains the given separator token.
+     * Returns whether the text contains any of the given separator tokens.
      *
      * @param text complete command details being inspected
-     * @param separator separator token to locate
-     * @return true when the separator occurs as a complete token
+     * @param separators separator tokens to locate
+     * @return true when any separator occurs as a complete token
      */
-    private boolean containsSeparator(String text, String separator) {
-        return findSeparator(text, separator, 0) >= 0;
+    private boolean containsAnySeparator(String text, String... separators) {
+        for (String separator : separators) {
+            if (findSeparator(text, separator, 0) >= 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
