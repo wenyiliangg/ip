@@ -191,6 +191,49 @@ public class ToothlessTest {
     }
 
     /**
+     * Verifies GUI responses reuse command execution and retain state between messages.
+     */
+    @Test
+    public void getResponse_commandSequence_returnsResponsesAndPersistsState() throws Exception {
+        Path dataFile = temporaryDirectory.resolve("gui-tasks.txt");
+        Toothless toothless = new Toothless(new Storage(dataFile));
+
+        String addResponse = toothless.getResponse("todo prepare saddle");
+        String markResponse = toothless.getResponse("mark 1");
+        String listResponse = toothless.getResponse("list");
+
+        assertEquals("", toothless.getStartupMessage());
+        assertEquals("Got it! Toothless has added this task for you:\n"
+                + "  [T][ ] prepare saddle\n"
+                + "Now you have 1 task in the list. "
+                + DisplaySymbols.getDecorativeMark(), addResponse);
+        assertTrue(markResponse.contains("I've starred this task as done:"));
+        assertEquals("Here are the tasks in your list:\n"
+                + "1.[T][" + DisplaySymbols.getDoneMark() + "] prepare saddle", listResponse);
+        assertEquals(List.of("T | 1 | prepare saddle"),
+                Files.readAllLines(dataFile, StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Verifies GUI sessions expose loading warnings and return clean farewell text.
+     */
+    @Test
+    public void getResponse_malformedStorageAndBye_reportsWarningThenExits() throws Exception {
+        Path dataFile = temporaryDirectory.resolve("gui-tasks.txt");
+        Files.write(dataFile, List.of("T | 0 | valid task", "unknown line"),
+                StandardCharsets.UTF_8);
+        Toothless toothless = new Toothless(new Storage(dataFile));
+
+        String goodbyeResponse = toothless.getResponse("bye");
+
+        assertEquals("Toothless found 1 puzzling line in his saved quests.\n"
+                + "He skipped them and kept every task he could understand.",
+                toothless.getStartupMessage());
+        assertEquals("Bye. Hope to see you again soon!", goodbyeResponse);
+        assertTrue(toothless.hasExited());
+    }
+
+    /**
      * Runs Toothless with isolated input and output streams.
      */
     private String runWithInput(Storage storage, String input) {

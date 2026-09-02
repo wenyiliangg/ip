@@ -26,6 +26,7 @@ public class Ui {
 
     private final Scanner scanner;
     private final PrintStream output;
+    private final boolean isDividerEnabled;
 
     /**
      * Creates a UI connected to the application's current console streams.
@@ -41,8 +42,20 @@ public class Ui {
      * @param output stream receiving application responses.
      */
     public Ui(InputStream input, PrintStream output) {
+        this(input, output, true);
+    }
+
+    /**
+     * Creates a UI using the supplied streams and divider preference.
+     *
+     * @param input stream containing user commands.
+     * @param output stream receiving application responses.
+     * @param isDividerEnabled whether console dividers should be displayed.
+     */
+    public Ui(InputStream input, PrintStream output, boolean isDividerEnabled) {
         this.scanner = new Scanner(input);
         this.output = output;
+        this.isDividerEnabled = isDividerEnabled;
     }
 
     /**
@@ -208,18 +221,19 @@ public class Ui {
     }
 
     /**
-     * Displays the farewell and closing divider.
+     * Displays the farewell for the current session.
      */
     public void showGoodbye() {
         output.println("Bye. Hope to see you again soon!");
-        showDivider();
     }
 
     /**
      * Displays the divider separating responses.
      */
     public void showDivider() {
-        output.println(DIVIDER);
+        if (isDividerEnabled) {
+            output.println(DIVIDER);
+        }
     }
 
     /**
