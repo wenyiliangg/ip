@@ -23,6 +23,9 @@ import toothless.task.DeadlineDate;
 public class Parser {
     private static final String COMMANDS =
             "todo, deadline, event, list, find, mark, unmark, delete, or bye";
+    private static final String DEADLINE_SEPARATOR = "/by";
+    private static final String EVENT_START_SEPARATOR = "/from";
+    private static final String EVENT_END_SEPARATOR = "/to";
 
     /**
      * Creates a stateless parser for commands entered during a Toothless session.
@@ -159,18 +162,19 @@ public class Parser {
      */
     private ParsedDeadline parseDeadlineDetails(String details) throws ToothlessException {
         String trimmed = details.trim();
-        int byIndex = findSeparator(trimmed, "/by", 0);
+        int byIndex = findSeparator(trimmed, DEADLINE_SEPARATOR, 0);
         if (byIndex < 0) {
             throw new ToothlessException("This deadline is missing '/by' and its date.\n"
                     + "Try: deadline return book /by 2019-12-02");
         }
-        if (findSeparator(trimmed, "/by", byIndex + 3) >= 0
-                || containsAnySeparator(trimmed, "/from", "/to")) {
+        int contentAfterByIndex = byIndex + DEADLINE_SEPARATOR.length();
+        if (findSeparator(trimmed, DEADLINE_SEPARATOR, contentAfterByIndex) >= 0
+                || containsAnySeparator(trimmed, EVENT_START_SEPARATOR, EVENT_END_SEPARATOR)) {
             throw new ToothlessException("This deadline's format has Toothless puzzled.\n"
                     + "Please use: deadline DESCRIPTION /by yyyy-MM-dd");
         }
         String description = trimmed.substring(0, byIndex).trim();
-        String by = trimmed.substring(byIndex + 3).trim();
+        String by = trimmed.substring(contentAfterByIndex).trim();
         if (description.isEmpty()) {
             throw new ToothlessException(
                     "Toothless couldn’t find a description for that deadline.\n"
@@ -235,8 +239,8 @@ public class Parser {
      */
     private ParsedEvent parseEventDetails(String details) throws ToothlessException {
         String trimmed = details.trim();
-        int fromIndex = findSeparator(trimmed, "/from", 0);
-        int toIndex = findSeparator(trimmed, "/to", 0);
+        int fromIndex = findSeparator(trimmed, EVENT_START_SEPARATOR, 0);
+        int toIndex = findSeparator(trimmed, EVENT_END_SEPARATOR, 0);
         if (fromIndex < 0) {
             throw new ToothlessException("This event is missing its starting time after '/from'.\n"
                     + "Try: event DESCRIPTION /from START /to END");
@@ -249,15 +253,17 @@ public class Parser {
             throw new ToothlessException("The event's '/from' must come before '/to'.\n"
                     + "Try: event DESCRIPTION /from START /to END");
         }
-        if (findSeparator(trimmed, "/from", fromIndex + 5) >= 0
-                || findSeparator(trimmed, "/to", toIndex + 3) >= 0
-                || containsAnySeparator(trimmed, "/by")) {
+        int contentAfterFromIndex = fromIndex + EVENT_START_SEPARATOR.length();
+        int contentAfterToIndex = toIndex + EVENT_END_SEPARATOR.length();
+        if (findSeparator(trimmed, EVENT_START_SEPARATOR, contentAfterFromIndex) >= 0
+                || findSeparator(trimmed, EVENT_END_SEPARATOR, contentAfterToIndex) >= 0
+                || containsAnySeparator(trimmed, DEADLINE_SEPARATOR)) {
             throw new ToothlessException("This event's format has Toothless puzzled.\n"
                     + "Try: event DESCRIPTION /from START /to END");
         }
         String description = trimmed.substring(0, fromIndex).trim();
-        String from = trimmed.substring(fromIndex + 5, toIndex).trim();
-        String to = trimmed.substring(toIndex + 3).trim();
+        String from = trimmed.substring(contentAfterFromIndex, toIndex).trim();
+        String to = trimmed.substring(contentAfterToIndex).trim();
         if (description.isEmpty()) {
             throw new ToothlessException("Toothless couldn’t find a description for that event.\n"
                     + "Try: event DESCRIPTION /from START /to END");
