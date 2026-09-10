@@ -76,6 +76,7 @@ public class Toothless {
 
             try {
                 Command command = parser.parse(input, taskList.size());
+                assert command != null : "Parser should return a command for valid input";
                 command.execute(taskList, ui, storage);
                 isExit = command.isExit();
             } catch (ToothlessException exception) {
@@ -98,6 +99,7 @@ public class Toothless {
         Ui ui = createResponseUi(output);
         try {
             Command command = parser.parse(input, taskList.size());
+            assert command != null : "Parser should return a command for valid input";
             command.execute(taskList, ui, storage);
             hasExited = command.isExit();
         } catch (ToothlessException exception) {
