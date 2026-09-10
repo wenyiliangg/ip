@@ -2,6 +2,7 @@ package toothless.command;
 
 import toothless.exception.ToothlessException;
 import toothless.storage.Storage;
+import toothless.storage.StorageException;
 import toothless.task.TaskList;
 import toothless.ui.Ui;
 
@@ -25,6 +26,21 @@ public abstract class Command {
      */
     public abstract void execute(TaskList taskList, Ui ui, Storage storage)
             throws ToothlessException;
+
+    /**
+     * Saves the task list and reports a recoverable persistence failure to the user.
+     *
+     * @param taskList tasks to persist.
+     * @param ui user interface used to report a save failure.
+     * @param storage storage used to persist the tasks.
+     */
+    protected final void saveTasks(TaskList taskList, Ui ui, Storage storage) {
+        try {
+            storage.save(taskList);
+        } catch (StorageException exception) {
+            ui.showSaveError();
+        }
+    }
 
     /**
      * Returns whether this command should end the application loop.

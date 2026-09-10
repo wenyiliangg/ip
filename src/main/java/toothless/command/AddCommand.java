@@ -1,7 +1,6 @@
 package toothless.command;
 
 import toothless.storage.Storage;
-import toothless.storage.StorageException;
 import toothless.task.Task;
 import toothless.task.TaskList;
 import toothless.ui.Ui;
@@ -35,10 +34,6 @@ public abstract class AddCommand extends Command {
         Task task = createTask();
         taskList.addTask(task);
         ui.showTaskAdded(task, taskList.size());
-        try {
-            storage.save(taskList);
-        } catch (StorageException exception) {
-            ui.showSaveError();
-        }
+        saveTasks(taskList, ui, storage);
     }
 }

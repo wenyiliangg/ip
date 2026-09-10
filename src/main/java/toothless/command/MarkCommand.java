@@ -2,7 +2,6 @@ package toothless.command;
 
 import toothless.exception.ToothlessException;
 import toothless.storage.Storage;
-import toothless.storage.StorageException;
 import toothless.task.Task;
 import toothless.task.TaskList;
 import toothless.ui.Ui;
@@ -35,10 +34,6 @@ public class MarkCommand extends Command {
             throws ToothlessException {
         Task markedTask = taskList.markTask(taskNumber);
         ui.showTaskMarked(markedTask);
-        try {
-            storage.save(taskList);
-        } catch (StorageException exception) {
-            ui.showSaveError();
-        }
+        saveTasks(taskList, ui, storage);
     }
 }
