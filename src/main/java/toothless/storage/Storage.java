@@ -22,6 +22,8 @@ import toothless.task.Todo;
  */
 public class Storage {
     private static final String FIELD_SEPARATOR = " | ";
+    private static final String TEMPORARY_FILE_SUFFIX = ".tmp";
+    private static final int MINIMUM_TEMPORARY_FILE_PREFIX_LENGTH = 3;
 
     private final Path dataFile;
 
@@ -41,29 +43,64 @@ public class Storage {
      * @throws StorageException if the file cannot be written safely
      */
     public void save(TaskList taskList) throws StorageException {
+        List<String> serializedTasks = serializeTasks(taskList);
+        try {
+            writeTasksSafely(serializedTasks);
+        } catch (IOException exception) {
+            throw new StorageException("Unable to save tasks", exception);
+        }
+    }
+
+    /**
+     * Converts every task into its saved line representation.
+     *
+     * @param taskList tasks to serialize.
+     * @return serialized tasks in their original order
+     */
+    private List<String> serializeTasks(TaskList taskList) {
         List<String> lines = new ArrayList<>();
         for (int i = 0; i < taskList.size(); i++) {
             lines.add(serialize(taskList.getTask(i)));
         }
+        return lines;
+    }
 
-        Path temporaryFile = null;
+    /**
+     * Writes serialized tasks through a temporary file before replacing the data file.
+     *
+     * @param serializedTasks complete storage lines to write.
+     * @throws IOException if the temporary file cannot safely replace the data file
+     */
+    private void writeTasksSafely(List<String> serializedTasks) throws IOException {
+        Path temporaryFile = createTemporaryFile();
         try {
-            Path parentDirectory = dataFile.getParent();
-            if (parentDirectory != null) {
-                Files.createDirectories(parentDirectory);
-            }
-            Path temporaryDirectory = parentDirectory == null ? Path.of(".") : parentDirectory;
-            String temporaryPrefix = dataFile.getFileName().toString();
-            if (temporaryPrefix.length() < 3) {
-                temporaryPrefix = (temporaryPrefix + "___").substring(0, 3);
-            }
-            temporaryFile = Files.createTempFile(temporaryDirectory, temporaryPrefix, ".tmp");
-            Files.write(temporaryFile, lines, StandardCharsets.UTF_8);
+            Files.write(temporaryFile, serializedTasks, StandardCharsets.UTF_8);
             replaceDataFile(temporaryFile);
         } catch (IOException exception) {
             deleteTemporaryFile(temporaryFile);
-            throw new StorageException("Unable to save tasks", exception);
+            throw exception;
         }
+    }
+
+    /**
+     * Creates a temporary file beside the data file so it can replace the data file safely.
+     *
+     * @return empty temporary file prepared for task data
+     * @throws IOException if the parent directory or temporary file cannot be created
+     */
+    private Path createTemporaryFile() throws IOException {
+        Path parentDirectory = dataFile.getParent();
+        if (parentDirectory != null) {
+            Files.createDirectories(parentDirectory);
+        }
+        Path temporaryDirectory = parentDirectory == null ? Path.of(".") : parentDirectory;
+        String temporaryPrefix = dataFile.getFileName().toString();
+        if (temporaryPrefix.length() < MINIMUM_TEMPORARY_FILE_PREFIX_LENGTH) {
+            String padding = "_".repeat(MINIMUM_TEMPORARY_FILE_PREFIX_LENGTH);
+            temporaryPrefix = (temporaryPrefix + padding)
+                    .substring(0, MINIMUM_TEMPORARY_FILE_PREFIX_LENGTH);
+        }
+        return Files.createTempFile(temporaryDirectory, temporaryPrefix, TEMPORARY_FILE_SUFFIX);
     }
 
     /**
