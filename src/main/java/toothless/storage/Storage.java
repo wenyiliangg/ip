@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import toothless.task.Deadline;
 import toothless.task.DeadlineDate;
@@ -58,11 +59,9 @@ public class Storage {
      * @return serialized tasks in their original order
      */
     private List<String> serializeTasks(TaskList taskList) {
-        List<String> lines = new ArrayList<>();
-        for (int i = 0; i < taskList.size(); i++) {
-            lines.add(serialize(taskList.getTask(i)));
-        }
-        return lines;
+        return IntStream.range(0, taskList.size())
+                .mapToObj(index -> serialize(taskList.getTask(index)))
+                .toList();
     }
 
     /**

@@ -1,5 +1,7 @@
 package toothless.command;
 
+import java.util.Arrays;
+
 /**
  * Identifies a command keyword understood by the Toothless chatbot.
  */
@@ -41,12 +43,10 @@ public enum CommandType {
      * @return matching command type, or {@link #UNKNOWN} when there is no match
      */
     public static CommandType fromKeyword(String keyword) {
-        for (CommandType commandType : values()) {
-            if (commandType.keyword.equals(keyword)) {
-                return commandType;
-            }
-        }
-        return UNKNOWN;
+        return Arrays.stream(values())
+                .filter(commandType -> commandType.keyword.equals(keyword))
+                .findFirst()
+                .orElse(UNKNOWN);
     }
 
     /**
