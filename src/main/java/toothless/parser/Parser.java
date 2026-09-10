@@ -2,6 +2,7 @@ package toothless.parser;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 
 import toothless.command.Command;
 import toothless.command.CommandType;
@@ -352,12 +353,8 @@ public class Parser {
      * @return true when any separator occurs as a complete token
      */
     private boolean containsAnySeparator(String text, String... separators) {
-        for (String separator : separators) {
-            if (findSeparator(text, separator, 0) >= 0) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(separators)
+                .anyMatch(separator -> findSeparator(text, separator, 0) >= 0);
     }
 
     /**
