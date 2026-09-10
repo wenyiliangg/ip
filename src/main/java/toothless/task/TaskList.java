@@ -74,7 +74,10 @@ public class TaskList {
                     "Toothless can’t find task " + taskNumber + " in the cave.\n"
                             + "Please choose a number from 1 to " + tasks.size() + ".");
         }
-        Task task = tasks.get(taskNumber - 1);
+        int taskIndex = taskNumber - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Validated task index should be within the task list";
+        Task task = tasks.get(taskIndex);
         task.markAsDone();
         return task;
     }
@@ -97,7 +100,10 @@ public class TaskList {
                             + "Please choose a number from 1 to " + tasks.size() + ".");
         }
 
-        Task task = tasks.get(taskNumber - 1);
+        int taskIndex = taskNumber - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Validated task index should be within the task list";
+        Task task = tasks.get(taskIndex);
         if (!task.isDone()) {
             return new UnmarkResult(task, false);
         }
@@ -122,7 +128,10 @@ public class TaskList {
                     "Toothless can’t find task " + taskNumber + " in the cave.\n"
                             + "Please choose a number from 1 to " + tasks.size() + ".");
         }
-        return tasks.remove(taskNumber - 1);
+        int taskIndex = taskNumber - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Validated task index should be within the task list";
+        return tasks.remove(taskIndex);
     }
 
     /**
