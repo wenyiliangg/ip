@@ -65,16 +65,7 @@ public class TaskList {
      * @throws ToothlessException if the task number is outside the task list
      */
     public Task markTask(int taskNumber) throws ToothlessException {
-        if (tasks.isEmpty()) {
-            throw new ToothlessException("Toothless's cave is empty, so there is no task to "
-                    + "mark.\nAdd a task first, then try again.");
-        }
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new ToothlessException(
-                    "Toothless can’t find task " + taskNumber + " in the cave.\n"
-                            + "Please choose a number from 1 to " + tasks.size() + ".");
-        }
-        Task task = tasks.get(taskNumber - 1);
+        Task task = getTaskByNumber(taskNumber, "mark");
         task.markAsDone();
         return task;
     }
@@ -87,17 +78,7 @@ public class TaskList {
      * @throws ToothlessException if the task number is outside the task list
      */
     public UnmarkResult unmarkTask(int taskNumber) throws ToothlessException {
-        if (tasks.isEmpty()) {
-            throw new ToothlessException("Toothless's cave is empty, so there is no task to "
-                    + "unmark.\nAdd a task first, then try again.");
-        }
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new ToothlessException(
-                    "Toothless can’t find task " + taskNumber + " in the cave.\n"
-                            + "Please choose a number from 1 to " + tasks.size() + ".");
-        }
-
-        Task task = tasks.get(taskNumber - 1);
+        Task task = getTaskByNumber(taskNumber, "unmark");
         if (!task.isDone()) {
             return new UnmarkResult(task, false);
         }
@@ -113,16 +94,30 @@ public class TaskList {
      * @throws ToothlessException if the task number is outside the task list
      */
     public Task deleteTask(int taskNumber) throws ToothlessException {
+        Task task = getTaskByNumber(taskNumber, "delete");
+        tasks.remove(task);
+        return task;
+    }
+
+    /**
+     * Returns the task identified by a one-based number after validating the selection.
+     *
+     * @param taskNumber one-based task number.
+     * @param action verb describing the operation attempted on the task.
+     * @return selected task
+     * @throws ToothlessException if the task number is outside the task list
+     */
+    private Task getTaskByNumber(int taskNumber, String action) throws ToothlessException {
         if (tasks.isEmpty()) {
             throw new ToothlessException("Toothless's cave is empty, so there is no task to "
-                    + "delete.\nAdd a task first, then try again.");
+                    + action + ".\nAdd a task first, then try again.");
         }
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new ToothlessException(
                     "Toothless can’t find task " + taskNumber + " in the cave.\n"
                             + "Please choose a number from 1 to " + tasks.size() + ".");
         }
-        return tasks.remove(taskNumber - 1);
+        return tasks.get(taskNumber - 1);
     }
 
     /**
