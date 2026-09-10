@@ -32,6 +32,7 @@ public abstract class AddCommand extends Command {
     @Override
     public final void execute(TaskList taskList, Ui ui, Storage storage) {
         Task task = createTask();
+        assert task != null : "Add command should create a task before execution";
         taskList.addTask(task);
         ui.showTaskAdded(task, taskList.size());
         saveTasks(taskList, ui, storage);
