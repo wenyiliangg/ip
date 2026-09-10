@@ -59,6 +59,8 @@ public class Parser {
                     + "Try: list");
         }
 
+        assert commandType != CommandType.UNKNOWN
+                : "Validated command type should be supported";
         switch (commandType) {
             case BYE:
                 return new ExitCommand();
