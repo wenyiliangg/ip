@@ -2,7 +2,6 @@ package toothless.command;
 
 import toothless.exception.ToothlessException;
 import toothless.storage.Storage;
-import toothless.storage.StorageException;
 import toothless.task.TaskList;
 import toothless.ui.Ui;
 
@@ -39,10 +38,6 @@ public class UnmarkCommand extends Command {
         }
 
         ui.showTaskUnmarked(result.getTask());
-        try {
-            storage.save(taskList);
-        } catch (StorageException exception) {
-            ui.showSaveError();
-        }
+        saveTasks(taskList, ui, storage);
     }
 }
