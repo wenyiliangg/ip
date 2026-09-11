@@ -39,6 +39,14 @@
                                        styleClass="command-help-copy"
                                        text="Tap an example to place it in the command box, then edit or send it."
                                        wrapText="true" />
+                                <Label maxWidth="1.7976931348623157E308"
+                                       styleClass="command-help-copy"
+                                       text="Edit with /description, /by (Deadline), or /from and /to (Event). You can combine fields."
+                                       wrapText="true" />
+                                <Label maxWidth="1.7976931348623157E308"
+                                       styleClass="command-help-copy"
+                                       text="Any task: edit 1 /description read the new textbook&#10;Deadline: edit 2 /by 2026-09-20&#10;Event start: edit 3 /from 21 September 2026 2pm&#10;Event end: edit 3 /to 21 September 2026 5pm"
+                                       wrapText="true" />
                                 <FlowPane fx:id="commandButtons" hgap="7.0" vgap="7.0"
                                           prefWrapLength="510.0">
                                     <children>
@@ -63,6 +71,9 @@
                                         <Button onAction="#useCommandSuggestion"
                                                 styleClass="command-chip" text="☆  Unmark"
                                                 userData="unmark 1" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="✎  Edit task"
+                                                userData="edit 1 /description read the new textbook" />
                                         <Button onAction="#useCommandSuggestion"
                                                 styleClass="command-chip" text="−  Delete"
                                                 userData="delete 1" />

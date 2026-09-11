@@ -7,15 +7,18 @@ remains readable after resizing, scrolls to new messages, and ends input cleanly
 
 Launch command: `./gradlew run` under Java 25.
 
-Actions: Show and hide the Help panel; click several suggestion buttons and edit their examples; enter a mix
-of valid and invalid commands using both the Enter key and Send button; add enough tasks to exceed the visible
-conversation height; resize the window to its minimum dimensions; finish with `bye`.
+Actions: Show and hide the Help panel; confirm it explains `/description`, `/by`, `/from`, and `/to`; confirm there
+is one Edit task suggestion with separate Any task, Deadline, Event start, and Event end samples beneath Help;
+click the Edit task suggestion and verify its complete sample appears in the command box; enter a mix of valid and
+invalid commands using both the Enter key and Send button; add enough tasks to exceed the visible conversation
+height; resize the window to its minimum dimensions; finish with `bye`.
 
 Expected observations: The illustrated header, opening greeting, avatars, and Help button appear; the command list
-stays hidden until Help is clicked; each suggestion fills the command box without sending immediately; every
-non-blank command produces the same response as the console application; blank input adds no bubbles; the newest
-exchange remains visible; text wraps without clipping; and the input controls and command suggestions become
-disabled after the farewell response.
+stays hidden until Help is clicked; the Help panel explains the task-type restrictions and combining fields; one
+Edit task suggestion appears and the four task-type samples match the documented syntax; each suggestion fills the
+command box without sending immediately; every non-blank command produces the same response as the console
+application; blank input adds no bubbles; the newest exchange remains visible; text wraps without clipping; and the
+input controls and command suggestions become disabled after the farewell response.
 
 ## TC-01: Interleaved valid and invalid commands preserve task state
 
@@ -99,6 +102,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless heard a tiny silence. What should he do?
@@ -310,6 +314,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Got it! Toothless has added this task for you:
@@ -440,6 +445,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 This deadline is missing '/by' and its date.
@@ -560,6 +566,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless's cave is empty, so there is no task to delete.
@@ -693,6 +700,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Here are the tasks in your list:
@@ -744,6 +752,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless had trouble reading his saved quests.
@@ -802,6 +811,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless found 6 puzzling lines in his saved quests.
@@ -868,6 +878,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless needs a keyword to sniff out matching tasks.
@@ -972,6 +983,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! *
 ____________________________________________________________
 Got it! Toothless has added this task for you:

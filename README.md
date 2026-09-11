@@ -17,7 +17,8 @@ From the project directory, use Java 25 and run:
 ```
 
 The window supports both the Send button and the Enter key. Select **Help** to reveal clickable command examples;
-each example is placed in the input field so it can be edited before sending.
+each example, including field-specific task edits, is placed in the input field so it can be adjusted before
+sending.
 
 See the [Toothless User Guide](docs/README.md) for all commands.
 

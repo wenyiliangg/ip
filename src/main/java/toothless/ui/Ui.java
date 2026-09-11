@@ -71,6 +71,8 @@ public class Ui {
         output.println("  - todo [DESCRIPTION]");
         output.println("  - deadline [DESCRIPTION] /by [yyyy-MM-dd]");
         output.println("  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]");
+        output.println("  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION]"
+                + " [/by yyyy-MM-dd] [/from START] [/to END]");
         output.println("You can also type list to see all our quests. Tiny roar! "
                 + DisplaySymbols.getDecorativeMark());
         showDivider();

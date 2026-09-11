@@ -82,6 +82,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless heard a tiny silence. What should he do?
@@ -252,6 +253,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless heard a tiny silence. What should he do?
@@ -462,6 +464,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Got it! Toothless has added this task for you:
@@ -560,6 +563,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Got it! Toothless has added this task for you:
@@ -691,6 +695,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 This deadline is missing '/by' and its date.
@@ -770,6 +775,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 This deadline is missing '/by' and its date.
@@ -891,6 +897,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless's cave is empty, so there is no task to delete.
@@ -1007,6 +1014,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless's cave is empty, so there is no task to delete.
@@ -1141,6 +1149,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Here are the tasks in your list:
@@ -1173,6 +1182,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Here are the tasks in your list:
@@ -1225,6 +1235,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless had trouble reading his saved quests.
@@ -1266,6 +1277,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless had trouble reading his saved quests.
@@ -1325,6 +1337,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless found 6 puzzling lines in his saved quests.
@@ -1359,6 +1372,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless found 6 puzzling lines in his saved quests.
@@ -1426,6 +1440,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless needs a keyword to sniff out matching tasks.
@@ -1511,6 +1526,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless needs a keyword to sniff out matching tasks.
@@ -1616,6 +1632,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! *
 ____________________________________________________________
 Got it! Toothless has added this task for you:
@@ -1653,6 +1670,7 @@ Ready for our next little adventure? Tell me what to remember:
   - todo [DESCRIPTION]
   - deadline [DESCRIPTION] /by [yyyy-MM-dd]
   - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
 You can also type list to see all our quests. Tiny roar! *
 ____________________________________________________________
 Got it! Toothless has added this task for you:
