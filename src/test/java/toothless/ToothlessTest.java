@@ -149,6 +149,45 @@ public class ToothlessTest {
     }
 
     /**
+     * Verifies successful edits are saved while invalid edits leave saved state unchanged.
+     */
+    @Test
+    public void run_editTasksThenRestart_preservesFieldsTypesStatusAndOrder()
+            throws Exception {
+        CountingStorage storage = new CountingStorage(
+                temporaryDirectory.resolve("data").resolve("tasks.txt"));
+
+        runWithInput(storage, "todo old todo\n"
+                + "deadline old deadline /by 2026-09-20\n"
+                + "event old event /from 2pm /to 3pm\n"
+                + "mark 2\n"
+                + "edit 1 /by 2026-09-21\n"
+                + "edit 2 /from 4pm\n"
+                + "edit 3 /by 2026-09-21\n"
+                + "edit 4 /description missing\n"
+                + "edit 2 /by 2026-02-30\n"
+                + "edit 1 /description read the new textbook\n"
+                + "edit 2 /by 2026-09-21\n"
+                + "edit 3 /description consultation /from 4pm /to 6pm\n"
+                + "bye\n");
+
+        assertEquals(7, storage.getSaveCount());
+        assertEquals(List.of(
+                "T | 0 | read the new textbook",
+                "D | 1 | old deadline | 2026-09-21",
+                "E | 0 | consultation | 4pm | 6pm"),
+                Files.readAllLines(storage.getDataFile(), StandardCharsets.UTF_8));
+
+        String restartedOutput = runWithInput(new Storage(storage.getDataFile()),
+                "list\nbye\n");
+        assertTrue(restartedOutput.contains("Here are the tasks in your list:\n"
+                + "1.[T][ ] read the new textbook\n"
+                + "2.[D][" + DisplaySymbols.getDoneMark()
+                + "] old deadline (by: Sep 21 2026)\n"
+                + "3.[E][ ] consultation (from: 4pm to: 6pm)"));
+    }
+
+    /**
      * Verifies consecutive finds show fresh results without saving or changing tasks.
      */
     @Test

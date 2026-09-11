@@ -38,5 +38,6 @@ public class EditCommand extends Command {
             throws ToothlessException {
         Task updatedTask = taskList.editTask(taskNumber, update);
         ui.showTaskEdited(updatedTask);
+        saveTasks(taskList, ui, storage);
     }
 }
