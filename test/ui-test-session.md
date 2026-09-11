@@ -85,10 +85,10 @@ Ready for our next little adventure? Tell me what to remember:
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless heard a tiny silence. What should he do?
-Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
+Try todo, deadline, event, list, find, mark, unmark, delete, edit, or bye.
 ____________________________________________________________
 Toothless tilted his head—he doesn’t recognise that command.
-Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
+Try todo, deadline, event, list, find, mark, unmark, delete, edit, or bye.
 ____________________________________________________________
 The list command doesn't need extra words.
 Try: list
@@ -255,10 +255,10 @@ Ready for our next little adventure? Tell me what to remember:
 You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless heard a tiny silence. What should he do?
-Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
+Try todo, deadline, event, list, find, mark, unmark, delete, edit, or bye.
 ____________________________________________________________
 Toothless tilted his head—he doesn’t recognise that command.
-Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
+Try todo, deadline, event, list, find, mark, unmark, delete, edit, or bye.
 ____________________________________________________________
 The list command doesn't need extra words.
 Try: list
@@ -396,6 +396,242 @@ ____________________________________________________________
 Here are the tasks in your list:
 1.[D][★] return book (by: Dec 2 2019)
 2.[E][ ] project meeting (from: tomorrow to: 4pm)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+Exit code: `0` (expected `0`)
+
+## TC-09: Edit task fields without changing task identity or state — PASS
+
+Aim: Verify Todo, Deadline, and Event edits; multiple and omitted fields; one-based task-number errors; empty,
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && ./gradlew -q classes && TOOTHLESS_TEST_ROOT=$(mktemp -d) && TOOTHLESS_CLASSES="$PWD/build/classes/java/main:$PWD/build/resources/main" && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp "$TOOTHLESS_CLASSES" toothless.Toothless'
+```
+
+Console input:
+
+```text
+todo old todo
+deadline old deadline /by 2026-09-20
+event old event /from 21 September 2026 2pm /to 21 September 2026 3pm
+mark 2
+edit
+edit /description changed
+edit first /description changed
+edit 0 /description changed
+edit 4 /description changed
+edit 1
+edit 1 /description
+edit 2 /by 2026-02-30
+edit 1 /by 2026-09-21
+edit 2 /from 4pm
+edit 3 /by 2026-09-21
+edit 1 /when tomorrow
+edit 1 /description first /description second
+edit 1 change /description changed
+edit 1 /description read the new textbook
+edit 2 /by 2026-09-21
+edit 3 /from 21 September 2026 4pm
+edit 3 /description project consultation /to 21 September 2026 6pm
+list
+bye
+```
+
+Actual console output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] old todo
+Now you have 1 task in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [D][ ] old deadline (by: Sep 20 2026)
+Now you have 2 tasks in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [E][ ] old event (from: 21 September 2026 2pm to: 21 September 2026 3pm)
+Now you have 3 tasks in the list. ★
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [D][★] old deadline (by: Sep 20 2026)
+____________________________________________________________
+Toothless needs a task number to edit.
+Try: edit 1
+____________________________________________________________
+Toothless needs a task number to edit.
+Try: edit 1
+____________________________________________________________
+That task number looks a little unusual.
+Please use a whole number, like: edit 1
+____________________________________________________________
+Toothless can’t find task 0 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
+Toothless can’t find task 4 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
+Toothless needs at least one field to edit.
+Try: edit 1 /description read the new textbook
+____________________________________________________________
+This edit is missing a value after '/description'.
+Please add the new value and try again.
+____________________________________________________________
+That edited deadline date made Toothless tilt his head.
+Please use a real date in yyyy-MM-dd format.
+____________________________________________________________
+Only deadline tasks have a '/by' date to edit.
+____________________________________________________________
+Only event tasks have '/from' or '/to' times to edit.
+____________________________________________________________
+Only deadline tasks have a '/by' date to edit.
+____________________________________________________________
+This edit's format has Toothless puzzled.
+Use: edit TASK_NUMBER /FIELD NEW_VALUE
+____________________________________________________________
+Each edit field can appear only once.
+Try: edit 1 /description read the new textbook
+____________________________________________________________
+This edit's format has Toothless puzzled.
+Use: edit TASK_NUMBER /FIELD NEW_VALUE
+____________________________________________________________
+A clever little roar! Toothless has updated this task:
+  [T][ ] read the new textbook
+____________________________________________________________
+A clever little roar! Toothless has updated this task:
+  [D][★] old deadline (by: Sep 21 2026)
+____________________________________________________________
+A clever little roar! Toothless has updated this task:
+  [E][ ] old event (from: 21 September 2026 4pm to: 21 September 2026 3pm)
+____________________________________________________________
+A clever little roar! Toothless has updated this task:
+  [E][ ] project consultation (from: 21 September 2026 4pm to: 21 September 2026 6pm)
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] read the new textbook
+2.[D][★] old deadline (by: Sep 21 2026)
+3.[E][ ] project consultation (from: 21 September 2026 4pm to: 21 September 2026 6pm)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [T][ ] old todo
+Now you have 1 task in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [D][ ] old deadline (by: Sep 20 2026)
+Now you have 2 tasks in the list. ★
+____________________________________________________________
+Got it! Toothless has added this task for you:
+  [E][ ] old event (from: 21 September 2026 2pm to: 21 September 2026 3pm)
+Now you have 3 tasks in the list. ★
+____________________________________________________________
+A happy little roar! I've starred this task as done:
+  [D][★] old deadline (by: Sep 20 2026)
+____________________________________________________________
+Toothless needs a task number to edit.
+Try: edit 1
+____________________________________________________________
+Toothless needs a task number to edit.
+Try: edit 1
+____________________________________________________________
+That task number looks a little unusual.
+Please use a whole number, like: edit 1
+____________________________________________________________
+Toothless can’t find task 0 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
+Toothless can’t find task 4 in the cave.
+Please choose a number from 1 to 3.
+____________________________________________________________
+Toothless needs at least one field to edit.
+Try: edit 1 /description read the new textbook
+____________________________________________________________
+This edit is missing a value after '/description'.
+Please add the new value and try again.
+____________________________________________________________
+That edited deadline date made Toothless tilt his head.
+Please use a real date in yyyy-MM-dd format.
+____________________________________________________________
+Only deadline tasks have a '/by' date to edit.
+____________________________________________________________
+Only event tasks have '/from' or '/to' times to edit.
+____________________________________________________________
+Only deadline tasks have a '/by' date to edit.
+____________________________________________________________
+This edit's format has Toothless puzzled.
+Use: edit TASK_NUMBER /FIELD NEW_VALUE
+____________________________________________________________
+Each edit field can appear only once.
+Try: edit 1 /description read the new textbook
+____________________________________________________________
+This edit's format has Toothless puzzled.
+Use: edit TASK_NUMBER /FIELD NEW_VALUE
+____________________________________________________________
+A clever little roar! Toothless has updated this task:
+  [T][ ] read the new textbook
+____________________________________________________________
+A clever little roar! Toothless has updated this task:
+  [D][★] old deadline (by: Sep 21 2026)
+____________________________________________________________
+A clever little roar! Toothless has updated this task:
+  [E][ ] old event (from: 21 September 2026 4pm to: 21 September 2026 3pm)
+____________________________________________________________
+A clever little roar! Toothless has updated this task:
+  [E][ ] project consultation (from: 21 September 2026 4pm to: 21 September 2026 6pm)
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] read the new textbook
+2.[D][★] old deadline (by: Sep 21 2026)
+3.[E][ ] project consultation (from: 21 September 2026 4pm to: 21 September 2026 6pm)
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________

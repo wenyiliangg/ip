@@ -2,12 +2,19 @@ package toothless.parser;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import toothless.command.Command;
 import toothless.command.CommandType;
 import toothless.command.DeadlineCommand;
 import toothless.command.DeleteCommand;
+import toothless.command.EditCommand;
 import toothless.command.EventCommand;
 import toothless.command.ExitCommand;
 import toothless.command.FindCommand;
@@ -17,16 +24,22 @@ import toothless.command.TodoCommand;
 import toothless.command.UnmarkCommand;
 import toothless.exception.ToothlessException;
 import toothless.task.DeadlineDate;
+import toothless.task.TaskUpdate;
 
 /**
  * Interprets user input and validates the details supplied to Toothless commands.
  */
 public class Parser {
     private static final String COMMANDS =
-            "todo, deadline, event, list, find, mark, unmark, delete, or bye";
+            "todo, deadline, event, list, find, mark, unmark, delete, edit, or bye";
+    private static final String DESCRIPTION_SEPARATOR = "/description";
     private static final String DEADLINE_SEPARATOR = "/by";
     private static final String EVENT_START_SEPARATOR = "/from";
     private static final String EVENT_END_SEPARATOR = "/to";
+    private static final Set<String> EDIT_SEPARATORS = Set.of(
+            DESCRIPTION_SEPARATOR, DEADLINE_SEPARATOR,
+            EVENT_START_SEPARATOR, EVENT_END_SEPARATOR);
+    private static final Pattern EDIT_FIELD_PATTERN = Pattern.compile("(?<!\\S)/\\S+");
 
     /**
      * Creates a stateless parser for commands entered during a Toothless session.
@@ -78,6 +91,9 @@ public class Parser {
                 return new UnmarkCommand(parseTaskNumber(commandType, details, taskCount));
             case DELETE:
                 return new DeleteCommand(parseTaskNumber(commandType, details, taskCount));
+            case EDIT:
+                ParsedEdit edit = parseEditDetails(details, taskCount);
+                return new EditCommand(edit.getTaskNumber(), edit.getUpdate());
             case TODO:
                 return new TodoCommand(parseTodoDescription(details));
             case DEADLINE:
@@ -124,6 +140,135 @@ public class Parser {
                     + "Please choose a number from 1 to " + taskCount + ".");
         }
         return taskNumber;
+    }
+
+    /**
+     * Parses the one-based task number and named replacement fields of an edit command.
+     *
+     * @param details text following the edit command.
+     * @param taskCount current number of tasks.
+     * @return validated task number and replacement fields
+     * @throws ToothlessException if the task number or field structure is invalid
+     */
+    private ParsedEdit parseEditDetails(String details, int taskCount)
+            throws ToothlessException {
+        if (details.isBlank()) {
+            parseTaskNumber(CommandType.EDIT, "", taskCount);
+        }
+
+        String[] editParts = details.split("\\s+", 2);
+        if (editParts[0].startsWith("/")) {
+            parseTaskNumber(CommandType.EDIT, "", taskCount);
+        }
+        int taskNumber = parseTaskNumber(CommandType.EDIT, editParts[0], taskCount);
+        if (editParts.length == 1 || editParts[1].isBlank()) {
+            throw new ToothlessException("Toothless needs at least one field to edit.\n"
+                    + "Try: edit 1 /description read the new textbook");
+        }
+
+        String fieldText = editParts[1].trim();
+        List<ParsedEditField> fields = findEditFields(fieldText);
+        if (fields.isEmpty() || fields.get(0).getStartIndex() != 0) {
+            throw malformedEditException();
+        }
+        return createParsedEdit(taskNumber, fieldText, fields);
+    }
+
+    /**
+     * Finds every slash-prefixed field token in edit details.
+     *
+     * @param fieldText text following the edit task number.
+     * @return field tokens in their input order
+     */
+    private List<ParsedEditField> findEditFields(String fieldText) {
+        List<ParsedEditField> fields = new ArrayList<>();
+        Matcher matcher = EDIT_FIELD_PATTERN.matcher(fieldText);
+        while (matcher.find()) {
+            fields.add(new ParsedEditField(matcher.group(), matcher.start(), matcher.end()));
+        }
+        return fields;
+    }
+
+    /**
+     * Converts ordered edit fields and their values into one task update.
+     *
+     * @param taskNumber parsed one-based task number.
+     * @param fieldText complete named-field text.
+     * @param fields field tokens in their input order.
+     * @return validated edit details
+     * @throws ToothlessException if a field is unknown, duplicated, empty, or invalid
+     */
+    private ParsedEdit createParsedEdit(int taskNumber, String fieldText,
+            List<ParsedEditField> fields) throws ToothlessException {
+        Set<String> seenFields = new HashSet<>();
+        String description = null;
+        LocalDate by = null;
+        String from = null;
+        String to = null;
+
+        for (int i = 0; i < fields.size(); i++) {
+            ParsedEditField field = fields.get(i);
+            String separator = field.getSeparator();
+            if (!EDIT_SEPARATORS.contains(separator)) {
+                throw malformedEditException();
+            }
+            if (!seenFields.add(separator)) {
+                throw new ToothlessException("Each edit field can appear only once.\n"
+                        + "Try: edit 1 /description read the new textbook");
+            }
+
+            int valueEndIndex = i + 1 < fields.size()
+                    ? fields.get(i + 1).getStartIndex() : fieldText.length();
+            String value = fieldText.substring(field.getValueStartIndex(), valueEndIndex).trim();
+            if (value.isEmpty()) {
+                throw new ToothlessException("This edit is missing a value after '"
+                        + separator + "'.\nPlease add the new value and try again.");
+            }
+
+            switch (separator) {
+                case DESCRIPTION_SEPARATOR:
+                    description = value;
+                    break;
+                case DEADLINE_SEPARATOR:
+                    by = parseEditedDeadlineDate(value);
+                    break;
+                case EVENT_START_SEPARATOR:
+                    from = value;
+                    break;
+                case EVENT_END_SEPARATOR:
+                    to = value;
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported edit field: " + separator);
+            }
+        }
+        return new ParsedEdit(taskNumber, new TaskUpdate(description, by, from, to));
+    }
+
+    /**
+     * Parses an edited deadline date using the same format as deadline creation.
+     *
+     * @param value replacement deadline date text.
+     * @return parsed deadline date
+     * @throws ToothlessException if the date is not a real ISO date
+     */
+    private LocalDate parseEditedDeadlineDate(String value) throws ToothlessException {
+        try {
+            return DeadlineDate.parse(value);
+        } catch (DateTimeParseException exception) {
+            throw new ToothlessException("That edited deadline date made Toothless tilt his head.\n"
+                    + "Please use a real date in yyyy-MM-dd format.");
+        }
+    }
+
+    /**
+     * Creates the shared guidance for malformed edit field structure.
+     *
+     * @return user-facing edit format exception
+     */
+    private ToothlessException malformedEditException() {
+        return new ToothlessException("This edit's format has Toothless puzzled.\n"
+                + "Use: edit TASK_NUMBER /FIELD NEW_VALUE");
     }
 
     /**
@@ -230,6 +375,92 @@ public class Parser {
          */
         private LocalDate getBy() {
             return by;
+        }
+    }
+
+    /**
+     * Holds a parsed task number and its validated replacement fields.
+     */
+    private static final class ParsedEdit {
+        private final int taskNumber;
+        private final TaskUpdate update;
+
+        /**
+         * Groups a task number with the replacement fields to apply.
+         *
+         * @param taskNumber parsed one-based task number.
+         * @param update validated replacement fields.
+         */
+        private ParsedEdit(int taskNumber, TaskUpdate update) {
+            this.taskNumber = taskNumber;
+            this.update = update;
+        }
+
+        /**
+         * Returns the parsed one-based task number.
+         *
+         * @return task number
+         */
+        private int getTaskNumber() {
+            return taskNumber;
+        }
+
+        /**
+         * Returns the parsed replacement fields.
+         *
+         * @return task update
+         */
+        private TaskUpdate getUpdate() {
+            return update;
+        }
+    }
+
+    /**
+     * Identifies one named edit field and the location of its value.
+     */
+    private static final class ParsedEditField {
+        private final String separator;
+        private final int startIndex;
+        private final int valueStartIndex;
+
+        /**
+         * Records the separator and source indexes of one edit field.
+         *
+         * @param separator slash-prefixed field name.
+         * @param startIndex index at which the field name begins.
+         * @param valueStartIndex index immediately after the field name.
+         */
+        private ParsedEditField(String separator, int startIndex, int valueStartIndex) {
+            this.separator = separator;
+            this.startIndex = startIndex;
+            this.valueStartIndex = valueStartIndex;
+        }
+
+        /**
+         * Returns the slash-prefixed field name.
+         *
+         * @return field separator
+         */
+        private String getSeparator() {
+            return separator;
+        }
+
+        /**
+         * Returns where the field begins within the edit details.
+         *
+         * @return field start index
+         */
+        private int getStartIndex() {
+            return startIndex;
+        }
+
+        /**
+         * Returns where the field's value begins within the edit details.
+         *
+         * @return value start index
+         */
+        private int getValueStartIndex() {
+            return valueStartIndex;
         }
     }
 

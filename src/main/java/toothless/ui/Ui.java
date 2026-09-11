@@ -192,6 +192,16 @@ public class Ui {
     }
 
     /**
+     * Confirms that selected fields of a task were updated.
+     *
+     * @param task updated task.
+     */
+    public void showTaskEdited(Task task) {
+        output.println("A clever little roar! Toothless has updated this task:");
+        output.println("  " + task);
+    }
+
+    /**
      * Confirms that a task was added and displays the new task count.
      *
      * @param task task that was added.
