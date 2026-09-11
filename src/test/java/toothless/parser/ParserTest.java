@@ -475,7 +475,8 @@ public class ParserTest {
         Storage storage = new Storage(temporaryDirectory.resolve("parser-tasks.txt"));
 
         command.execute(taskList, ui, storage);
-        return output.toString(StandardCharsets.UTF_8);
+        return output.toString(StandardCharsets.UTF_8)
+                .replace(System.lineSeparator(), "\n");
     }
 
     /**
