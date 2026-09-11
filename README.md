@@ -16,8 +16,9 @@ From the project directory, use Java 25 and run:
 ./gradlew run
 ```
 
-The window supports both the Send button and the Enter key. Select **Help** to reveal clickable command examples;
-each example is placed in the input field so it can be edited before sending.
+The window supports both the Send button and the Enter key. Select **Help** to reveal clickable command examples.
+Select **Edit task** to reveal the description, deadline, and event edit choices; selecting one places its example
+in the input field so it can be adjusted before sending.
 
 See the [Toothless User Guide](docs/README.md) for all commands.
 
