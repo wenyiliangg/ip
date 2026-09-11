@@ -2,6 +2,7 @@ package toothless.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -184,6 +185,103 @@ public class TaskListTest {
         assertEquals("first", taskList.getTask(0).getDescription());
         assertEquals("second", taskList.getTask(1).getDescription());
         assertEquals("third", taskList.getTask(2).getDescription());
+    }
+
+    /**
+     * Verifies description-only edits preserve each task's type, other fields, status, and position.
+     */
+    @Test
+    public void editTask_descriptionOnly_preservesTypeFieldsStatusAndPosition()
+            throws ToothlessException {
+        TaskList taskList = new TaskList();
+        Todo todo = new Todo("old todo");
+        Deadline deadline = new Deadline("old deadline", LocalDate.of(2026, 9, 20));
+        Event event = new Event("old event", "2pm", "3pm");
+        deadline.markAsDone();
+        taskList.addTask(todo);
+        taskList.addTask(deadline);
+        taskList.addTask(event);
+
+        Task updatedTask = taskList.editTask(2,
+                new TaskUpdate("new deadline", null, null, null));
+
+        Deadline updatedDeadline = assertInstanceOf(Deadline.class, updatedTask);
+        assertSame(todo, taskList.getTask(0));
+        assertSame(updatedDeadline, taskList.getTask(1));
+        assertSame(event, taskList.getTask(2));
+        assertEquals("new deadline", updatedDeadline.getDescription());
+        assertEquals(LocalDate.of(2026, 9, 20), updatedDeadline.getBy());
+        assertTrue(updatedDeadline.isDone());
+    }
+
+    /**
+     * Verifies multiple event fields can be replaced while omitted fields stay unchanged.
+     */
+    @Test
+    public void editTask_multipleEventFields_updatesOnlyRequestedFields()
+            throws ToothlessException {
+        TaskList taskList = new TaskList();
+        taskList.addTask(new Event("consultation", "2pm", "3pm"));
+
+        Task updatedTask = taskList.editTask(1,
+                new TaskUpdate("project consultation", null, null, "6pm"));
+
+        Event updatedEvent = assertInstanceOf(Event.class, updatedTask);
+        assertEquals("project consultation", updatedEvent.getDescription());
+        assertEquals("2pm", updatedEvent.getFrom());
+        assertEquals("6pm", updatedEvent.getTo());
+        assertFalse(updatedEvent.isDone());
+    }
+
+    /**
+     * Verifies deadline dates can be replaced without changing other task state.
+     */
+    @Test
+    public void editTask_deadlineDate_updatesOnlyDeadlineDate() throws ToothlessException {
+        TaskList taskList = new TaskList();
+        Deadline deadline = new Deadline("submit report", LocalDate.of(2026, 9, 20));
+        deadline.markAsDone();
+        taskList.addTask(deadline);
+
+        Task updatedTask = taskList.editTask(1,
+                new TaskUpdate(null, LocalDate.of(2026, 9, 21), null, null));
+
+        Deadline updatedDeadline = assertInstanceOf(Deadline.class, updatedTask);
+        assertEquals("submit report", updatedDeadline.getDescription());
+        assertEquals(LocalDate.of(2026, 9, 21), updatedDeadline.getBy());
+        assertTrue(updatedDeadline.isDone());
+    }
+
+    /**
+     * Verifies unsupported fields and invalid task numbers do not change any task.
+     */
+    @Test
+    public void editTask_invalidSelectionOrFields_throwsAndPreservesTasks() {
+        TaskList taskList = new TaskList();
+        Todo todo = new Todo("todo");
+        Deadline deadline = new Deadline("deadline", LocalDate.of(2026, 9, 20));
+        Event event = new Event("event", "2pm", "3pm");
+        taskList.addTask(todo);
+        taskList.addTask(deadline);
+        taskList.addTask(event);
+
+        assertThrows(ToothlessException.class, () -> taskList.editTask(0,
+                new TaskUpdate("changed", null, null, null)));
+        assertThrows(ToothlessException.class, () -> taskList.editTask(4,
+                new TaskUpdate("changed", null, null, null)));
+        assertThrows(ToothlessException.class, () -> taskList.editTask(1,
+                new TaskUpdate(null, LocalDate.of(2026, 9, 21), null, null)));
+        assertThrows(ToothlessException.class, () -> taskList.editTask(2,
+                new TaskUpdate(null, null, "4pm", null)));
+        assertThrows(ToothlessException.class, () -> taskList.editTask(3,
+                new TaskUpdate(null, LocalDate.of(2026, 9, 21), null, null)));
+        assertThrows(ToothlessException.class, () -> taskList.editTask(1,
+                new TaskUpdate(null, null, null, null)));
+
+        assertSame(todo, taskList.getTask(0));
+        assertSame(deadline, taskList.getTask(1));
+        assertSame(event, taskList.getTask(2));
+        assertEquals(3, taskList.size());
     }
 
     /**
