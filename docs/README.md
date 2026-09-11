@@ -8,8 +8,9 @@ Toothless helps you remember todos, deadlines, and events through a friendly cha
 2. Type a command in the box at the bottom.
 3. Press Enter or select **Send**.
 4. Select **Help** at any time to reveal clickable command examples.
+5. Select **Edit task** inside Help to reveal description, deadline, and event edit examples.
 
-Selecting a Help example fills the input box without sending it. Edit the example if needed, then send it when ready.
+Selecting an example fills the input box without sending it. Edit the example if needed, then send it when ready.
 
 ## Commands
 

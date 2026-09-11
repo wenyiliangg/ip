@@ -7,18 +7,20 @@ remains readable after resizing, scrolls to new messages, and ends input cleanly
 
 Launch command: `./gradlew run` under Java 25.
 
-Actions: Show and hide the Help panel; confirm it explains `/description`, `/by`, `/from`, and `/to`; confirm there
-is one Edit task suggestion with separate Any task, Deadline, Event start, and Event end samples beneath Help;
-click the Edit task suggestion and verify its complete sample appears in the command box; enter a mix of valid and
-invalid commands using both the Enter key and Send button; add enough tasks to exceed the visible conversation
-height; resize the window to its minimum dimensions; finish with `bye`.
+Actions: Show the Help panel and confirm no edit examples are displayed above the main command buttons; select the
+single Edit task button and confirm Edit description, Edit deadline, and Edit event buttons appear beneath it;
+select each secondary button and verify its complete sample appears in the command box; close and reopen Help and
+confirm the secondary edit buttons are hidden again; enter a mix of valid and invalid commands using both the Enter
+key and Send button; add enough tasks to exceed the visible conversation height; resize the window to its minimum
+dimensions; finish with `bye`.
 
 Expected observations: The illustrated header, opening greeting, avatars, and Help button appear; the command list
-stays hidden until Help is clicked; the Help panel explains the task-type restrictions and combining fields; one
-Edit task suggestion appears and the four task-type samples match the documented syntax; each suggestion fills the
-command box without sending immediately; every non-blank command produces the same response as the console
-application; blank input adds no bubbles; the newest exchange remains visible; text wraps without clipping; and the
-input controls and command suggestions become disabled after the farewell response.
+stays hidden until Help is clicked; one Edit task button appears in the main list; its three secondary buttons stay
+hidden until Edit task is clicked and use the documented description, deadline, and combined event syntax; each
+secondary suggestion fills the command box without sending immediately; closing Help collapses the edit choices;
+every non-blank command produces the same response as the console application; blank input adds no bubbles; the
+newest exchange remains visible; text wraps without clipping; and all input controls and command suggestions become
+disabled after the farewell response.
 
 ## TC-01: Interleaved valid and invalid commands preserve task state
 
