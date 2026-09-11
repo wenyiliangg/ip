@@ -198,9 +198,9 @@ public class ToothlessTest {
         Path dataFile = temporaryDirectory.resolve("gui-tasks.txt");
         Toothless toothless = new Toothless(new Storage(dataFile));
 
-        String addResponse = toothless.getResponse("todo prepare saddle");
-        String markResponse = toothless.getResponse("mark 1");
-        String listResponse = toothless.getResponse("list");
+        String addResponse = normalizeLineEndings(toothless.getResponse("todo prepare saddle"));
+        String markResponse = normalizeLineEndings(toothless.getResponse("mark 1"));
+        String listResponse = normalizeLineEndings(toothless.getResponse("list"));
 
         assertEquals("", toothless.getStartupMessage());
         assertEquals("Got it! Toothless has added this task for you:\n"
@@ -228,7 +228,7 @@ public class ToothlessTest {
 
         assertEquals("Toothless found 1 puzzling line in his saved quests.\n"
                 + "He skipped them and kept every task he could understand.",
-                toothless.getStartupMessage());
+                normalizeLineEndings(toothless.getStartupMessage()));
         assertEquals("Bye. Hope to see you again soon!", goodbyeResponse);
         assertTrue(toothless.hasExited());
     }
@@ -248,7 +248,17 @@ public class ToothlessTest {
             System.setIn(originalInput);
             System.setOut(originalOutput);
         }
-        return output.toString(StandardCharsets.UTF_8);
+        return normalizeLineEndings(output.toString(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Normalizes platform-specific line endings for portable output assertions.
+     *
+     * @param text captured application output.
+     * @return output using Unix line endings.
+     */
+    private static String normalizeLineEndings(String text) {
+        return text.replace(System.lineSeparator(), "\n");
     }
 
     /**
