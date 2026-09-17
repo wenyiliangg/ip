@@ -14,6 +14,18 @@ sessions.
 
 3. Type a command in the chat box and press **Enter** or select **Send**. Try `todo read a book`, then `list`.
 
+## Run the released JAR
+
+1. Install **Java 25**.
+2. Download `Toothless.jar` from the [latest release](https://github.com/wenyiliangg/ip/releases/latest).
+3. Open a terminal in the folder containing the JAR and run:
+
+   ```shell
+   java -jar Toothless.jar
+   ```
+
+Your tasks are saved automatically and loaded the next time you open Toothless.
+
 ## Using Help
 
 Select **Help** in the top-right corner to see clickable command examples. Selecting one fills the chat box
