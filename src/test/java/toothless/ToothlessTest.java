@@ -388,7 +388,7 @@ public class ToothlessTest {
             assertTrue(response.text().contains("Nothing changed"), command);
         }
         assertEquals("Here are the tasks in your list:\n1.[T][ ] original",
-                toothless.getResponse("list"));
+                normalizeLineEndings(toothless.getResponse("list")));
         assertEquals(List.of("T | 0 | original"),
                 Files.readAllLines(dataFile, StandardCharsets.UTF_8));
     }
@@ -402,7 +402,7 @@ public class ToothlessTest {
 
         assertTrue(toothless.getCommandResult("todo new").isError());
         assertEquals("Here are the matching tasks in your list:\n1.[T][ ] good",
-                toothless.getResponse("find good"));
+                normalizeLineEndings(toothless.getResponse("find good")));
         assertEquals(original, Files.readString(dataFile, StandardCharsets.UTF_8));
     }
 
@@ -442,6 +442,11 @@ public class ToothlessTest {
         return normalizeLineEndings(output.toString(StandardCharsets.UTF_8));
     }
 
+    @Test
+    public void normalizeLineEndings_windowsOutput_returnsUnixLineEndings() {
+        assertEquals("first\nsecond", normalizeLineEndings("first\r\nsecond"));
+    }
+
     /**
      * Normalizes platform-specific line endings for portable output assertions.
      *
@@ -449,7 +454,7 @@ public class ToothlessTest {
      * @return output using Unix line endings.
      */
     private static String normalizeLineEndings(String text) {
-        return text.replace(System.lineSeparator(), "\n");
+        return text.replace("\r\n", "\n");
     }
 
     /**
