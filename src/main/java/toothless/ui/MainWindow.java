@@ -71,7 +71,7 @@ public class MainWindow {
         this.toothless = Objects.requireNonNull(toothless);
         dialogContainer.getChildren().add(DialogBox.getToothlessDialog(GREETING, TOOTHLESS_IMAGE));
 
-        Toothless.Response startupResponse = toothless.getStartupResponse();
+        Toothless.Response startupResponse = toothless.getChatStartupResponse();
         if (!startupResponse.text().isBlank()) {
             dialogContainer.getChildren().add(createToothlessDialog(startupResponse));
         }

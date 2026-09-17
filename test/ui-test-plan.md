@@ -16,6 +16,8 @@ the greeting, user commands, normal replies, errors, and farewell share the same
 each ★ is visible in the greeting, task results, and completed-task markers; add enough
 tasks to exceed the visible conversation height; resize the window near its 440-by-560 minimum and then much larger;
 open Help at both sizes, including the nested Edit examples; finish with `  BYE  ` and watch the farewell.
+In a separate run using an isolated data directory with one valid and one malformed saved record,
+check startup, `list`, and an attempted `todo`; also check startup when the saved file cannot be read.
 
 Expected observations: The illustrated header, opening greeting, avatars, and Help button appear; the command list
 stays hidden until Help is clicked; one Edit task button appears in the main list; its three secondary buttons stay
@@ -30,6 +32,9 @@ stars are visible rather than missing-glyph boxes, including when a long message
 Help examples wrap or scroll within their panel; avatars keep their proportions; and all input controls and command
 suggestions become disabled after the farewell response; the window remains responsive during the brief delay and
 closes automatically about 1.8 seconds later.
+Malformed saved records do not add a warning bubble to the chat at startup; `list` still shows readable tasks,
+and a change attempt reports that it could not be saved without changing the list. An unreadable saved file
+still produces its startup error bubble.
 
 ## TC-01: Interleaved valid and invalid commands preserve task state
 

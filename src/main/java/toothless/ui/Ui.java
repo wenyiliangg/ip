@@ -28,6 +28,7 @@ public class Ui {
     private final PrintStream output;
     private final boolean isDividerEnabled;
     private boolean hasError;
+    private boolean hasMalformedDataWarning;
 
     /**
      * Creates a UI connected to the application's current console streams.
@@ -104,6 +105,7 @@ public class Ui {
      */
     public void showMalformedDataWarning(int malformedLineCount) {
         hasError = true;
+        hasMalformedDataWarning = true;
         String lineWord = malformedLineCount == 1 ? "line" : "lines";
         output.println("Toothless found " + malformedLineCount + " puzzling " + lineWord
                 + " in his saved quests.");
@@ -263,6 +265,15 @@ public class Ui {
      */
     public boolean hasError() {
         return hasError;
+    }
+
+    /**
+     * Returns whether loading encountered malformed saved task records.
+     *
+     * @return true when at least one saved record could not be loaded.
+     */
+    public boolean hasMalformedDataWarning() {
+        return hasMalformedDataWarning;
     }
 
     /**

@@ -277,7 +277,7 @@ public class ToothlessTest {
     }
 
     /**
-     * Verifies GUI sessions expose loading warnings and return clean farewell text.
+     * Verifies raw loading warnings remain available without appearing in the chat.
      */
     @Test
     public void getResponse_malformedStorageAndBye_reportsWarningThenExits() throws Exception {
@@ -292,6 +292,8 @@ public class ToothlessTest {
                 + "He skipped them and kept every task he could understand.\n"
                 + "Saved changes are paused until the file is repaired; your data stays untouched.",
                 normalizeLineEndings(toothless.getStartupMessage()));
+        assertEquals("", toothless.getChatStartupResponse().text());
+        assertFalse(toothless.getChatStartupResponse().isError());
         assertEquals("Bye. Hope to see you again soon!", goodbyeResponse);
         assertTrue(toothless.hasExited());
     }
@@ -331,6 +333,15 @@ public class ToothlessTest {
 
         assertTrue(toothless.getStartupResponse().isError());
         assertTrue(toothless.getStartupResponse().text().contains("puzzling line"));
+    }
+
+    @Test
+    public void getChatStartupResponse_unreadableFile_keepsLoadFailureVisible() throws Exception {
+        Path directoryAsFile = Files.createDirectory(temporaryDirectory.resolve("tasks.txt"));
+        Toothless toothless = new Toothless(new Storage(directoryAsFile));
+
+        assertTrue(toothless.getChatStartupResponse().isError());
+        assertTrue(toothless.getChatStartupResponse().text().contains("trouble reading"));
     }
 
     @Test

@@ -28,6 +28,7 @@ public class Toothless {
     private final Storage storage;
     private final TaskList taskList;
     private final Response startupResponse;
+    private final boolean hasMalformedSavedData;
     private boolean hasExited;
 
     /**
@@ -49,6 +50,7 @@ public class Toothless {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Ui ui = createResponseUi(output);
         this.taskList = loadTasks(storage, ui);
+        this.hasMalformedSavedData = ui.hasMalformedDataWarning();
         this.startupResponse = new Response(
                 output.toString(StandardCharsets.UTF_8).stripTrailing(), ui.hasError());
         ui.close();
@@ -152,6 +154,17 @@ public class Toothless {
      */
     public Response getStartupResponse() {
         return startupResponse;
+    }
+
+    /**
+     * Returns the startup response suitable for the chat window.
+     * Malformed-record details remain available to console users, while the
+     * GUI reports the write block only if a change is attempted.
+     *
+     * @return a load failure, or an empty response when there is no visible warning.
+     */
+    public Response getChatStartupResponse() {
+        return hasMalformedSavedData ? new Response("", false) : startupResponse;
     }
 
     /**
