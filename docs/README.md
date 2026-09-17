@@ -72,4 +72,4 @@ no save command.
 ## Ending a session
 
 Type `bye` and press **Enter** or select **Send**. Toothless says goodbye and closes the window. Run
-`./gradlew run` again to start a new session with your saved tasks.
+`./gradlew run` or `java -jar Toothless.jar` again to start a new session with your saved tasks.
