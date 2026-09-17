@@ -40,7 +40,8 @@ edit 3 /description project consultation /to 21 September 2026 6pm
 ```
 
 Todos support `/description`; Deadlines support `/description` and `/by`; Events support `/description`, `/from`,
-and `/to`. Editing keeps the task type, completion status, and list position unchanged.
+and `/to`. Editing keeps the task type, completion status, and list position unchanged. An event's start must remain
+strictly earlier than its end, including after an edit.
 
 ## Dates and saved tasks
 
@@ -50,8 +51,20 @@ Deadline dates use the ISO `yyyy-MM-dd` format. For example:
 deadline submit report /by 2026-10-15
 ```
 
+Event times accept `2pm`, `2:30pm`, or `14:30`. You can prefix a time with a full date such as
+`21 September 2026 2pm` or `2026-09-21 14:00`, or with a weekday such as `Monday 2pm`.
+`tomorrow` denotes the start of that day; `tomorrow 2pm` is also supported. A time without a date
+uses the other endpoint's date if it has one. Use full dates for events spanning different days;
+different weekday names alone are ambiguous. Invalid dates and out-of-range times are rejected.
+
+The same task type, description, and date/time details cannot be added twice. Extra whitespace is ignored
+when checking duplicates; punctuation within descriptions remains valid. Descriptions may be up to 500
+characters, and commands up to 4096 characters.
+
 Tasks are saved automatically after a successful add, edit, mark, unmark, or delete command. Toothless loads them
-the next time the application starts.
+the next time the application starts. If saved data is damaged or cannot be read, Toothless keeps readable tasks
+visible but pauses all changes, leaving the file untouched. Repair the file or restore a backup and restart.
+If a save fails, no task change is published; check file access and try again.
 
 ## Ending a session
 

@@ -112,7 +112,7 @@ public class StorageTest {
     }
 
     /**
-     * Verifies every escaped boundary character is reversible in every free-text field.
+     * Verifies escaped boundary characters remain reversible in task descriptions.
      */
     @Test
     public void saveThenLoad_fieldsWithBoundaryCharacters_restoresExactText() throws Exception {
@@ -120,7 +120,7 @@ public class StorageTest {
         Storage storage = new Storage(dataFile);
         TaskList originalTasks = new TaskList();
         originalTasks.addTask(new Todo("pipe | slash \\ newline\nreturn\r"));
-        originalTasks.addTask(new Event("event | \\ title", "line one\nline two", "end\rtime"));
+        originalTasks.addTask(new Event("event | \\ title", "2pm", "3pm"));
 
         storage.save(originalTasks);
         TaskList loadedTasks = storage.load().getTaskList();
@@ -129,8 +129,8 @@ public class StorageTest {
         Event event = assertInstanceOf(Event.class, loadedTasks.getTask(1));
         assertEquals("pipe | slash \\ newline\nreturn\r", todo.getDescription());
         assertEquals("event | \\ title", event.getDescription());
-        assertEquals("line one\nline two", event.getFrom());
-        assertEquals("end\rtime", event.getTo());
+        assertEquals("2pm", event.getFrom());
+        assertEquals("3pm", event.getTo());
     }
 
     /**
@@ -258,5 +258,19 @@ public class StorageTest {
         assertEquals("[D][ ] return book (by: Dec 6 2019)",
                 result.getTaskList().getTask(1).toString());
         assertEquals(originalLines, Files.readAllLines(dataFile, StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void load_corruptedRecord_blocksLaterWritesAndKeepsOriginalBytes() throws Exception {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        String original = "T | 0 | intact\nE | 0 | broken | 5pm | 2pm\n";
+        Files.writeString(dataFile, original, StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile);
+
+        StorageLoadResult loaded = storage.load();
+        assertEquals(1, loaded.getMalformedLineCount());
+        loaded.getTaskList().addTask(new Todo("later"));
+        assertThrows(StorageException.class, () -> storage.save(loaded.getTaskList()));
+        assertEquals(original, Files.readString(dataFile, StandardCharsets.UTF_8));
     }
 }

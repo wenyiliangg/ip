@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import toothless.command.Command;
 import toothless.exception.ToothlessException;
@@ -19,6 +21,7 @@ import toothless.ui.Ui;
  * Starts the Toothless chatbot application.
  */
 public class Toothless {
+    private static final Logger LOGGER = Logger.getLogger(Toothless.class.getName());
     private static final Path DATA_FILE = Path.of("data", "toothless.txt");
 
     private final Parser parser;
@@ -82,6 +85,9 @@ public class Toothless {
                 isExit = command.isExit();
             } catch (ToothlessException exception) {
                 ui.showError(exception.getMessage());
+            } catch (RuntimeException exception) {
+                LOGGER.log(Level.SEVERE, "Unexpected command failure", exception);
+                ui.showUnexpectedError();
             }
             ui.showDivider();
         }
@@ -109,16 +115,24 @@ public class Toothless {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Ui ui = createResponseUi(output);
         try {
+            if (hasExited) {
+                ui.showError("This adventure has ended. Reopen Toothless to start a new one.");
+                return new Response(output.toString(StandardCharsets.UTF_8).stripTrailing(), true);
+            }
             Command command = parser.parse(input, taskList.size());
             assert command != null : "Parser should return a command for valid input";
             command.execute(taskList, ui, storage);
             hasExited = command.isExit();
         } catch (ToothlessException exception) {
             ui.showError(exception.getMessage());
+        } catch (RuntimeException exception) {
+            LOGGER.log(Level.SEVERE, "Unexpected command failure", exception);
+            ui.showUnexpectedError();
+        } finally {
+            ui.close();
         }
         Response response = new Response(
                 output.toString(StandardCharsets.UTF_8).stripTrailing(), ui.hasError());
-        ui.close();
         return response;
     }
 

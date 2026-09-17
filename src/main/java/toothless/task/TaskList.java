@@ -29,6 +29,97 @@ public class TaskList {
     }
 
     /**
+     * Adds a task only when no task of the same type and details already exists.
+     *
+     * @param task proposed task.
+     * @throws ToothlessException if an equivalent task already exists.
+     */
+    public void addUniqueTask(Task task) throws ToothlessException {
+        ensureUnique(task, -1);
+        addTask(task);
+    }
+
+    /**
+     * Returns a separate list with copied tasks for a proposed persistent change.
+     *
+     * @return independent task list with the same contents and completion states.
+     */
+    public TaskList copy() {
+        TaskList copy = new TaskList();
+        for (Task task : tasks) {
+            Task clonedTask = copyTask(task);
+            if (task.isDone()) {
+                clonedTask.markAsDone();
+            }
+            copy.addTask(clonedTask);
+        }
+        return copy;
+    }
+
+    /**
+     * Publishes a fully saved proposal without changing this list's identity.
+     *
+     * @param savedTasks list successfully persisted to storage.
+     */
+    public void replaceWith(TaskList savedTasks) {
+        tasks.clear();
+        tasks.addAll(savedTasks.tasks);
+    }
+
+    /**
+     * Copies a task's details before its completion state is copied separately.
+     */
+    private Task copyTask(Task task) {
+        if (task instanceof Todo) {
+            return new Todo(task.getDescription());
+        }
+        if (task instanceof Deadline deadline) {
+            return new Deadline(task.getDescription(), deadline.getBy());
+        }
+        if (task instanceof Event event) {
+            return new Event(task.getDescription(), event.getFrom(), event.getTo());
+        }
+        return new Task(task.getDescription());
+    }
+
+    /**
+     * Checks a candidate against all tasks except the one being edited.
+     */
+    private void ensureUnique(Task candidate, int excludedIndex) throws ToothlessException {
+        for (int i = 0; i < tasks.size(); i++) {
+            if (i != excludedIndex && sameDetails(tasks.get(i), candidate)) {
+                throw new ToothlessException("Toothless already remembers that exact quest.\n"
+                        + "Change its details or edit the existing task instead.");
+            }
+        }
+    }
+
+    /**
+     * Compares only the fields that identify a task, not its completion state.
+     */
+    private boolean sameDetails(Task first, Task second) {
+        if (first.getClass() != second.getClass()
+                || !normalize(first.getDescription()).equals(normalize(second.getDescription()))) {
+            return false;
+        }
+        if (first instanceof Deadline firstDeadline && second instanceof Deadline secondDeadline) {
+            return firstDeadline.getBy().equals(secondDeadline.getBy());
+        }
+        if (first instanceof Event firstEvent && second instanceof Event secondEvent) {
+            return normalize(firstEvent.getFrom()).equals(normalize(secondEvent.getFrom()))
+                    && normalize(firstEvent.getTo()).equals(normalize(secondEvent.getTo()));
+        }
+        return true;
+    }
+
+    /**
+     * Reduces insignificant whitespace while preserving meaningful punctuation and case.
+     */
+    private String normalize(String value) {
+        return value.strip().replaceAll("\\s+", " ");
+    }
+
+    /**
      * Returns the task at the given zero-based index.
      *
      * @param index zero-based task index.
@@ -65,6 +156,17 @@ public class TaskList {
         Task task = getTaskByNumber(taskNumber, "mark");
         task.markAsDone();
         return task;
+    }
+
+    /**
+     * Checks whether the selected task is already complete without changing it.
+     *
+     * @param taskNumber one-based task number.
+     * @return whether the selected task is complete.
+     * @throws ToothlessException if the task does not exist.
+     */
+    public boolean isTaskDone(int taskNumber) throws ToothlessException {
+        return getTaskByNumber(taskNumber, "mark").isDone();
     }
 
     /**
@@ -109,6 +211,10 @@ public class TaskList {
         validateUpdate(originalTask, update);
 
         Task updatedTask = createUpdatedTask(originalTask, update);
+        if (updatedTask instanceof Event event) {
+            EventTime.validate(event.getFrom(), event.getTo());
+        }
+        ensureUnique(updatedTask, taskNumber - 1);
         if (originalTask.isDone()) {
             updatedTask.markAsDone();
         }

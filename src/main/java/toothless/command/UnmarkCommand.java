@@ -31,13 +31,15 @@ public class UnmarkCommand extends Command {
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage)
             throws ToothlessException {
-        TaskList.UnmarkResult result = taskList.unmarkTask(taskNumber);
+        TaskList proposedTasks = taskList.copy();
+        TaskList.UnmarkResult result = proposedTasks.unmarkTask(taskNumber);
         if (!result.wasChanged()) {
             ui.showTaskAlreadyUnmarked(result.getTask());
             return;
         }
 
-        ui.showTaskUnmarked(result.getTask());
-        saveTasks(taskList, ui, storage);
+        if (saveTasks(taskList, proposedTasks, ui, storage)) {
+            ui.showTaskUnmarked(result.getTask());
+        }
     }
 }

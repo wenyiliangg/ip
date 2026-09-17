@@ -32,8 +32,10 @@ public class DeleteCommand extends Command {
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage)
             throws ToothlessException {
-        Task deletedTask = taskList.deleteTask(taskNumber);
-        ui.showTaskDeleted(deletedTask, taskList.size());
-        saveTasks(taskList, ui, storage);
+        TaskList proposedTasks = taskList.copy();
+        Task deletedTask = proposedTasks.deleteTask(taskNumber);
+        if (saveTasks(taskList, proposedTasks, ui, storage)) {
+            ui.showTaskDeleted(deletedTask, taskList.size());
+        }
     }
 }

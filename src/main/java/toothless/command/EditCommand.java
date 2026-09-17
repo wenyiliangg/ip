@@ -36,8 +36,10 @@ public class EditCommand extends Command {
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage)
             throws ToothlessException {
-        Task updatedTask = taskList.editTask(taskNumber, update);
-        ui.showTaskEdited(updatedTask);
-        saveTasks(taskList, ui, storage);
+        TaskList proposedTasks = taskList.copy();
+        Task updatedTask = proposedTasks.editTask(taskNumber, update);
+        if (saveTasks(taskList, proposedTasks, ui, storage)) {
+            ui.showTaskEdited(updatedTask);
+        }
     }
 }

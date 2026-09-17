@@ -70,7 +70,7 @@ public class ToothlessTest {
                 + "delete 3\n"
                 + "bye\n");
 
-        assertEquals(9, storage.getSaveCount());
+        assertEquals(8, storage.getSaveCount());
         assertEquals(List.of(
                 "T | 0 | first task",
                 "D | 0 | second task | 2019-12-02"),
@@ -102,10 +102,10 @@ public class ToothlessTest {
     }
 
     /**
-     * Verifies a save failure is reported while changed in-memory tasks remain usable.
+     * Verifies a save failure is reported without publishing unsaved changes.
      */
     @Test
-    public void run_saveFailure_reportsFriendlyMessageAndKeepsTaskInMemory() throws Exception {
+    public void run_saveFailure_reportsFriendlyMessageWithoutChangingMemory() throws Exception {
         Path dataFile = temporaryDirectory.resolve("tasks.txt");
         Files.writeString(dataFile, "", StandardCharsets.UTF_8);
         Storage storage = new FailingSaveStorage(dataFile);
@@ -113,7 +113,8 @@ public class ToothlessTest {
         String output = runWithInput(storage, "todo keep this task\nlist\nbye\n");
 
         assertTrue(output.contains("Toothless couldn’t tuck these changes into his data file."));
-        assertTrue(output.contains("1.[T][ ] keep this task"));
+        assertTrue(output.contains("Your task list is empty. Ready for a new adventure!"));
+        assertFalse(output.contains("1.[T][ ] keep this task"));
         assertFalse(output.contains("Exception"));
     }
 
@@ -288,7 +289,8 @@ public class ToothlessTest {
         String goodbyeResponse = toothless.getResponse("bye");
 
         assertEquals("Toothless found 1 puzzling line in his saved quests.\n"
-                + "He skipped them and kept every task he could understand.",
+                + "He skipped them and kept every task he could understand.\n"
+                + "Saved changes are paused until the file is repaired; your data stays untouched.",
                 normalizeLineEndings(toothless.getStartupMessage()));
         assertEquals("Bye. Hope to see you again soon!", goodbyeResponse);
         assertTrue(toothless.hasExited());
@@ -343,6 +345,72 @@ public class ToothlessTest {
             assertFalse(response.isError());
             assertTrue(toothless.hasExited());
         }
+    }
+
+    @Test
+    public void getCommandResult_duplicateSubmissionsAndBye_doNotAddOrSaveTwice() throws Exception {
+        CountingStorage storage = new CountingStorage(temporaryDirectory.resolve("tasks.txt"));
+        Toothless toothless = new Toothless(storage);
+
+        assertFalse(toothless.getCommandResult("todo  read   book ").isError());
+        assertTrue(toothless.getCommandResult("todo read book").isError());
+        assertFalse(toothless.getCommandResult("bye").isError());
+        assertTrue(toothless.getCommandResult("todo another").isError());
+
+        assertEquals(1, storage.getSaveCount());
+        assertEquals(List.of("T | 0 | read   book"),
+                Files.readAllLines(storage.getDataFile(), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void getCommandResult_failedSaveLeavesEveryMutationUnpublished() throws Exception {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        Storage initialStorage = new Storage(dataFile);
+        TaskList initialTasks = new TaskList();
+        initialTasks.addTask(new Todo("original"));
+        initialStorage.save(initialTasks);
+        Toothless toothless = new Toothless(new FailingSaveStorage(dataFile));
+
+        for (String command : List.of("todo new", "mark 1", "edit 1 /description changed", "delete 1")) {
+            Toothless.Response response = toothless.getCommandResult(command);
+            assertTrue(response.isError(), command);
+            assertTrue(response.text().contains("Nothing changed"), command);
+        }
+        assertEquals("Here are the tasks in your list:\n1.[T][ ] original",
+                toothless.getResponse("list"));
+        assertEquals(List.of("T | 0 | original"),
+                Files.readAllLines(dataFile, StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void getCommandResult_malformedSavedData_blocksWritesButAllowsSearch() throws Exception {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        String original = "T | 0 | good\ncorrupted\n";
+        Files.writeString(dataFile, original, StandardCharsets.UTF_8);
+        Toothless toothless = new Toothless(new Storage(dataFile));
+
+        assertTrue(toothless.getCommandResult("todo new").isError());
+        assertEquals("Here are the matching tasks in your list:\n1.[T][ ] good",
+                toothless.getResponse("find good"));
+        assertEquals(original, Files.readString(dataFile, StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void getCommandResult_unexpectedProcessingFailure_hidesInternalDetailsAndKeepsState() {
+        Storage storage = new Storage(temporaryDirectory.resolve("tasks.txt")) {
+            @Override
+            public void save(TaskList tasks) {
+                throw new IllegalStateException("private storage path");
+            }
+        };
+        Toothless toothless = new Toothless(storage);
+
+        Toothless.Response response = toothless.getCommandResult("todo example");
+
+        assertTrue(response.isError());
+        assertEquals("Toothless hit a snag with that command. Please try again.", response.text());
+        assertEquals("Your task list is empty. Ready for a new adventure!",
+                toothless.getResponse("list"));
     }
 
     /**

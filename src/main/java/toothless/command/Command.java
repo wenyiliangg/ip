@@ -28,17 +28,22 @@ public abstract class Command {
             throws ToothlessException;
 
     /**
-     * Saves the task list and reports a recoverable persistence failure to the user.
+     * Saves a proposed list before publishing it, leaving the original unchanged on failure.
      *
-     * @param taskList tasks to persist.
+     * @param taskList active tasks to replace only after a successful save.
+     * @param proposedTasks validated tasks to persist.
      * @param ui user interface used to report a save failure.
      * @param storage storage used to persist the tasks.
+     * @return true if both saving and publication succeeded.
      */
-    protected final void saveTasks(TaskList taskList, Ui ui, Storage storage) {
+    protected final boolean saveTasks(TaskList taskList, TaskList proposedTasks, Ui ui, Storage storage) {
         try {
-            storage.save(taskList);
+            storage.save(proposedTasks);
+            taskList.replaceWith(proposedTasks);
+            return true;
         } catch (StorageException exception) {
             ui.showSaveError();
+            return false;
         }
     }
 
