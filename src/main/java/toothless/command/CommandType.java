@@ -20,6 +20,8 @@ public enum CommandType {
     UNMARK("unmark"),
     /** Removes a selected task from Toothless's list. */
     DELETE("delete"),
+    /** Replaces selected fields of an existing task. */
+    EDIT("edit"),
     /** Ends the current Toothless session. */
     BYE("bye"),
     /** Represents input that does not match a supported command keyword. */

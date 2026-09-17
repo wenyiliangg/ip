@@ -71,6 +71,8 @@ public class Ui {
         output.println("  - todo [DESCRIPTION]");
         output.println("  - deadline [DESCRIPTION] /by [yyyy-MM-dd]");
         output.println("  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]");
+        output.println("  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION]"
+                + " [/by yyyy-MM-dd] [/from START] [/to END]");
         output.println("You can also type list to see all our quests. Tiny roar! "
                 + DisplaySymbols.getDecorativeMark());
         showDivider();
@@ -189,6 +191,16 @@ public class Ui {
         output.println("A tiny farewell roar! Toothless has removed this task:");
         output.println("  " + task);
         output.println(formatTaskCount(taskCount));
+    }
+
+    /**
+     * Confirms that selected fields of a task were updated.
+     *
+     * @param task updated task.
+     */
+    public void showTaskEdited(Task task) {
+        output.println("A clever little roar! Toothless has updated this task:");
+        output.println("  " + task);
     }
 
     /**

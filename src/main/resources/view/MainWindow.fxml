@@ -63,12 +63,28 @@
                                         <Button onAction="#useCommandSuggestion"
                                                 styleClass="command-chip" text="☆  Unmark"
                                                 userData="unmark 1" />
+                                        <Button onAction="#toggleEditHelp"
+                                                styleClass="command-chip" text="✎  Edit task" />
                                         <Button onAction="#useCommandSuggestion"
                                                 styleClass="command-chip" text="−  Delete"
                                                 userData="delete 1" />
                                         <Button onAction="#useCommandSuggestion"
                                                 styleClass="command-chip" text="☾  Say bye"
                                                 userData="bye" />
+                                    </children>
+                                </FlowPane>
+                                <FlowPane fx:id="editCommandButtons" hgap="7.0" managed="false"
+                                          prefWrapLength="510.0" vgap="7.0" visible="false">
+                                    <children>
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="✎  Edit description"
+                                                userData="edit 1 /description read the new textbook" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="◷  Edit deadline"
+                                                userData="edit 2 /by 2026-09-20" />
+                                        <Button onAction="#useCommandSuggestion"
+                                                styleClass="command-chip" text="✦  Edit event"
+                                                userData="edit 3 /from 21 September 2026 2pm /to 21 September 2026 5pm" />
                                     </children>
                                 </FlowPane>
                             </children>

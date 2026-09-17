@@ -97,6 +97,68 @@ public class TaskList {
     }
 
     /**
+     * Replaces selected fields of one task without changing its type, status, or list position.
+     *
+     * @param taskNumber one-based task number.
+     * @param update replacement fields to apply.
+     * @return updated task
+     * @throws ToothlessException if the task number or replacement fields are invalid
+     */
+    public Task editTask(int taskNumber, TaskUpdate update) throws ToothlessException {
+        Task originalTask = getTaskByNumber(taskNumber, "edit");
+        validateUpdate(originalTask, update);
+
+        Task updatedTask = createUpdatedTask(originalTask, update);
+        if (originalTask.isDone()) {
+            updatedTask.markAsDone();
+        }
+        tasks.set(taskNumber - 1, updatedTask);
+        return updatedTask;
+    }
+
+    /**
+     * Validates that an update contains fields supported by the selected task type.
+     *
+     * @param task task selected for editing.
+     * @param update replacement fields requested by the user.
+     * @throws ToothlessException if no field is present or a field does not belong to the task type
+     */
+    private void validateUpdate(Task task, TaskUpdate update) throws ToothlessException {
+        if (!update.hasAnyField()) {
+            throw new ToothlessException("Toothless needs at least one field to edit.\n"
+                    + "Try: edit 1 /description read the new textbook");
+        }
+        if (update.hasBy() && !(task instanceof Deadline)) {
+            throw new ToothlessException("Only deadline tasks have a '/by' date to edit.");
+        }
+        if (update.hasEventTime() && !(task instanceof Event)) {
+            throw new ToothlessException("Only event tasks have '/from' or '/to' times to edit.");
+        }
+    }
+
+    /**
+     * Creates a same-type task containing the requested replacement fields.
+     *
+     * @param task original task selected for editing.
+     * @param update validated replacement fields.
+     * @return updated task with the same concrete type
+     */
+    private Task createUpdatedTask(Task task, TaskUpdate update) {
+        String description = update.getDescriptionOr(task.getDescription());
+        if (task instanceof Todo) {
+            return new Todo(description);
+        }
+        if (task instanceof Deadline deadline) {
+            return new Deadline(description, update.getByOr(deadline.getBy()));
+        }
+        if (task instanceof Event event) {
+            return new Event(description, update.getFromOr(event.getFrom()),
+                    update.getToOr(event.getTo()));
+        }
+        return new Task(description);
+    }
+
+    /**
      * Returns the task identified by a one-based number after validating the selection.
      *
      * @param taskNumber one-based task number.

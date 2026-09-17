@@ -37,6 +37,8 @@ public class MainWindow {
     @FXML
     private FlowPane commandButtons;
     @FXML
+    private FlowPane editCommandButtons;
+    @FXML
     private VBox commandHelp;
 
     /**
@@ -89,6 +91,7 @@ public class MainWindow {
             userInput.setDisable(true);
             sendButton.setDisable(true);
             commandButtons.setDisable(true);
+            editCommandButtons.setDisable(true);
         }
         scrollToLatestMessage();
     }
@@ -115,9 +118,24 @@ public class MainWindow {
         boolean shouldShowHelp = !commandHelp.isVisible();
         commandHelp.setVisible(shouldShowHelp);
         commandHelp.setManaged(shouldShowHelp);
+        if (!shouldShowHelp) {
+            editCommandButtons.setVisible(false);
+            editCommandButtons.setManaged(false);
+        }
         if (shouldShowHelp) {
             Platform.runLater(userInput::requestFocus);
         }
+    }
+
+    /**
+     * Shows or hides the type-specific edit command examples.
+     */
+    @FXML
+    private void toggleEditHelp() {
+        boolean shouldShowEditHelp = !editCommandButtons.isVisible();
+        editCommandButtons.setVisible(shouldShowEditHelp);
+        editCommandButtons.setManaged(shouldShowEditHelp);
+        Platform.runLater(userInput::requestFocus);
     }
 
     /**

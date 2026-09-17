@@ -18,6 +18,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import toothless.command.Command;
 import toothless.command.DeleteCommand;
+import toothless.command.EditCommand;
 import toothless.command.ExitCommand;
 import toothless.command.FindCommand;
 import toothless.command.ListCommand;
@@ -37,7 +38,7 @@ import toothless.ui.Ui;
 public class ParserTest {
     private static final String UNKNOWN_COMMAND_MESSAGE =
             "Toothless tilted his head—he doesn’t recognise that command.\n"
-                    + "Try todo, deadline, event, list, find, mark, unmark, delete, or bye.";
+                    + "Try todo, deadline, event, list, find, mark, unmark, delete, edit, or bye.";
 
     @TempDir
     private Path temporaryDirectory;
@@ -131,6 +132,183 @@ public class ParserTest {
     }
 
     /**
+     * Verifies edit fields can appear in any order and preserve omitted task values.
+     */
+    @Test
+    public void parse_editCommands_updatesSupportedFieldsAndShowsConfirmation()
+            throws ToothlessException {
+        Parser parser = new Parser();
+        TaskList taskList = new TaskList();
+        taskList.addTask(new Todo("old todo"));
+        taskList.addTask(new Deadline("old deadline", LocalDate.of(2026, 9, 20)));
+        taskList.addTask(new Event("old event", "2pm", "3pm"));
+        taskList.markTask(2);
+
+        Command todoEdit = parser.parse(
+                "edit 1 /description read the new textbook", taskList.size());
+        String todoOutput = execute(todoEdit, taskList);
+        Command deadlineEdit = parser.parse(
+                "edit 2 /by 2026-09-21 /description submit project", taskList.size());
+        execute(deadlineEdit, taskList);
+        Command eventEdit = parser.parse(
+                "edit 3 /to 6pm /description project consultation /from 4pm",
+                taskList.size());
+        execute(eventEdit, taskList);
+
+        assertInstanceOf(EditCommand.class, todoEdit);
+        assertInstanceOf(EditCommand.class, deadlineEdit);
+        assertInstanceOf(EditCommand.class, eventEdit);
+        assertEquals("A clever little roar! Toothless has updated this task:\n"
+                + "  [T][ ] read the new textbook\n", todoOutput);
+        assertEquals("read the new textbook", taskList.getTask(0).getDescription());
+        Deadline deadline = assertInstanceOf(Deadline.class, taskList.getTask(1));
+        assertEquals("submit project", deadline.getDescription());
+        assertEquals(LocalDate.of(2026, 9, 21), deadline.getBy());
+        assertTrue(deadline.isDone());
+        Event event = assertInstanceOf(Event.class, taskList.getTask(2));
+        assertEquals("project consultation", event.getDescription());
+        assertEquals("4pm", event.getFrom());
+        assertEquals("6pm", event.getTo());
+    }
+
+    /**
+     * Verifies missing and non-numeric edit task numbers produce focused guidance.
+     */
+    @Test
+    public void parse_editWithoutValidTaskNumber_throwsTaskNumberErrors() {
+        Parser parser = new Parser();
+
+        ToothlessException missingException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit", 3));
+        ToothlessException fieldFirstException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit /description changed", 3));
+        ToothlessException nonNumericException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit first /description changed", 3));
+
+        assertEquals("Toothless needs a task number to edit.\nTry: edit 1",
+                missingException.getMessage());
+        assertEquals(missingException.getMessage(), fieldFirstException.getMessage());
+        assertEquals("That task number looks a little unusual.\n"
+                + "Please use a whole number, like: edit 1", nonNumericException.getMessage());
+    }
+
+    /**
+     * Verifies an edit must contain at least one complete replacement field.
+     */
+    @Test
+    public void parse_editWithoutFieldsOrWithEmptyValues_throwsFocusedErrors() {
+        Parser parser = new Parser();
+        String noFieldMessage = "Toothless needs at least one field to edit.\n"
+                + "Try: edit 1 /description read the new textbook";
+
+        ToothlessException noFieldException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1", 3));
+        ToothlessException emptyDescriptionException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 /description", 3));
+        ToothlessException emptyByException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 /by", 3));
+        ToothlessException emptyFromException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 /from", 3));
+        ToothlessException emptyToException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 /to", 3));
+
+        assertEquals(noFieldMessage, noFieldException.getMessage());
+        assertEquals("This edit is missing a value after '/description'.\n"
+                + "Please add the new value and try again.",
+                emptyDescriptionException.getMessage());
+        assertEquals("This edit is missing a value after '/by'.\n"
+                + "Please add the new value and try again.", emptyByException.getMessage());
+        assertEquals("This edit is missing a value after '/from'.\n"
+                + "Please add the new value and try again.", emptyFromException.getMessage());
+        assertEquals("This edit is missing a value after '/to'.\n"
+                + "Please add the new value and try again.", emptyToException.getMessage());
+    }
+
+    /**
+     * Verifies malformed, unknown, and duplicate edit fields are rejected.
+     */
+    @Test
+    public void parse_editWithMalformedFields_throwsStructureErrors() {
+        Parser parser = new Parser();
+        String malformedMessage = "This edit's format has Toothless puzzled.\n"
+                + "Use: edit TASK_NUMBER /FIELD NEW_VALUE";
+
+        ToothlessException strayTextException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 change /description new task", 3));
+        ToothlessException unknownFieldException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 /when tomorrow", 3));
+        ToothlessException duplicateFieldException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 /description first /description second", 3));
+
+        assertEquals(malformedMessage, strayTextException.getMessage());
+        assertEquals(malformedMessage, unknownFieldException.getMessage());
+        assertEquals("Each edit field can appear only once.\n"
+                + "Try: edit 1 /description read the new textbook",
+                duplicateFieldException.getMessage());
+    }
+
+    /**
+     * Verifies invalid edited deadline dates are rejected before task mutation.
+     */
+    @Test
+    public void parse_editWithInvalidDeadlineDate_throwsDateError() {
+        Parser parser = new Parser();
+        String expectedMessage = "That edited deadline date made Toothless tilt his head.\n"
+                + "Please use a real date in yyyy-MM-dd format.";
+
+        ToothlessException impossibleDateException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 /by 2026-02-30", 3));
+        ToothlessException wrongFormatException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 /by 20 September 2026 6pm", 3));
+
+        assertEquals(expectedMessage, impossibleDateException.getMessage());
+        assertEquals(expectedMessage, wrongFormatException.getMessage());
+    }
+
+    /**
+     * Verifies task-type and range validation occur before any edit is applied.
+     */
+    @Test
+    public void parse_editWithUnsupportedFieldOrTaskNumber_preservesTasks()
+            throws ToothlessException {
+        Parser parser = new Parser();
+        TaskList taskList = new TaskList();
+        Todo todo = new Todo("todo");
+        Deadline deadline = new Deadline("deadline", LocalDate.of(2026, 9, 20));
+        Event event = new Event("event", "2pm", "3pm");
+        taskList.addTask(todo);
+        taskList.addTask(deadline);
+        taskList.addTask(event);
+
+        Command byOnTodo = parser.parse("edit 1 /description changed /by 2026-09-21", 3);
+        Command fromOnDeadline = parser.parse("edit 2 /from 4pm", 3);
+        Command byOnEvent = parser.parse("edit 3 /by 2026-09-21", 3);
+        Command outsideRange = parser.parse("edit 4 /description changed", 3);
+
+        assertThrows(ToothlessException.class, () -> execute(byOnTodo, taskList));
+        assertThrows(ToothlessException.class, () -> execute(fromOnDeadline, taskList));
+        assertThrows(ToothlessException.class, () -> execute(byOnEvent, taskList));
+        assertThrows(ToothlessException.class, () -> execute(outsideRange, taskList));
+        assertEquals("todo", todo.getDescription());
+        assertEquals("deadline", deadline.getDescription());
+        assertEquals("event", event.getDescription());
+        assertEquals(3, taskList.size());
+    }
+
+    /**
      * Verifies a find keyword is trimmed and carried into a read-only find command.
      */
     @Test
@@ -165,7 +343,7 @@ public class ParserTest {
                 parser.parse("fly", 0));
 
         assertEquals("Toothless heard a tiny silence. What should he do?\n"
-                + "Try todo, deadline, event, list, find, mark, unmark, delete, or bye.",
+                + "Try todo, deadline, event, list, find, mark, unmark, delete, edit, or bye.",
                 blankException.getMessage());
         assertEquals(UNKNOWN_COMMAND_MESSAGE, unknownException.getMessage());
     }
@@ -205,6 +383,9 @@ public class ParserTest {
         ToothlessException deleteException = assertThrows(
                 ToothlessException.class, () ->
                 parser.parse("delete 1", 0));
+        ToothlessException editException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit 1 /description changed", 0));
 
         assertEquals("Toothless's cave is empty, so there is no task to mark.\n"
                 + "Add a task first, then try again.", markException.getMessage());
@@ -212,6 +393,8 @@ public class ParserTest {
                 + "Add a task first, then try again.", unmarkException.getMessage());
         assertEquals("Toothless's cave is empty, so there is no task to delete.\n"
                 + "Add a task first, then try again.", deleteException.getMessage());
+        assertEquals("Toothless's cave is empty, so there is no task to edit.\n"
+                + "Add a task first, then try again.", editException.getMessage());
     }
 
     /**
@@ -230,6 +413,9 @@ public class ParserTest {
         ToothlessException deleteException = assertThrows(
                 ToothlessException.class, () ->
                 parser.parse("delete", 3));
+        ToothlessException editException = assertThrows(
+                ToothlessException.class, () ->
+                parser.parse("edit", 3));
 
         assertEquals("Toothless needs a task number to mark.\nTry: mark 1",
                 markException.getMessage());
@@ -237,6 +423,8 @@ public class ParserTest {
                 unmarkException.getMessage());
         assertEquals("Toothless needs a task number to delete.\nTry: delete 1",
                 deleteException.getMessage());
+        assertEquals("Toothless needs a task number to edit.\nTry: edit 1",
+                editException.getMessage());
     }
 
     /**
@@ -475,7 +663,8 @@ public class ParserTest {
         Storage storage = new Storage(temporaryDirectory.resolve("parser-tasks.txt"));
 
         command.execute(taskList, ui, storage);
-        return output.toString(StandardCharsets.UTF_8);
+        return output.toString(StandardCharsets.UTF_8)
+                .replace(System.lineSeparator(), "\n");
     }
 
     /**
