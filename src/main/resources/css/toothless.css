@@ -103,8 +103,13 @@
     -fx-padding: 11 14 11 14;
     -fx-background-radius: 9;
     -fx-border-radius: 9;
+    -fx-font-family: "Comic Neue";
     -fx-font-size: 14px;
     -fx-line-spacing: 2px;
+}
+
+.message-font-fallback .dialog-bubble {
+    -fx-font-family: "System";
 }
 
 .toothless-dialog .dialog-bubble {

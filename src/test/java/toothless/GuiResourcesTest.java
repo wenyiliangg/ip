@@ -1,5 +1,6 @@
 package toothless;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -20,9 +21,40 @@ class GuiResourcesTest {
         assertNotNull(GuiResourcesTest.class.getResource("/view/MainWindow.fxml"));
         assertNotNull(GuiResourcesTest.class.getResource("/view/DialogBox.fxml"));
         assertNotNull(GuiResourcesTest.class.getResource("/css/toothless.css"));
+        assertNotNull(GuiResourcesTest.class.getResource("/fonts/ComicNeue-Regular.ttf"));
+        assertNotNull(GuiResourcesTest.class.getResource("/fonts/OFL.txt"));
         assertNotNull(GuiResourcesTest.class.getResource("/images/night-sky-header.png"));
         assertNotNull(GuiResourcesTest.class.getResource("/images/toothless-avatar.png"));
         assertNotNull(GuiResourcesTest.class.getResource("/images/user-avatar.png"));
+    }
+
+    @Test
+    void conversationFont_isPackagedAsLicensedTrueType() throws IOException {
+        try (InputStream font = GuiResourcesTest.class.getResourceAsStream(
+                "/fonts/ComicNeue-Regular.ttf");
+                InputStream license = GuiResourcesTest.class.getResourceAsStream("/fonts/OFL.txt")) {
+            assertNotNull(font);
+            assertNotNull(license);
+            assertArrayEquals(new byte[] {0, 1, 0, 0}, font.readNBytes(4));
+            String licenseText = new String(license.readAllBytes(), StandardCharsets.UTF_8);
+            assertTrue(licenseText.contains("The Comic Neue Project Authors"));
+            assertTrue(licenseText.contains("SIL OPEN FONT LICENSE Version 1.1"));
+        }
+    }
+
+    @Test
+    void conversationFont_isScopedToMessageBubbles() throws IOException {
+        try (InputStream input = GuiResourcesTest.class.getResourceAsStream("/css/toothless.css")) {
+            assertNotNull(input);
+            String css = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+            int bubbleStart = css.indexOf(".dialog-bubble {");
+            assertTrue(bubbleStart >= 0);
+            String bubbleRules = css.substring(bubbleStart, css.indexOf('}', bubbleStart));
+
+            assertTrue(bubbleRules.contains("-fx-font-family: \"Comic Neue\";"));
+            assertTrue(css.contains(".message-font-fallback .dialog-bubble"));
+            assertFalse(css.substring(0, css.indexOf('}')).contains("Comic Neue"));
+        }
     }
 
     @Test
