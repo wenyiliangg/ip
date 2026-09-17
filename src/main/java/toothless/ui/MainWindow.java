@@ -39,7 +39,7 @@ public class MainWindow {
     @FXML
     private FlowPane editCommandButtons;
     @FXML
-    private VBox commandHelp;
+    private ScrollPane commandHelp;
 
     /**
      * Configures scrolling and keyboard focus after the FXML fields are loaded.

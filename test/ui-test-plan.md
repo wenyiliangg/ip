@@ -12,8 +12,8 @@ single Edit task button and confirm Edit description, Edit deadline, and Edit ev
 select each secondary button and verify its complete sample appears in the command box; close and reopen Help and
 confirm the secondary edit buttons are hidden again; enter a mix of valid and invalid commands using both the Enter
 key and Send button; compare a valid reply with an invalid-command reply, including a multi-line error; add enough
-tasks to exceed the visible conversation height; resize the window to its minimum
-dimensions; finish with `bye`.
+tasks to exceed the visible conversation height; resize the window near its 440-by-560 minimum and then much larger;
+open Help at both sizes, including the nested Edit examples; finish with `bye`.
 
 Expected observations: The illustrated header, opening greeting, avatars, and Help button appear; the command list
 stays hidden until Help is clicked; one Edit task button appears in the main list; its three secondary buttons stay
@@ -21,9 +21,10 @@ hidden until Edit task is clicked and use the documented description, deadline, 
 secondary suggestion fills the command box without sending immediately; closing Help collapses the edit choices;
 every non-blank command produces the same response as the console application; validation errors use a pale warm
 background, dark red border, readable text, and Toothless avatar while successful replies keep their normal style;
-blank input adds no bubbles; the
-newest exchange remains visible; text wraps without clipping; and all input controls and command suggestions become
-disabled after the farewell response.
+blank input adds no bubbles; the newest exchange remains visible in a vertically scrolling conversation; message
+bubbles use the available width and long replies wrap without clipping; the input stretches while Send remains visible;
+Help examples wrap or scroll within their panel; avatars keep their proportions; and all input controls and command
+suggestions become disabled after the farewell response.
 
 ## TC-01: Interleaved valid and invalid commands preserve task state
 

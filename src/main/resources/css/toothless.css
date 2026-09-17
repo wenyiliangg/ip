@@ -48,6 +48,13 @@
     -fx-border-width: 0 0 1 0;
 }
 
+.command-help-scroll,
+.command-help-scroll > .viewport {
+    -fx-background-color: #fffaf0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
 .command-help-copy {
     -fx-font-size: 12px;
     -fx-text-fill: #52666b;

@@ -35,6 +35,7 @@ public class Main extends Application {
             stage.setTitle("Toothless");
             stage.setMinWidth(440);
             stage.setMinHeight(560);
+            stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
         } catch (IOException exception) {
