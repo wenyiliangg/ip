@@ -331,6 +331,20 @@ public class ToothlessTest {
         assertTrue(toothless.getStartupResponse().text().contains("puzzling line"));
     }
 
+    @Test
+    public void getCommandResult_byeVariants_returnsFarewellBeforeExit() {
+        for (String input : List.of("bye", "Bye", "BYE", "  bYe  ")) {
+            Toothless toothless = new Toothless(new Storage(
+                    temporaryDirectory.resolve("gui-" + input.trim() + ".txt")));
+
+            Toothless.Response response = toothless.getCommandResult(input);
+
+            assertEquals("Bye. Hope to see you again soon!", response.text());
+            assertFalse(response.isError());
+            assertTrue(toothless.hasExited());
+        }
+    }
+
     /**
      * Runs Toothless with isolated input and output streams.
      */

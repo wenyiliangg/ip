@@ -22,7 +22,8 @@
                             <children>
                                 <Label styleClass="app-title" text="TOOTHLESS"
                                        AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="22.0" />
-                                <Button onAction="#toggleHelp" styleClass="help-button" text="Help"
+                                <Button fx:id="helpButton" onAction="#toggleHelp"
+                                        styleClass="help-button" text="Help"
                                         AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="18.0" />
                             </children>
                         </AnchorPane>

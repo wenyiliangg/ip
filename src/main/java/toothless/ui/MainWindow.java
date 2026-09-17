@@ -3,6 +3,7 @@ package toothless.ui;
 import java.io.InputStream;
 import java.util.Objects;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +13,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import toothless.Toothless;
 
 /**
@@ -23,8 +26,10 @@ public class MainWindow {
             + "Tiny roar! ★";
     private static final Image TOOTHLESS_IMAGE = loadImage("/images/toothless-avatar.png");
     private static final Image USER_IMAGE = loadImage("/images/user-avatar.png");
+    private static final Duration GOODBYE_DELAY = Duration.millis(1800);
 
     private Toothless toothless;
+    private boolean isShuttingDown;
 
     @FXML
     private ScrollPane scrollPane;
@@ -34,6 +39,8 @@ public class MainWindow {
     private TextField userInput;
     @FXML
     private Button sendButton;
+    @FXML
+    private Button helpButton;
     @FXML
     private FlowPane commandButtons;
     @FXML
@@ -71,6 +78,9 @@ public class MainWindow {
      */
     @FXML
     private void handleUserInput() {
+        if (isShuttingDown) {
+            return;
+        }
         if (toothless == null) {
             throw new IllegalStateException("A Toothless instance must be supplied before accepting input");
         }
@@ -87,13 +97,30 @@ public class MainWindow {
                 createToothlessDialog(response));
 
         if (toothless.hasExited()) {
-            userInput.setPromptText("The adventure continues another day!");
-            userInput.setDisable(true);
-            sendButton.setDisable(true);
-            commandButtons.setDisable(true);
-            editCommandButtons.setDisable(true);
+            scheduleShutdown();
         }
         scrollToLatestMessage();
+    }
+
+    /**
+     * Disables further input and closes the window after the farewell is shown.
+     */
+    private void scheduleShutdown() {
+        isShuttingDown = true;
+        userInput.setPromptText("The adventure continues another day!");
+        userInput.setDisable(true);
+        sendButton.setDisable(true);
+        helpButton.setDisable(true);
+        commandButtons.setDisable(true);
+        editCommandButtons.setDisable(true);
+
+        PauseTransition delay = new PauseTransition(GOODBYE_DELAY);
+        delay.setOnFinished(event -> {
+            Stage stage = (Stage) userInput.getScene().getWindow();
+            stage.close();
+            Platform.exit();
+        });
+        delay.play();
     }
 
     /**
