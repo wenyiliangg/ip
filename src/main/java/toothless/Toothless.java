@@ -24,7 +24,7 @@ public class Toothless {
     private final Parser parser;
     private final Storage storage;
     private final TaskList taskList;
-    private final String startupMessage;
+    private final Response startupResponse;
     private boolean hasExited;
 
     /**
@@ -46,7 +46,8 @@ public class Toothless {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Ui ui = createResponseUi(output);
         this.taskList = loadTasks(storage, ui);
-        this.startupMessage = output.toString(StandardCharsets.UTF_8).stripTrailing();
+        this.startupResponse = new Response(
+                output.toString(StandardCharsets.UTF_8).stripTrailing(), ui.hasError());
         ui.close();
     }
 
@@ -95,6 +96,16 @@ public class Toothless {
      * @return response text produced by the existing command workflow
      */
     public String getResponse(String input) {
+        return getCommandResult(input).text();
+    }
+
+    /**
+     * Executes one command and identifies whether its response reports an error.
+     *
+     * @param input complete command entered by the user.
+     * @return response text and its error status
+     */
+    public Response getCommandResult(String input) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Ui ui = createResponseUi(output);
         try {
@@ -105,8 +116,10 @@ public class Toothless {
         } catch (ToothlessException exception) {
             ui.showError(exception.getMessage());
         }
+        Response response = new Response(
+                output.toString(StandardCharsets.UTF_8).stripTrailing(), ui.hasError());
         ui.close();
-        return output.toString(StandardCharsets.UTF_8).stripTrailing();
+        return response;
     }
 
     /**
@@ -115,7 +128,25 @@ public class Toothless {
      * @return startup warning, or an empty string when loading succeeded cleanly
      */
     public String getStartupMessage() {
-        return startupMessage;
+        return startupResponse.text();
+    }
+
+    /**
+     * Returns the warning, if any, produced while loading saved tasks.
+     *
+     * @return startup response text and its error status
+     */
+    public Response getStartupResponse() {
+        return startupResponse;
+    }
+
+    /**
+     * Carries response text and its error status without inspecting wording.
+     *
+     * @param text complete response to display.
+     * @param isError whether command validation or storage reported an error.
+     */
+    public record Response(String text, boolean isError) {
     }
 
     /**

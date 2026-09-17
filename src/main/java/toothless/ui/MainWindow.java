@@ -59,9 +59,9 @@ public class MainWindow {
         this.toothless = Objects.requireNonNull(toothless);
         dialogContainer.getChildren().add(DialogBox.getToothlessDialog(GREETING, TOOTHLESS_IMAGE));
 
-        String startupMessage = toothless.getStartupMessage();
-        if (!startupMessage.isBlank()) {
-            dialogContainer.getChildren().add(DialogBox.getToothlessDialog(startupMessage, TOOTHLESS_IMAGE));
+        Toothless.Response startupResponse = toothless.getStartupResponse();
+        if (!startupResponse.text().isBlank()) {
+            dialogContainer.getChildren().add(createToothlessDialog(startupResponse));
         }
     }
 
@@ -81,10 +81,10 @@ public class MainWindow {
             return;
         }
 
-        String response = toothless.getResponse(input);
+        Toothless.Response response = toothless.getCommandResult(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, USER_IMAGE),
-                DialogBox.getToothlessDialog(response, TOOTHLESS_IMAGE));
+                createToothlessDialog(response));
 
         if (toothless.hasExited()) {
             userInput.setPromptText("The adventure continues another day!");
@@ -143,6 +143,16 @@ public class MainWindow {
      */
     private void scrollToLatestMessage() {
         Platform.runLater(() -> scrollPane.setVvalue(1.0));
+    }
+
+    /**
+     * Applies error styling only when the command workflow reports an error.
+     */
+    private DialogBox createToothlessDialog(Toothless.Response response) {
+        if (response.isError()) {
+            return DialogBox.getErrorDialog(response.text(), TOOTHLESS_IMAGE);
+        }
+        return DialogBox.getToothlessDialog(response.text(), TOOTHLESS_IMAGE);
     }
 
     /**

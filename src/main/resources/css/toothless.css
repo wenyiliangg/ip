@@ -107,6 +107,13 @@
     -fx-text-fill: #20323b;
 }
 
+.error-dialog .dialog-bubble {
+    -fx-background-color: #f9e4dd;
+    -fx-border-color: #a3483e;
+    -fx-border-width: 1.8;
+    -fx-text-fill: #642c2a;
+}
+
 .user-dialog .dialog-bubble {
     -fx-background-color: #bd573d;
     -fx-border-color: #8f3d2b;

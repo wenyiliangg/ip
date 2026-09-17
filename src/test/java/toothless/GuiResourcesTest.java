@@ -45,4 +45,17 @@ class GuiResourcesTest {
             assertFalse(fxml.contains("Any task: edit"));
         }
     }
+
+    @Test
+    void errorDialog_stylesBubbleWithoutChangingNormalReplies() throws IOException {
+        try (InputStream input = GuiResourcesTest.class.getResourceAsStream("/css/toothless.css")) {
+            assertNotNull(input);
+            String css = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+
+            assertTrue(css.contains(".toothless-dialog .dialog-bubble"));
+            assertTrue(css.contains(".error-dialog .dialog-bubble"));
+            assertTrue(css.contains("-fx-background-color: #f9e4dd"));
+            assertTrue(css.contains("-fx-border-color: #a3483e"));
+        }
+    }
 }

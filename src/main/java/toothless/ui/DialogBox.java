@@ -75,6 +75,20 @@ public class DialogBox extends HBox {
     }
 
     /**
+     * Creates a Toothless message styled for a validation or storage error.
+     *
+     * @param text error message to display.
+     * @param image Toothless's avatar.
+     * @return configured error dialog box
+     */
+    public static DialogBox getErrorDialog(String text, Image image) {
+        DialogBox dialogBox = getToothlessDialog(text, image);
+        dialogBox.getStyleClass().add("error-dialog");
+        dialogBox.setAccessibleText("Toothless error: " + text);
+        return dialogBox;
+    }
+
+    /**
      * Places Toothless's avatar on the left of his message.
      */
     private void flip() {

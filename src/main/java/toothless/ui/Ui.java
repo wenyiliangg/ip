@@ -27,6 +27,7 @@ public class Ui {
     private final Scanner scanner;
     private final PrintStream output;
     private final boolean isDividerEnabled;
+    private boolean hasError;
 
     /**
      * Creates a UI connected to the application's current console streams.
@@ -102,6 +103,7 @@ public class Ui {
      * @param malformedLineCount number of saved lines that were skipped.
      */
     public void showMalformedDataWarning(int malformedLineCount) {
+        hasError = true;
         String lineWord = malformedLineCount == 1 ? "line" : "lines";
         output.println("Toothless found " + malformedLineCount + " puzzling " + lineWord
                 + " in his saved quests.");
@@ -113,6 +115,7 @@ public class Ui {
      * Displays the friendly fallback used when saved tasks cannot be read.
      */
     public void showLoadError() {
+        hasError = true;
         output.println("Toothless had trouble reading his saved quests.");
         output.println("He'll start with an empty cave, but the saved file was left untouched.");
         showDivider();
@@ -219,6 +222,7 @@ public class Ui {
      * Displays the friendly warning used when changed tasks cannot be saved.
      */
     public void showSaveError() {
+        hasError = true;
         output.println("Toothless couldn’t tuck these changes into his data file.");
         output.println("They’re still safe for this adventure, but may not return next time.");
     }
@@ -229,7 +233,17 @@ public class Ui {
      * @param message error message to display.
      */
     public void showError(String message) {
+        hasError = true;
         output.println(message);
+    }
+
+    /**
+     * Returns whether this response includes a validation or storage error.
+     *
+     * @return true when an error was reported while producing this response
+     */
+    public boolean hasError() {
+        return hasError;
     }
 
     /**
