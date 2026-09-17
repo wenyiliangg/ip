@@ -45,4 +45,43 @@ class GuiResourcesTest {
             assertFalse(fxml.contains("Any task: edit"));
         }
     }
+
+    @Test
+    void errorDialog_stylesBubbleWithoutChangingNormalReplies() throws IOException {
+        try (InputStream input = GuiResourcesTest.class.getResourceAsStream("/css/toothless.css")) {
+            assertNotNull(input);
+            String css = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+
+            assertTrue(css.contains(".toothless-dialog .dialog-bubble"));
+            assertTrue(css.contains(".error-dialog .dialog-bubble"));
+            assertTrue(css.contains("-fx-background-color: #f9e4dd"));
+            assertTrue(css.contains("-fx-border-color: #a3483e"));
+        }
+    }
+
+    @Test
+    void mainWindow_responsiveLayout_keepsConversationAndControlsAccessible() throws IOException {
+        try (InputStream input = GuiResourcesTest.class.getResourceAsStream(
+                "/view/MainWindow.fxml")) {
+            assertNotNull(input);
+            String fxml = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+
+            assertTrue(fxml.contains("<BorderPane prefHeight="));
+            assertTrue(fxml.contains("fx:id=\"scrollPane\" fitToWidth=\"true\""));
+            assertTrue(fxml.contains("fx:id=\"commandHelp\" fitToWidth=\"true\""));
+            assertTrue(fxml.contains("maxHeight=\"220.0\""));
+            assertTrue(fxml.contains("fx:id=\"userInput\" HBox.hgrow=\"ALWAYS\""));
+            assertTrue(fxml.contains("fx:id=\"sendButton\""));
+            assertFalse(fxml.contains("prefWrapLength=\"510.0\""));
+        }
+        try (InputStream input = GuiResourcesTest.class.getResourceAsStream(
+                "/view/DialogBox.fxml")) {
+            assertNotNull(input);
+            String fxml = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+
+            assertTrue(fxml.contains("wrapText=\"true\""));
+            assertTrue(fxml.contains("preserveRatio=\"true\""));
+            assertFalse(fxml.contains("maxWidth=\"320.0\""));
+        }
+    }
 }

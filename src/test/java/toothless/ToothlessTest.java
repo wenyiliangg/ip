@@ -294,6 +294,57 @@ public class ToothlessTest {
         assertTrue(toothless.hasExited());
     }
 
+    @Test
+    public void getCommandResult_invalidAndSuccessfulCommands_classifiesResponses() {
+        Toothless toothless = new Toothless(new Storage(temporaryDirectory.resolve("gui-tasks.txt")));
+
+        Toothless.Response invalid = toothless.getCommandResult("unknown");
+        Toothless.Response successful = toothless.getCommandResult("list");
+
+        assertTrue(invalid.isError());
+        assertTrue(invalid.text().contains("doesn’t recognise that command"));
+        assertFalse(successful.isError());
+        assertEquals("Your task list is empty. Ready for a new adventure!", successful.text());
+    }
+
+    @Test
+    public void getCommandResult_saveFailure_marksResponseAsError() throws Exception {
+        Path dataFile = temporaryDirectory.resolve("gui-tasks.txt");
+        Files.writeString(dataFile, "", StandardCharsets.UTF_8);
+        Toothless toothless = new Toothless(new FailingSaveStorage(dataFile));
+
+        Toothless.Response response = toothless.getCommandResult("todo keep this task");
+
+        assertTrue(response.isError());
+        assertTrue(response.text().contains("couldn’t tuck these changes"));
+    }
+
+    @Test
+    public void getStartupResponse_loadWarning_marksResponseAsError() throws Exception {
+        Path dataFile = temporaryDirectory.resolve("gui-tasks.txt");
+        Files.write(dataFile, List.of("T | 0 | valid task", "unknown line"),
+                StandardCharsets.UTF_8);
+
+        Toothless toothless = new Toothless(new Storage(dataFile));
+
+        assertTrue(toothless.getStartupResponse().isError());
+        assertTrue(toothless.getStartupResponse().text().contains("puzzling line"));
+    }
+
+    @Test
+    public void getCommandResult_byeVariants_returnsFarewellBeforeExit() {
+        for (String input : List.of("bye", "Bye", "BYE", "  bYe  ")) {
+            Toothless toothless = new Toothless(new Storage(
+                    temporaryDirectory.resolve("gui-" + input.trim() + ".txt")));
+
+            Toothless.Response response = toothless.getCommandResult(input);
+
+            assertEquals("Bye. Hope to see you again soon!", response.text());
+            assertFalse(response.isError());
+            assertTrue(toothless.hasExited());
+        }
+    }
+
     /**
      * Runs Toothless with isolated input and output streams.
      */

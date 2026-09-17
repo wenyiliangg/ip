@@ -45,6 +45,9 @@ public enum CommandType {
      * @return matching command type, or {@link #UNKNOWN} when there is no match
      */
     public static CommandType fromKeyword(String keyword) {
+        if (BYE.keyword.equalsIgnoreCase(keyword)) {
+            return BYE;
+        }
         return Arrays.stream(values())
                 .filter(commandType -> commandType.keyword.equals(keyword))
                 .findFirst()

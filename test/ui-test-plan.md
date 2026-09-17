@@ -11,16 +11,21 @@ Actions: Show the Help panel and confirm no edit examples are displayed above th
 single Edit task button and confirm Edit description, Edit deadline, and Edit event buttons appear beneath it;
 select each secondary button and verify its complete sample appears in the command box; close and reopen Help and
 confirm the secondary edit buttons are hidden again; enter a mix of valid and invalid commands using both the Enter
-key and Send button; add enough tasks to exceed the visible conversation height; resize the window to its minimum
-dimensions; finish with `bye`.
+key and Send button; compare a valid reply with an invalid-command reply, including a multi-line error; add enough
+tasks to exceed the visible conversation height; resize the window near its 440-by-560 minimum and then much larger;
+open Help at both sizes, including the nested Edit examples; finish with `  BYE  ` and watch the farewell.
 
 Expected observations: The illustrated header, opening greeting, avatars, and Help button appear; the command list
 stays hidden until Help is clicked; one Edit task button appears in the main list; its three secondary buttons stay
 hidden until Edit task is clicked and use the documented description, deadline, and combined event syntax; each
 secondary suggestion fills the command box without sending immediately; closing Help collapses the edit choices;
-every non-blank command produces the same response as the console application; blank input adds no bubbles; the
-newest exchange remains visible; text wraps without clipping; and all input controls and command suggestions become
-disabled after the farewell response.
+every non-blank command produces the same response as the console application; validation errors use a pale warm
+background, dark red border, readable text, and Toothless avatar while successful replies keep their normal style;
+blank input adds no bubbles; the newest exchange remains visible in a vertically scrolling conversation; message
+bubbles use the available width and long replies wrap without clipping; the input stretches while Send remains visible;
+Help examples wrap or scroll within their panel; avatars keep their proportions; and all input controls and command
+suggestions become disabled after the farewell response; the window remains responsive during the brief delay and
+closes automatically about 1.8 seconds later.
 
 ## TC-01: Interleaved valid and invalid commands preserve task state
 
@@ -997,6 +1002,50 @@ A happy little roar! I've starred this task as done:
 ____________________________________________________________
 Here are the tasks in your list:
 1.[T][X] windows task
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+
+## TC-10: Accept uppercase bye with leading whitespace
+
+Aim: Verify the farewell command is recognized after trimming leading whitespace and without regard to capitalization.
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && ./gradlew -q classes && TOOTHLESS_TEST_ROOT=$(mktemp -d) && TOOTHLESS_CLASSES="$PWD/build/classes/java/main:$PWD/build/resources/main" && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp "$TOOTHLESS_CLASSES" toothless.Toothless'
+```
+
+Input:
+
+```text
+  BYE
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
+You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________

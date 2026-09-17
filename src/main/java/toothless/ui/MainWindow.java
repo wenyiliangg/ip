@@ -3,6 +3,7 @@ package toothless.ui;
 import java.io.InputStream;
 import java.util.Objects;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +13,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import toothless.Toothless;
 
 /**
@@ -23,8 +26,10 @@ public class MainWindow {
             + "Tiny roar! ★";
     private static final Image TOOTHLESS_IMAGE = loadImage("/images/toothless-avatar.png");
     private static final Image USER_IMAGE = loadImage("/images/user-avatar.png");
+    private static final Duration GOODBYE_DELAY = Duration.millis(1800);
 
     private Toothless toothless;
+    private boolean isShuttingDown;
 
     @FXML
     private ScrollPane scrollPane;
@@ -35,11 +40,13 @@ public class MainWindow {
     @FXML
     private Button sendButton;
     @FXML
+    private Button helpButton;
+    @FXML
     private FlowPane commandButtons;
     @FXML
     private FlowPane editCommandButtons;
     @FXML
-    private VBox commandHelp;
+    private ScrollPane commandHelp;
 
     /**
      * Configures scrolling and keyboard focus after the FXML fields are loaded.
@@ -59,9 +66,9 @@ public class MainWindow {
         this.toothless = Objects.requireNonNull(toothless);
         dialogContainer.getChildren().add(DialogBox.getToothlessDialog(GREETING, TOOTHLESS_IMAGE));
 
-        String startupMessage = toothless.getStartupMessage();
-        if (!startupMessage.isBlank()) {
-            dialogContainer.getChildren().add(DialogBox.getToothlessDialog(startupMessage, TOOTHLESS_IMAGE));
+        Toothless.Response startupResponse = toothless.getStartupResponse();
+        if (!startupResponse.text().isBlank()) {
+            dialogContainer.getChildren().add(createToothlessDialog(startupResponse));
         }
     }
 
@@ -71,6 +78,9 @@ public class MainWindow {
      */
     @FXML
     private void handleUserInput() {
+        if (isShuttingDown) {
+            return;
+        }
         if (toothless == null) {
             throw new IllegalStateException("A Toothless instance must be supplied before accepting input");
         }
@@ -81,19 +91,36 @@ public class MainWindow {
             return;
         }
 
-        String response = toothless.getResponse(input);
+        Toothless.Response response = toothless.getCommandResult(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, USER_IMAGE),
-                DialogBox.getToothlessDialog(response, TOOTHLESS_IMAGE));
+                createToothlessDialog(response));
 
         if (toothless.hasExited()) {
-            userInput.setPromptText("The adventure continues another day!");
-            userInput.setDisable(true);
-            sendButton.setDisable(true);
-            commandButtons.setDisable(true);
-            editCommandButtons.setDisable(true);
+            scheduleShutdown();
         }
         scrollToLatestMessage();
+    }
+
+    /**
+     * Disables further input and closes the window after the farewell is shown.
+     */
+    private void scheduleShutdown() {
+        isShuttingDown = true;
+        userInput.setPromptText("The adventure continues another day!");
+        userInput.setDisable(true);
+        sendButton.setDisable(true);
+        helpButton.setDisable(true);
+        commandButtons.setDisable(true);
+        editCommandButtons.setDisable(true);
+
+        PauseTransition delay = new PauseTransition(GOODBYE_DELAY);
+        delay.setOnFinished(event -> {
+            Stage stage = (Stage) userInput.getScene().getWindow();
+            stage.close();
+            Platform.exit();
+        });
+        delay.play();
     }
 
     /**
@@ -143,6 +170,16 @@ public class MainWindow {
      */
     private void scrollToLatestMessage() {
         Platform.runLater(() -> scrollPane.setVvalue(1.0));
+    }
+
+    /**
+     * Applies error styling only when the command workflow reports an error.
+     */
+    private DialogBox createToothlessDialog(Toothless.Response response) {
+        if (response.isError()) {
+            return DialogBox.getErrorDialog(response.text(), TOOTHLESS_IMAGE);
+        }
+        return DialogBox.getToothlessDialog(response.text(), TOOTHLESS_IMAGE);
     }
 
     /**

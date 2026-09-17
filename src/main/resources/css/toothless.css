@@ -48,6 +48,13 @@
     -fx-border-width: 0 0 1 0;
 }
 
+.command-help-scroll,
+.command-help-scroll > .viewport {
+    -fx-background-color: #fffaf0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
 .command-help-copy {
     -fx-font-size: 12px;
     -fx-text-fill: #52666b;
@@ -105,6 +112,13 @@
     -fx-border-color: #8fbdb5;
     -fx-border-width: 1.4;
     -fx-text-fill: #20323b;
+}
+
+.error-dialog .dialog-bubble {
+    -fx-background-color: #f9e4dd;
+    -fx-border-color: #a3483e;
+    -fx-border-width: 1.8;
+    -fx-text-fill: #642c2a;
 }
 
 .user-dialog .dialog-bubble {

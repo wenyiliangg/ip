@@ -42,6 +42,7 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
+        dialog.maxWidthProperty().bind(widthProperty().subtract(70.0));
         displayPicture.setImage(image);
     }
 
@@ -71,6 +72,20 @@ public class DialogBox extends HBox {
         dialogBox.flip();
         dialogBox.getStyleClass().add("toothless-dialog");
         dialogBox.setAccessibleText("Toothless said: " + text);
+        return dialogBox;
+    }
+
+    /**
+     * Creates a Toothless message styled for a validation or storage error.
+     *
+     * @param text error message to display.
+     * @param image Toothless's avatar.
+     * @return configured error dialog box
+     */
+    public static DialogBox getErrorDialog(String text, Image image) {
+        DialogBox dialogBox = getToothlessDialog(text, image);
+        dialogBox.getStyleClass().add("error-dialog");
+        dialogBox.setAccessibleText("Toothless error: " + text);
         return dialogBox;
     }
 

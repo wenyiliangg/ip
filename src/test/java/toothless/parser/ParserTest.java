@@ -60,6 +60,16 @@ public class ParserTest {
         assertTrue(exitCommand.isExit());
     }
 
+    @Test
+    public void parse_byeWithMixedCaseAndWhitespace_returnsExitCommand()
+            throws ToothlessException {
+        Parser parser = new Parser();
+
+        assertInstanceOf(ExitCommand.class, parser.parse(" Bye ", 0));
+        assertInstanceOf(ExitCommand.class, parser.parse("BYE", 0));
+        assertInstanceOf(ExitCommand.class, parser.parse("  bYe  ", 0));
+    }
+
     /**
      * Verifies descriptions, dates, and event times survive parsing into created tasks.
      */
