@@ -732,6 +732,48 @@ public class ParserTest {
                 deadlineSeparatorException.getMessage());
     }
 
+    @Test
+    public void parse_commandKeywords_onlyByeIgnoresCase() throws ToothlessException {
+        Parser parser = new Parser();
+
+        for (String keyword : java.util.List.of("LIST", "Todo book", "Mark 1", "HELP", "help")) {
+            ToothlessException error = assertThrows(ToothlessException.class, () ->
+                    parser.parse(keyword, 1), keyword);
+            assertEquals(UNKNOWN_COMMAND_MESSAGE, error.getMessage());
+        }
+        assertInstanceOf(ExitCommand.class, parser.parse("  bYe  ", 1));
+    }
+
+    @Test
+    public void parse_shortAndMaximumDescriptions_preservesUnicodeAndPunctuation()
+            throws ToothlessException {
+        Parser parser = new Parser();
+        TaskList tasks = new TaskList();
+        String longDescription = "书".repeat(500);
+
+        execute(parser.parse("todo !", 0), tasks);
+        execute(parser.parse("todo " + longDescription, 1), tasks);
+        execute(parser.parse("deadline 读书! /by 2024-02-29", 2), tasks);
+        execute(parser.parse("event 朋友聚会! /from 2pm /to 3pm", 3), tasks);
+
+        assertEquals("!", tasks.getTask(0).getDescription());
+        assertEquals(longDescription, tasks.getTask(1).getDescription());
+        assertEquals("读书!", tasks.getTask(2).getDescription());
+        assertEquals("朋友聚会!", tasks.getTask(3).getDescription());
+        assertEquals(4, tasks.size());
+    }
+
+    @Test
+    public void parse_findLengthBoundary_accepts500AndRejects501() throws ToothlessException {
+        Parser parser = new Parser();
+
+        assertInstanceOf(FindCommand.class, parser.parse("find " + "a".repeat(500), 0));
+        ToothlessException error = assertThrows(ToothlessException.class, () ->
+                parser.parse("find " + "a".repeat(501), 0));
+        assertEquals("That search is too long for Toothless.\n"
+                + "Try a shorter keyword (at most 500 characters).", error.getMessage());
+    }
+
     /**
      * Executes a parsed command with isolated output and temporary storage.
      */
