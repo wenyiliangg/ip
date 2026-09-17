@@ -1,72 +1,63 @@
 # Toothless User Guide
 
-Toothless helps you remember todos, deadlines, and events through a friendly chat interface.
+Toothless is a task-management chatbot. Use it to track todos, deadlines, and events. It saves your tasks between
+sessions.
 
-## Getting started
+## Quick start
 
-1. Start Toothless with `./gradlew run`.
-2. Type a command in the box at the bottom.
-3. Press Enter or select **Send**.
-4. Select **Help** at any time to reveal clickable command examples.
-5. Select **Edit task** inside Help to reveal description, deadline, and event edit examples.
+1. Install **JDK 25**. On a Mac using SDKMAN, run `sdk use java 25.0.3.fx-zulu` if needed.
+2. Open a terminal in the project directory and run:
 
-Selecting an example fills the input box without sending it. Edit the example if needed, then send it when ready.
+   ```shell
+   ./gradlew run
+   ```
+
+3. Type a command in the chat box and press **Enter** or select **Send**. Try `todo read a book`, then `list`.
+
+## Using Help
+
+Select **Help** in the top-right corner to see clickable command examples. Selecting one fills the chat box
+without sending it, so you can edit it first. Select **Edit task** in Help for edit examples. Select **Help**
+again to close the panel. There is no typed `help` command.
+
+## Command format
+
+Replace `UPPER_CASE` words with your own values. For example, `todo DESCRIPTION` becomes `todo read a book`.
+Type parts such as `/by` exactly as shown. Use the lowercase command words in the table below.
+
+Use the task numbers from `list` for `mark`, `unmark`, `edit`, and `delete`. `find` renumbers its results for
+display only; those numbers may not match the full list.
 
 ## Commands
 
-| Purpose | Format | Example |
+| What it does | Format | Example |
 | --- | --- | --- |
-| Show every task | `list` | `list` |
 | Add a todo | `todo DESCRIPTION` | `todo read a book` |
 | Add a deadline | `deadline DESCRIPTION /by yyyy-MM-dd` | `deadline return book /by 2026-12-31` |
-| Add an event | `event DESCRIPTION /from START /to END` | `event project meeting /from 2pm /to 4pm` |
-| Find matching tasks | `find KEYWORD` | `find book` |
+| Add an event | `event DESCRIPTION /from START /to END` | `event meeting /from 2pm /to 4pm` |
+| Show all tasks and their numbers | `list` | `list` |
+| Find tasks by description, ignoring case | `find KEYWORD_OR_PHRASE` | `find book` |
 | Mark a task done | `mark TASK_NUMBER` | `mark 1` |
 | Mark a task not done | `unmark TASK_NUMBER` | `unmark 1` |
-| Edit a description | `edit TASK_NUMBER /description NEW_DESCRIPTION` | `edit 1 /description read the new textbook` |
-| Edit a deadline date | `edit TASK_NUMBER /by yyyy-MM-dd` | `edit 2 /by 2026-09-20` |
-| Edit an event start | `edit TASK_NUMBER /from START` | `edit 3 /from 21 September 2026 2pm` |
-| Edit an event end | `edit TASK_NUMBER /to END` | `edit 3 /to 21 September 2026 5pm` |
-| Delete a task | `delete TASK_NUMBER` | `delete 1` |
+| Change a task's details | `edit TASK_NUMBER /FIELD NEW_VALUE` | `edit 1 /description read more` |
+| Remove a task | `delete TASK_NUMBER` | `delete 1` |
 | End the session | `bye` | `bye` |
 
-Task numbers come from `list`. Toothless responds with a friendly explanation when a command is incomplete or uses
-an invalid task number.
+For `edit`, use `/description` for any task, `/by` for a deadline, or `/from` and `/to` for an event. You can
+change more than one field at once. For example, if task 2 is an event: `edit 2 /from 2pm /to 4pm`.
 
-An `edit` command changes only the fields you provide. You can combine supported fields, such as:
+## Dates and times
 
-```text
-edit 3 /description project consultation /to 21 September 2026 6pm
-```
+Deadlines use `yyyy-MM-dd` dates. Events accept times such as `2pm`, `2:30pm`, and `14:30`. Add a day if needed,
+such as `Monday 2pm`, `tomorrow 2pm`, or `2026-09-21 14:00`. For events spanning different days, give full dates
+for both `/from` and `/to`. The start must be earlier than the end.
 
-Todos support `/description`; Deadlines support `/description` and `/by`; Events support `/description`, `/from`,
-and `/to`. Editing keeps the task type, completion status, and list position unchanged. An event's start must remain
-strictly earlier than its end, including after an edit.
+## Saving tasks
 
-## Dates and saved tasks
-
-Deadline dates use the ISO `yyyy-MM-dd` format. For example:
-
-```text
-deadline submit report /by 2026-10-15
-```
-
-Event times accept `2pm`, `2:30pm`, or `14:30`. You can prefix a time with a full date such as
-`21 September 2026 2pm` or `2026-09-21 14:00`, or with a weekday such as `Monday 2pm`.
-`tomorrow` denotes the start of that day; `tomorrow 2pm` is also supported. A time without a date
-uses the other endpoint's date if it has one. Use full dates for events spanning different days;
-different weekday names alone are ambiguous. Invalid dates and out-of-range times are rejected.
-
-The same task type, description, and date/time details cannot be added twice. Extra whitespace is ignored
-when checking duplicates; punctuation within descriptions remains valid. Descriptions may be up to 500
-characters, and commands up to 4096 characters.
-
-Tasks are saved automatically after a successful add, edit, mark, unmark, or delete command. Toothless loads them
-the next time the application starts. If saved data is damaged or cannot be read, Toothless keeps readable tasks
-visible but pauses all changes, leaving the file untouched. Repair the file or restore a backup and restart.
-If a save fails, no task change is published; check file access and try again.
+Toothless saves task changes automatically in `data/toothless.txt` and loads them when you reopen it. There is
+no save command.
 
 ## Ending a session
 
-Send `bye` to receive Toothless's farewell. The input field, Send button, and command examples are then disabled for
-that finished session. Close and reopen the window to begin a new session.
+Type `bye` and press **Enter** or select **Send**. Toothless says goodbye and closes the window. Run
+`./gradlew run` again to start a new session with your saved tasks.
