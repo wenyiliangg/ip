@@ -47,12 +47,13 @@ class GuiResourcesTest {
         try (InputStream input = GuiResourcesTest.class.getResourceAsStream("/css/toothless.css")) {
             assertNotNull(input);
             String css = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-            int bubbleStart = css.indexOf(".dialog-bubble {");
+            int bubbleStart = css.indexOf(".dialog-bubble .message-content {");
             assertTrue(bubbleStart >= 0);
             String bubbleRules = css.substring(bubbleStart, css.indexOf('}', bubbleStart));
 
             assertTrue(bubbleRules.contains("-fx-font-family: \"Comic Neue\";"));
-            assertTrue(css.contains(".message-font-fallback .dialog-bubble"));
+            assertTrue(css.contains(".dialog-bubble .star-glyph,"));
+            assertTrue(css.contains(".message-font-fallback .dialog-bubble .message-content"));
             assertFalse(css.substring(0, css.indexOf('}')).contains("Comic Neue"));
         }
     }
@@ -111,7 +112,7 @@ class GuiResourcesTest {
             assertNotNull(input);
             String fxml = new String(input.readAllBytes(), StandardCharsets.UTF_8);
 
-            assertTrue(fxml.contains("wrapText=\"true\""));
+            assertTrue(fxml.contains("<TextFlow fx:id=\"dialog\""));
             assertTrue(fxml.contains("preserveRatio=\"true\""));
             assertFalse(fxml.contains("maxWidth=\"320.0\""));
         }

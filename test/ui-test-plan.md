@@ -12,7 +12,8 @@ single Edit task button and confirm Edit description, Edit deadline, and Edit ev
 select each secondary button and verify its complete sample appears in the command box; close and reopen Help and
 confirm the secondary edit buttons are hidden again; enter a mix of valid and invalid commands using both the Enter
 key and Send button; compare a valid reply with an invalid-command reply, including a multi-line error; check that
-the greeting, user commands, normal replies, errors, and farewell share the same playful message font; add enough
+the greeting, user commands, normal replies, errors, and farewell share the same playful message font; check that
+each ★ is visible in the greeting, task results, and completed-task markers; add enough
 tasks to exceed the visible conversation height; resize the window near its 440-by-560 minimum and then much larger;
 open Help at both sizes, including the nested Edit examples; finish with `  BYE  ` and watch the farewell.
 
@@ -25,6 +26,7 @@ background, dark red border, readable text, and Toothless avatar while successfu
 blank input adds no bubbles; the newest exchange remains visible in a vertically scrolling conversation; message
 bubbles use the available width and long replies wrap without clipping; the input stretches while Send remains visible;
 conversation text uses Comic Neue while the header, Help panel, buttons, and input retain their existing fonts;
+stars are visible rather than missing-glyph boxes, including when a long message wraps around a star;
 Help examples wrap or scroll within their panel; avatars keep their proportions; and all input controls and command
 suggestions become disabled after the farewell response; the window remains responsive during the brief delay and
 closes automatically about 1.8 seconds later.

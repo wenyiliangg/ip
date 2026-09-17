@@ -8,21 +8,24 @@ import java.util.Objects;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 /**
  * Displays one chat message beside its speaker's avatar.
  */
 public class DialogBox extends HBox {
+    private static final char STAR = '★';
     private static final double MESSAGE_FONT_SIZE = 14.0;
     private static final Font MESSAGE_FONT = loadMessageFont();
+    private static final Font SYMBOL_FONT = Font.font("System", MESSAGE_FONT_SIZE);
 
     @FXML
-    private Label dialog;
+    private TextFlow dialog;
     @FXML
     private ImageView displayPicture;
 
@@ -46,13 +49,44 @@ public class DialogBox extends HBox {
             throw new IllegalStateException("Unable to load a Toothless dialog box", exception);
         }
 
-        dialog.setText(text);
-        dialog.setFont(MESSAGE_FONT);
+        addMessageText(text);
         if (!"Comic Neue".equals(MESSAGE_FONT.getFamily())) {
             getStyleClass().add("message-font-fallback");
         }
         dialog.maxWidthProperty().bind(widthProperty().subtract(70.0));
         displayPicture.setImage(image);
+    }
+
+    /**
+     * Adds text runs so the star uses a font that contains its glyph.
+     */
+    private void addMessageText(String text) {
+        int segmentStart = 0;
+        for (int index = 0; index < text.length(); index++) {
+            if (text.charAt(index) == STAR) {
+                if (segmentStart < index) {
+                    addTextRun(text.substring(segmentStart, index), false);
+                }
+                addTextRun(String.valueOf(STAR), true);
+                segmentStart = index + 1;
+            }
+        }
+        if (segmentStart < text.length()) {
+            addTextRun(text.substring(segmentStart), false);
+        }
+    }
+
+    /**
+     * Adds one styled run to the wrapping conversation bubble.
+     */
+    private void addTextRun(String value, boolean isStar) {
+        Text run = new Text(value);
+        run.getStyleClass().add("message-content");
+        if (isStar) {
+            run.getStyleClass().add("star-glyph");
+        }
+        run.setFont(isStar ? SYMBOL_FONT : MESSAGE_FONT);
+        dialog.getChildren().add(run);
     }
 
     /**
