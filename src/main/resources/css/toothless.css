@@ -103,29 +103,47 @@
     -fx-padding: 11 14 11 14;
     -fx-background-radius: 9;
     -fx-border-radius: 9;
-    -fx-font-size: 14px;
     -fx-line-spacing: 2px;
+}
+
+.dialog-bubble .message-content {
+    -fx-font-family: "Comic Neue";
+    -fx-font-size: 14px;
+}
+
+.dialog-bubble .star-glyph,
+.message-font-fallback .dialog-bubble .message-content {
+    -fx-font-family: "System";
 }
 
 .toothless-dialog .dialog-bubble {
     -fx-background-color: #d9e9e6;
     -fx-border-color: #8fbdb5;
     -fx-border-width: 1.4;
-    -fx-text-fill: #20323b;
+}
+
+.toothless-dialog .dialog-bubble .message-content {
+    -fx-fill: #20323b;
 }
 
 .error-dialog .dialog-bubble {
     -fx-background-color: #f9e4dd;
     -fx-border-color: #a3483e;
     -fx-border-width: 1.8;
-    -fx-text-fill: #642c2a;
+}
+
+.error-dialog .dialog-bubble .message-content {
+    -fx-fill: #642c2a;
 }
 
 .user-dialog .dialog-bubble {
     -fx-background-color: #bd573d;
     -fx-border-color: #8f3d2b;
     -fx-border-width: 1.4;
-    -fx-text-fill: #fffaf2;
+}
+
+.user-dialog .dialog-bubble .message-content {
+    -fx-fill: #fffaf2;
 }
 
 .avatar {
