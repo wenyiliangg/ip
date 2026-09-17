@@ -1688,3 +1688,76 @@ ____________________________________________________________
 ```
 
 Exit code: `0` (expected `0`)
+
+## TC-10: Accept uppercase bye with leading whitespace — PASS
+
+Aim: Verify the farewell command is recognized after trimming leading whitespace and without regard to capitalization.
+
+Command:
+
+```text
+/bin/zsh -lc 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java 25.0.3.fx-zulu >/dev/null && ./gradlew -q classes && TOOTHLESS_TEST_ROOT=$(mktemp -d) && TOOTHLESS_CLASSES="$PWD/build/classes/java/main:$PWD/build/resources/main" && cd "$TOOTHLESS_TEST_ROOT" && java -Dos.name="Mac OS X" -cp "$TOOTHLESS_CLASSES" toothless.Toothless'
+```
+
+Console input:
+
+```text
+  BYE
+```
+
+Actual console output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+Expected output:
+
+```text
+____________________________________________________________
+  __/\__           __/\__
+ /     \_________/     \
+/   /\   O     O   /\   \
+\__/  \     ^     /  \__/
+       \  \___/  /
+    ____|       |____
+ __/    |       |    \__
+/___/   /|_______|\   \___\
+        /_/     \_\
+
+Hi there! I'm Toothless. It's wonderful to meet you!
+What can I do for you today?
+Ready for our next little adventure? Tell me what to remember:
+  - todo [DESCRIPTION]
+  - deadline [DESCRIPTION] /by [yyyy-MM-dd]
+  - event [DESCRIPTION] /from [START_DATE_OR_TIME] /to [END_DATE_OR_TIME]
+  - edit [TASK_NUMBER] [/description NEW_DESCRIPTION] [/by yyyy-MM-dd] [/from START] [/to END]
+You can also type list to see all our quests. Tiny roar! ★
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+Exit code: `0` (expected `0`)
