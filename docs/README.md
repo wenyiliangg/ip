@@ -3,7 +3,23 @@
 Toothless is a task-management chatbot. Use it to track todos, deadlines, and events. It saves your tasks between
 sessions.
 
+<img width="1470" height="902" alt="image" src="https://github.com/user-attachments/assets/3ff5465f-f759-4104-a6ff-5707c7ece6ec" />
+
+
 ## Quick start
+
+1. Install **Java 25**.
+2. Download `Toothless.jar` from the [latest release](https://github.com/wenyiliangg/ip/releases/latest).
+3. Open a terminal in the folder containing the JAR and run:
+
+   ```shell
+   java -jar Toothless.jar
+   ```
+
+4. In the chat box, try `todo read a book`, then `list`. Press **Enter** or select **Send**.
+5. Your tasks are saved automatically and loaded the next time you open Toothless.
+
+## Run From Source
 
 1. Install **JDK 25**. On a Mac using SDKMAN, run `sdk use java 25.0.3.fx-zulu` if needed.
 2. Open a terminal in the project directory and run:
@@ -14,17 +30,6 @@ sessions.
 
 3. Type a command in the chat box and press **Enter** or select **Send**. Try `todo read a book`, then `list`.
 
-## Run the released JAR
-
-1. Install **Java 25**.
-2. Download `Toothless.jar` from the [latest release](https://github.com/wenyiliangg/ip/releases/latest).
-3. Open a terminal in the folder containing the JAR and run:
-
-   ```shell
-   java -jar Toothless.jar
-   ```
-
-Your tasks are saved automatically and loaded the next time you open Toothless.
 
 ## Using Help
 
@@ -71,5 +76,4 @@ no save command.
 
 ## Ending a session
 
-Type `bye` and press **Enter** or select **Send**. Toothless says goodbye and closes the window. Run
-`./gradlew run` or `java -jar Toothless.jar` again to start a new session with your saved tasks.
+Type `bye` and press **Enter** or select **Send**. Toothless says goodbye and closes the window. Run `java -jar Toothless.jar` or `./gradlew run` again to start a new session with your saved tasks.
