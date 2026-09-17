@@ -56,15 +56,30 @@ public class Parser {
      * @throws ToothlessException if the input is empty, unknown, or malformed
      */
     public Command parse(String input, int taskCount) throws ToothlessException {
+        String[] commandParts = splitInput(input);
+        CommandType commandType = CommandType.fromKeyword(commandParts[0]);
+        String details = commandParts.length == 2 ? commandParts[1].trim() : "";
+
+        validateCommand(commandType, details);
+        return createCommand(commandType, details, taskCount);
+    }
+
+    /**
+     * Splits a nonempty input line into its command word and optional details.
+     */
+    private String[] splitInput(String input) throws ToothlessException {
         String trimmedInput = input.trim();
         if (trimmedInput.isEmpty()) {
             throw new ToothlessException("Toothless heard a tiny silence. What should he do?\n"
                     + "Try " + COMMANDS + ".");
         }
+        return trimmedInput.split("\\s+", 2);
+    }
 
-        String[] commandParts = trimmedInput.split("\\s+", 2);
-        CommandType commandType = CommandType.fromKeyword(commandParts[0]);
-        String details = commandParts.length == 2 ? commandParts[1].trim() : "";
+    /**
+     * Rejects unknown commands and extra details on commands that take none.
+     */
+    private void validateCommand(CommandType commandType, String details) throws ToothlessException {
         if (commandType == CommandType.UNKNOWN
                 || commandType == CommandType.BYE && !details.isEmpty()) {
             throw new ToothlessException(
@@ -75,7 +90,13 @@ public class Parser {
             throw new ToothlessException("The list command doesn't need extra words.\n"
                     + "Try: list");
         }
+    }
 
+    /**
+     * Creates the command after its word and allowed details have been checked.
+     */
+    private Command createCommand(CommandType commandType, String details, int taskCount)
+            throws ToothlessException {
         assert commandType != CommandType.UNKNOWN
                 : "Validated command type should be supported";
         switch (commandType) {
