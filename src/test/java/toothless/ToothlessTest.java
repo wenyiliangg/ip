@@ -155,6 +155,22 @@ public class ToothlessTest {
     public void run_findCommands_displayFreshResultsWithoutSavingOrMutatingTasks()
             throws Exception {
         CountingStorage storage = new CountingStorage(temporaryDirectory.resolve("tasks.txt"));
+        saveFindTestTasks(storage);
+
+        String output = runWithInput(storage, "find Book\n"
+                + "find dragon\n"
+                + "find return book\n"
+                + "list\n"
+                + "bye\n");
+
+        assertFindResponses(output);
+        assertFindLeavesSavedTasksUnchanged(storage);
+    }
+
+    /**
+     * Saves a completed todo, a deadline, and an unrelated todo for find checks.
+     */
+    private void saveFindTestTasks(CountingStorage storage) throws StorageException {
         TaskList tasks = new TaskList();
         Todo todo = new Todo("read book");
         todo.markAsDone();
@@ -163,12 +179,12 @@ public class ToothlessTest {
         tasks.addTask(new Todo("write report"));
         storage.save(tasks);
         storage.resetSaveCount();
+    }
 
-        String output = runWithInput(storage, "find Book\n"
-                + "find dragon\n"
-                + "find return book\n"
-                + "list\n"
-                + "bye\n");
+    /**
+     * Checks that each find uses fresh numbering and the final list stays complete.
+     */
+    private void assertFindResponses(String output) {
         String completedTodo = "1.[T][" + DisplaySymbols.getDoneMark() + "] read book\n";
 
         assertTrue(output.contains("Here are the matching tasks in your list:\n"
@@ -182,6 +198,12 @@ public class ToothlessTest {
                 + completedTodo
                 + "2.[D][ ] return book (by: Dec 6 2019)\n"
                 + "3.[T][ ] write report"));
+    }
+
+    /**
+     * Checks that finding tasks did not trigger a save or change saved task data.
+     */
+    private void assertFindLeavesSavedTasksUnchanged(CountingStorage storage) throws Exception {
         assertEquals(0, storage.getSaveCount());
         assertEquals(List.of(
                 "T | 1 | read book",
