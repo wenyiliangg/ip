@@ -54,6 +54,33 @@ public class TaskListTest {
     }
 
     @Test
+    public void copy_allTaskTypes_preservesDetailsAndStatusWithoutSharingChanges()
+            throws ToothlessException {
+        TaskList original = new TaskList();
+        original.addTask(new Task("plain"));
+        original.addTask(new Todo("read"));
+        original.addTask(new Deadline("submit", LocalDate.of(2024, 2, 29)));
+        original.addTask(new Event("meet", "2pm", "3pm"));
+        original.markTask(2);
+        original.markTask(4);
+
+        TaskList copy = original.copy();
+        copy.unmarkTask(2);
+        copy.deleteTask(3);
+
+        assertEquals(4, original.size());
+        assertEquals(3, copy.size());
+        assertInstanceOf(Task.class, copy.getTask(0));
+        assertInstanceOf(Todo.class, copy.getTask(1));
+        assertInstanceOf(Event.class, copy.getTask(2));
+        assertEquals("plain", copy.getTask(0).getDescription());
+        assertTrue(original.getTask(1).isDone());
+        assertFalse(copy.getTask(1).isDone());
+        assertEquals(LocalDate.of(2024, 2, 29), ((Deadline) original.getTask(2)).getBy());
+        assertTrue(copy.getTask(2).isDone());
+    }
+
+    @Test
     public void editTask_conflictingEventOrDuplicate_preservesOriginalTask() {
         TaskList tasks = new TaskList();
         Todo original = new Todo("first");
