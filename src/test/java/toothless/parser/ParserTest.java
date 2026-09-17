@@ -138,33 +138,65 @@ public class ParserTest {
     public void parse_editCommands_updatesSupportedFieldsAndShowsConfirmation()
             throws ToothlessException {
         Parser parser = new Parser();
+        TaskList taskList = createEditableTaskList();
+
+        String todoOutput = parseAndExecuteEdit(parser, taskList,
+                "edit 1 /description read the new textbook");
+        parseAndExecuteEdit(parser, taskList,
+                "edit 2 /by 2026-09-21 /description submit project");
+        parseAndExecuteEdit(parser, taskList,
+                "edit 3 /to 6pm /description project consultation /from 4pm");
+
+        assertEditedTodo(taskList, todoOutput);
+        assertEditedDeadline(taskList);
+        assertEditedEvent(taskList);
+    }
+
+    /**
+     * Creates one task of each type, including a completed deadline.
+     */
+    private TaskList createEditableTaskList() throws ToothlessException {
         TaskList taskList = new TaskList();
         taskList.addTask(new Todo("old todo"));
         taskList.addTask(new Deadline("old deadline", LocalDate.of(2026, 9, 20)));
         taskList.addTask(new Event("old event", "2pm", "3pm"));
         taskList.markTask(2);
+        return taskList;
+    }
 
-        Command todoEdit = parser.parse(
-                "edit 1 /description read the new textbook", taskList.size());
-        String todoOutput = execute(todoEdit, taskList);
-        Command deadlineEdit = parser.parse(
-                "edit 2 /by 2026-09-21 /description submit project", taskList.size());
-        execute(deadlineEdit, taskList);
-        Command eventEdit = parser.parse(
-                "edit 3 /to 6pm /description project consultation /from 4pm",
-                taskList.size());
-        execute(eventEdit, taskList);
+    /**
+     * Checks the parsed command type and returns its confirmation output.
+     */
+    private String parseAndExecuteEdit(Parser parser, TaskList taskList, String input)
+            throws ToothlessException {
+        Command edit = parser.parse(input, taskList.size());
+        assertInstanceOf(EditCommand.class, edit);
+        return execute(edit, taskList);
+    }
 
-        assertInstanceOf(EditCommand.class, todoEdit);
-        assertInstanceOf(EditCommand.class, deadlineEdit);
-        assertInstanceOf(EditCommand.class, eventEdit);
+    /**
+     * Checks the edited todo description and its confirmation message.
+     */
+    private void assertEditedTodo(TaskList taskList, String todoOutput) {
         assertEquals("A clever little roar! Toothless has updated this task:\n"
                 + "  [T][ ] read the new textbook\n", todoOutput);
         assertEquals("read the new textbook", taskList.getTask(0).getDescription());
+    }
+
+    /**
+     * Checks the edited deadline fields and retained completion status.
+     */
+    private void assertEditedDeadline(TaskList taskList) {
         Deadline deadline = assertInstanceOf(Deadline.class, taskList.getTask(1));
         assertEquals("submit project", deadline.getDescription());
         assertEquals(LocalDate.of(2026, 9, 21), deadline.getBy());
         assertTrue(deadline.isDone());
+    }
+
+    /**
+     * Checks the edited event description and times.
+     */
+    private void assertEditedEvent(TaskList taskList) {
         Event event = assertInstanceOf(Event.class, taskList.getTask(2));
         assertEquals("project consultation", event.getDescription());
         assertEquals("4pm", event.getFrom());
