@@ -1,5 +1,6 @@
 package toothless.command;
 
+import toothless.exception.ToothlessException;
 import toothless.storage.Storage;
 import toothless.task.Task;
 import toothless.task.TaskList;
@@ -30,11 +31,13 @@ public abstract class AddCommand extends Command {
      * @param storage storage used to persist the updated task list
      */
     @Override
-    public final void execute(TaskList taskList, Ui ui, Storage storage) {
+    public final void execute(TaskList taskList, Ui ui, Storage storage) throws ToothlessException {
         Task task = createTask();
         assert task != null : "Add command should create a task before execution";
-        taskList.addTask(task);
-        ui.showTaskAdded(task, taskList.size());
-        saveTasks(taskList, ui, storage);
+        TaskList proposedTasks = taskList.copy();
+        proposedTasks.addUniqueTask(task);
+        if (saveTasks(taskList, proposedTasks, ui, storage)) {
+            ui.showTaskAdded(task, taskList.size());
+        }
     }
 }

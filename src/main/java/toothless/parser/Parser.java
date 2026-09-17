@@ -24,6 +24,7 @@ import toothless.command.TodoCommand;
 import toothless.command.UnmarkCommand;
 import toothless.exception.ToothlessException;
 import toothless.task.DeadlineDate;
+import toothless.task.EventTime;
 import toothless.task.TaskUpdate;
 
 /**
@@ -40,6 +41,8 @@ public class Parser {
             DESCRIPTION_SEPARATOR, DEADLINE_SEPARATOR,
             EVENT_START_SEPARATOR, EVENT_END_SEPARATOR);
     private static final Pattern EDIT_FIELD_PATTERN = Pattern.compile("(?<!\\S)/\\S+");
+    private static final int MAX_INPUT_LENGTH = 4096;
+    private static final int MAX_DESCRIPTION_LENGTH = 500;
 
     /**
      * Creates a stateless parser for commands entered during a Toothless session.
@@ -68,6 +71,10 @@ public class Parser {
      * Splits a nonempty input line into its command word and optional details.
      */
     private String[] splitInput(String input) throws ToothlessException {
+        if (input == null || input.length() > MAX_INPUT_LENGTH) {
+            throw new ToothlessException("That command is too long or unavailable for Toothless.\n"
+                    + "Please enter a shorter command (at most 4096 characters).");
+        }
         String trimmedInput = input.trim();
         if (trimmedInput.isEmpty()) {
             throw new ToothlessException("Toothless heard a tiny silence. What should he do?\n"
@@ -248,6 +255,7 @@ public class Parser {
 
             switch (separator) {
                 case DESCRIPTION_SEPARATOR:
+                    validateDescription(value);
                     description = value;
                     break;
                 case DEADLINE_SEPARATOR:
@@ -304,6 +312,7 @@ public class Parser {
             throw new ToothlessException("Toothless couldn’t find a description for that todo.\n"
                     + "Try: todo borrow book");
         }
+        validateDescription(details);
         return details.trim();
     }
 
@@ -319,7 +328,21 @@ public class Parser {
             throw new ToothlessException("Toothless needs a keyword to sniff out matching tasks.\n"
                     + "Try: find book");
         }
+        if (details.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new ToothlessException("That search is too long for Toothless.\n"
+                    + "Try a shorter keyword (at most 500 characters).");
+        }
         return details.trim();
+    }
+
+    /**
+     * Rejects descriptions too large to display and save comfortably.
+     */
+    private void validateDescription(String description) throws ToothlessException {
+        if (description.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new ToothlessException("That task description is too long for Toothless.\n"
+                    + "Please use at most 500 characters.");
+        }
     }
 
     /**
@@ -349,6 +372,7 @@ public class Parser {
                     "Toothless couldn’t find a description for that deadline.\n"
                             + "Try: deadline return book /by 2019-12-02");
         }
+        validateDescription(description);
         if (by.isEmpty()) {
             throw new ToothlessException("This deadline is missing its date.\n"
                     + "Try: deadline return book /by 2019-12-02");
@@ -523,6 +547,7 @@ public class Parser {
             throw new ToothlessException("Toothless couldn’t find a description for that event.\n"
                     + "Try: event DESCRIPTION /from START /to END");
         }
+        validateDescription(description);
         if (from.isEmpty()) {
             throw new ToothlessException("This event is missing its starting time.\n"
                     + "Try: event DESCRIPTION /from START /to END");
@@ -531,6 +556,7 @@ public class Parser {
             throw new ToothlessException("This event is missing its ending time.\n"
                     + "Try: event DESCRIPTION /from START /to END");
         }
+        EventTime.validate(from, to);
         return new ParsedEvent(description, from, to);
     }
 

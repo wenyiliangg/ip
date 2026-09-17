@@ -100,7 +100,7 @@ public class DialogBox extends HBox {
             Font font = Font.loadFont(fontStream, MESSAGE_FONT_SIZE);
             return font != null && "Comic Neue".equals(font.getFamily())
                     ? font : Font.font("System", MESSAGE_FONT_SIZE);
-        } catch (IOException exception) {
+        } catch (IOException | IllegalArgumentException exception) {
             return Font.font("System", MESSAGE_FONT_SIZE);
         }
     }

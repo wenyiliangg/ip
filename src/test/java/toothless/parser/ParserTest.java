@@ -19,6 +19,7 @@ import org.junit.jupiter.api.io.TempDir;
 import toothless.command.Command;
 import toothless.command.DeleteCommand;
 import toothless.command.EditCommand;
+import toothless.command.EventCommand;
 import toothless.command.ExitCommand;
 import toothless.command.FindCommand;
 import toothless.command.ListCommand;
@@ -115,6 +116,42 @@ public class ParserTest {
         assertEquals("meeting", event.getDescription());
         assertEquals("2pm", event.getFrom());
         assertEquals("3pm", event.getTo());
+    }
+
+    @Test
+    public void parse_eventInvalidTimesAndOrder_rejectsWithoutChangingTasks() throws ToothlessException {
+        Parser parser = new Parser();
+        TaskList tasks = new TaskList();
+        for (String input : java.util.List.of(
+                "event meeting /from 2pm /to 2pm",
+                "event meeting /from 3pm /to 2pm",
+                "event meeting /from 25:00 /to 3pm",
+                "event meeting /from 2:60pm /to 3pm",
+                "event meeting /from 30 February 2026 2pm /to 3pm",
+                "event meeting /from 2026-02-30 14:00 /to 16:00",
+                "event meeting /from Monday 2pm /to Tuesday 3pm")) {
+            assertThrows(ToothlessException.class, () -> parser.parse(input, tasks.size()), input);
+        }
+        execute(parser.parse("event meeting /from 21 September 2026 2pm"
+                + " /to 21 September 2026 3pm", tasks.size()), tasks);
+        assertEquals(1, tasks.size());
+    }
+
+    @Test
+    public void parse_longInputAndDescriptions_rejectsBeforeMutation() {
+        Parser parser = new Parser();
+        assertThrows(ToothlessException.class, () -> parser.parse("todo " + "a".repeat(501), 0));
+        assertThrows(ToothlessException.class, () -> parser.parse("todo " + "a".repeat(4097), 0));
+        assertThrows(ToothlessException.class, () -> parser.parse(null, 0));
+    }
+
+    @Test
+    public void parse_eventWithFullDates_checksChronologyRatherThanOnlyClock() throws ToothlessException {
+        Parser parser = new Parser();
+        assertThrows(ToothlessException.class, () -> parser.parse(
+                "event trip /from 22 September 2026 2pm /to 21 September 2026 3pm", 0));
+        assertInstanceOf(EventCommand.class, parser.parse(
+                "event trip /from 21 September 2026 11pm /to 22 September 2026 1am", 0));
     }
 
     /**

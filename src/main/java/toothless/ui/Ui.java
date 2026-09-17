@@ -28,6 +28,7 @@ public class Ui {
     private final PrintStream output;
     private final boolean isDividerEnabled;
     private boolean hasError;
+    private boolean hasMalformedDataWarning;
 
     /**
      * Creates a UI connected to the application's current console streams.
@@ -104,10 +105,12 @@ public class Ui {
      */
     public void showMalformedDataWarning(int malformedLineCount) {
         hasError = true;
+        hasMalformedDataWarning = true;
         String lineWord = malformedLineCount == 1 ? "line" : "lines";
         output.println("Toothless found " + malformedLineCount + " puzzling " + lineWord
                 + " in his saved quests.");
         output.println("He skipped them and kept every task he could understand.");
+        output.println("Saved changes are paused until the file is repaired; your data stays untouched.");
         showDivider();
     }
 
@@ -118,6 +121,7 @@ public class Ui {
         hasError = true;
         output.println("Toothless had trouble reading his saved quests.");
         output.println("He'll start with an empty cave, but the saved file was left untouched.");
+        output.println("Saved changes are paused until the file can be read.");
         showDivider();
     }
 
@@ -161,6 +165,16 @@ public class Ui {
      */
     public void showTaskMarked(Task task) {
         output.println("A happy little roar! I've starred this task as done:");
+        output.println("  " + task);
+    }
+
+    /**
+     * Explains that marking an already completed task made no change.
+     *
+     * @param task task already completed.
+     */
+    public void showTaskAlreadyMarked(Task task) {
+        output.println("This task is already starred as done, little rider:");
         output.println("  " + task);
     }
 
@@ -224,7 +238,7 @@ public class Ui {
     public void showSaveError() {
         hasError = true;
         output.println("Toothless couldn’t tuck these changes into his data file.");
-        output.println("They’re still safe for this adventure, but may not return next time.");
+        output.println("Nothing changed. Check the saved data or file access, then try again.");
     }
 
     /**
@@ -238,12 +252,28 @@ public class Ui {
     }
 
     /**
+     * Reports an unforeseen command problem without exposing internal details.
+     */
+    public void showUnexpectedError() {
+        showError("Toothless hit a snag with that command. Please try again.");
+    }
+
+    /**
      * Returns whether this response includes a validation or storage error.
      *
      * @return true when an error was reported while producing this response
      */
     public boolean hasError() {
         return hasError;
+    }
+
+    /**
+     * Returns whether loading encountered malformed saved task records.
+     *
+     * @return true when at least one saved record could not be loaded.
+     */
+    public boolean hasMalformedDataWarning() {
+        return hasMalformedDataWarning;
     }
 
     /**

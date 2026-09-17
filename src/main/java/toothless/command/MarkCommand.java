@@ -32,8 +32,14 @@ public class MarkCommand extends Command {
     @Override
     public void execute(TaskList taskList, Ui ui, Storage storage)
             throws ToothlessException {
-        Task markedTask = taskList.markTask(taskNumber);
-        ui.showTaskMarked(markedTask);
-        saveTasks(taskList, ui, storage);
+        TaskList proposedTasks = taskList.copy();
+        if (proposedTasks.isTaskDone(taskNumber)) {
+            ui.showTaskAlreadyMarked(proposedTasks.getTask(taskNumber - 1));
+            return;
+        }
+        Task markedTask = proposedTasks.markTask(taskNumber);
+        if (saveTasks(taskList, proposedTasks, ui, storage)) {
+            ui.showTaskMarked(markedTask);
+        }
     }
 }

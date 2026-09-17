@@ -21,12 +21,14 @@ unmark
 todo
 todo
 todo    read book
+todo read  book
 deadline
 deadline return book
 deadline /by Sunday
 deadline return book /by
 deadline return book /by Sunday /by Monday
 deadline return book /by 2019-12-02
+deadline return  book /by 2019-12-02
 event
 event project meeting
 event project meeting /from Mon 2pm
@@ -36,6 +38,9 @@ event project meeting /from /to 4pm
 event project meeting /from Mon 2pm /to
 event project meeting /to 4pm /from Mon 2pm
 event project meeting /from Mon /from Tue /to 4pm
+event project meeting /from 2pm /to 2pm
+event project meeting /from 25:00 /to 4pm
+event project meeting /from tomorrow /to 4pm
 event project meeting /from tomorrow /to 4pm
 mark
 mark abc
@@ -110,6 +115,9 @@ Got it! Toothless has added this task for you:
   [T][ ] read book
 Now you have 1 task in the list. ★
 ____________________________________________________________
+Toothless already remembers that exact quest.
+Change its details or edit the existing task instead.
+____________________________________________________________
 This deadline is missing '/by' and its date.
 Try: deadline return book /by 2019-12-02
 ____________________________________________________________
@@ -128,6 +136,9 @@ ____________________________________________________________
 Got it! Toothless has added this task for you:
   [D][ ] return book (by: Dec 2 2019)
 Now you have 2 tasks in the list. ★
+____________________________________________________________
+Toothless already remembers that exact quest.
+Change its details or edit the existing task instead.
 ____________________________________________________________
 This event is missing its starting time after '/from'.
 Try: event DESCRIPTION /from START /to END
@@ -156,9 +167,18 @@ ____________________________________________________________
 This event's format has Toothless puzzled.
 Try: event DESCRIPTION /from START /to END
 ____________________________________________________________
+The event's start must be before its end.
+Try: event meeting /from 2pm /to 3pm
+____________________________________________________________
+That event time made Toothless tilt his head.
+Use 2pm, 14:30, or 21 September 2026 2pm with a real date and time.
+____________________________________________________________
 Got it! Toothless has added this task for you:
   [E][ ] project meeting (from: tomorrow to: 4pm)
 Now you have 3 tasks in the list. ★
+____________________________________________________________
+Toothless already remembers that exact quest.
+Change its details or edit the existing task instead.
 ____________________________________________________________
 Toothless needs a task number to mark.
 Try: mark 1
@@ -181,7 +201,7 @@ ____________________________________________________________
 A happy little roar! I've starred this task as done:
   [T][★] read book
 ____________________________________________________________
-A happy little roar! I've starred this task as done:
+This task is already starred as done, little rider:
   [T][★] read book
 ____________________________________________________________
 Toothless needs a task number to unmark.
@@ -281,6 +301,9 @@ Got it! Toothless has added this task for you:
   [T][ ] read book
 Now you have 1 task in the list. ★
 ____________________________________________________________
+Toothless already remembers that exact quest.
+Change its details or edit the existing task instead.
+____________________________________________________________
 This deadline is missing '/by' and its date.
 Try: deadline return book /by 2019-12-02
 ____________________________________________________________
@@ -299,6 +322,9 @@ ____________________________________________________________
 Got it! Toothless has added this task for you:
   [D][ ] return book (by: Dec 2 2019)
 Now you have 2 tasks in the list. ★
+____________________________________________________________
+Toothless already remembers that exact quest.
+Change its details or edit the existing task instead.
 ____________________________________________________________
 This event is missing its starting time after '/from'.
 Try: event DESCRIPTION /from START /to END
@@ -327,9 +353,18 @@ ____________________________________________________________
 This event's format has Toothless puzzled.
 Try: event DESCRIPTION /from START /to END
 ____________________________________________________________
+The event's start must be before its end.
+Try: event meeting /from 2pm /to 3pm
+____________________________________________________________
+That event time made Toothless tilt his head.
+Use 2pm, 14:30, or 21 September 2026 2pm with a real date and time.
+____________________________________________________________
 Got it! Toothless has added this task for you:
   [E][ ] project meeting (from: tomorrow to: 4pm)
 Now you have 3 tasks in the list. ★
+____________________________________________________________
+Toothless already remembers that exact quest.
+Change its details or edit the existing task instead.
 ____________________________________________________________
 Toothless needs a task number to mark.
 Try: mark 1
@@ -352,7 +387,7 @@ ____________________________________________________________
 A happy little roar! I've starred this task as done:
   [T][★] read book
 ____________________________________________________________
-A happy little roar! I've starred this task as done:
+This task is already starred as done, little rider:
   [T][★] read book
 ____________________________________________________________
 Toothless needs a task number to unmark.
@@ -438,8 +473,8 @@ edit 1 /description first /description second
 edit 1 change /description changed
 edit 1 /description read the new textbook
 edit 2 /by 2026-09-21
-edit 3 /from 21 September 2026 4pm
-edit 3 /description project consultation /to 21 September 2026 6pm
+edit 3 /to 21 September 2026 5pm
+edit 3 /description project consultation /from 21 September 2026 4pm /to 21 September 2026 6pm
 list
 bye
 ```
@@ -528,7 +563,7 @@ A clever little roar! Toothless has updated this task:
   [D][★] old deadline (by: Sep 21 2026)
 ____________________________________________________________
 A clever little roar! Toothless has updated this task:
-  [E][ ] old event (from: 21 September 2026 4pm to: 21 September 2026 3pm)
+  [E][ ] old event (from: 21 September 2026 2pm to: 21 September 2026 5pm)
 ____________________________________________________________
 A clever little roar! Toothless has updated this task:
   [E][ ] project consultation (from: 21 September 2026 4pm to: 21 September 2026 6pm)
@@ -627,7 +662,7 @@ A clever little roar! Toothless has updated this task:
   [D][★] old deadline (by: Sep 21 2026)
 ____________________________________________________________
 A clever little roar! Toothless has updated this task:
-  [E][ ] old event (from: 21 September 2026 4pm to: 21 September 2026 3pm)
+  [E][ ] old event (from: 21 September 2026 2pm to: 21 September 2026 5pm)
 ____________________________________________________________
 A clever little roar! Toothless has updated this task:
   [E][ ] project consultation (from: 21 September 2026 4pm to: 21 September 2026 6pm)
@@ -1198,7 +1233,7 @@ Exit code: `0` (expected `0`)
 
 ## TC-05: Keep tasks usable after storage failures — PASS
 
-Aim: Verify expected read and write failures show friendly messages without a stack trace or loss of in-memory task state.
+Aim: Verify failed reads and writes show friendly messages without a stack trace and do not publish unsaved task changes.
 
 Command:
 
@@ -1240,17 +1275,14 @@ You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless had trouble reading his saved quests.
 He'll start with an empty cave, but the saved file was left untouched.
+Saved changes are paused until the file can be read.
 ____________________________________________________________
 Your task list is empty. Ready for a new adventure!
 ____________________________________________________________
-Got it! Toothless has added this task for you:
-  [T][ ] keep this task
-Now you have 1 task in the list. ★
 Toothless couldn’t tuck these changes into his data file.
-They’re still safe for this adventure, but may not return next time.
+Nothing changed. Check the saved data or file access, then try again.
 ____________________________________________________________
-Here are the tasks in your list:
-1.[T][ ] keep this task
+Your task list is empty. Ready for a new adventure!
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
@@ -1282,17 +1314,14 @@ You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless had trouble reading his saved quests.
 He'll start with an empty cave, but the saved file was left untouched.
+Saved changes are paused until the file can be read.
 ____________________________________________________________
 Your task list is empty. Ready for a new adventure!
 ____________________________________________________________
-Got it! Toothless has added this task for you:
-  [T][ ] keep this task
-Now you have 1 task in the list. ★
 Toothless couldn’t tuck these changes into his data file.
-They’re still safe for this adventure, but may not return next time.
+Nothing changed. Check the saved data or file access, then try again.
 ____________________________________________________________
-Here are the tasks in your list:
-1.[T][ ] keep this task
+Your task list is empty. Ready for a new adventure!
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
@@ -1302,7 +1331,7 @@ Exit code: `0` (expected `0`)
 
 ## TC-06: Skip malformed saved tasks safely — PASS
 
-Aim: Verify malformed saved entries produce one friendly warning while valid entries retain their type, values, order, and completion display.
+Aim: Verify malformed saved entries produce one friendly warning while valid entries remain readable and later writes cannot overwrite the original file.
 
 Command:
 
@@ -1313,6 +1342,8 @@ Command:
 Console input:
 
 ```text
+list
+todo new task
 list
 bye
 ```
@@ -1342,6 +1373,14 @@ You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless found 6 puzzling lines in his saved quests.
 He skipped them and kept every task he could understand.
+Saved changes are paused until the file is repaired; your data stays untouched.
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][★] borrow book
+2.[D][ ] return book (by: Dec 6 2019)
+____________________________________________________________
+Toothless couldn’t tuck these changes into his data file.
+Nothing changed. Check the saved data or file access, then try again.
 ____________________________________________________________
 Here are the tasks in your list:
 1.[T][★] borrow book
@@ -1377,6 +1416,14 @@ You can also type list to see all our quests. Tiny roar! ★
 ____________________________________________________________
 Toothless found 6 puzzling lines in his saved quests.
 He skipped them and kept every task he could understand.
+Saved changes are paused until the file is repaired; your data stays untouched.
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][★] borrow book
+2.[D][ ] return book (by: Dec 6 2019)
+____________________________________________________________
+Toothless couldn’t tuck these changes into his data file.
+Nothing changed. Check the saved data or file access, then try again.
 ____________________________________________________________
 Here are the tasks in your list:
 1.[T][★] borrow book

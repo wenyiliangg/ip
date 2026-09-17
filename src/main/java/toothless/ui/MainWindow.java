@@ -1,7 +1,10 @@
 package toothless.ui;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -21,6 +24,7 @@ import toothless.Toothless;
  * Controls the main Toothless chat window.
  */
 public class MainWindow {
+    private static final Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
     private static final String GREETING = "Hi there! I'm Toothless. It's wonderful to meet you!\n"
             + "Ready to tame some quests? Tap Help above whenever you want a command example.\n"
             + "Tiny roar! ★";
@@ -30,6 +34,7 @@ public class MainWindow {
 
     private Toothless toothless;
     private boolean isShuttingDown;
+    private boolean isHandlingInput;
 
     @FXML
     private ScrollPane scrollPane;
@@ -66,7 +71,7 @@ public class MainWindow {
         this.toothless = Objects.requireNonNull(toothless);
         dialogContainer.getChildren().add(DialogBox.getToothlessDialog(GREETING, TOOTHLESS_IMAGE));
 
-        Toothless.Response startupResponse = toothless.getStartupResponse();
+        Toothless.Response startupResponse = toothless.getChatStartupResponse();
         if (!startupResponse.text().isBlank()) {
             dialogContainer.getChildren().add(createToothlessDialog(startupResponse));
         }
@@ -78,7 +83,7 @@ public class MainWindow {
      */
     @FXML
     private void handleUserInput() {
-        if (isShuttingDown) {
+        if (isShuttingDown || isHandlingInput) {
             return;
         }
         if (toothless == null) {
@@ -91,13 +96,21 @@ public class MainWindow {
             return;
         }
 
-        Toothless.Response response = toothless.getCommandResult(input);
-        dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input, USER_IMAGE),
-                createToothlessDialog(response));
-
-        if (toothless.hasExited()) {
-            scheduleShutdown();
+        isHandlingInput = true;
+        try {
+            Toothless.Response response = toothless.getCommandResult(input);
+            dialogContainer.getChildren().addAll(
+                    DialogBox.getUserDialog(input, USER_IMAGE),
+                    createToothlessDialog(response));
+            if (toothless.hasExited()) {
+                scheduleShutdown();
+            }
+        } catch (RuntimeException exception) {
+            LOGGER.log(Level.SEVERE, "Unable to process a chat command", exception);
+            dialogContainer.getChildren().add(DialogBox.getErrorDialog(
+                    "Toothless hit a snag with that command. Please try again.", TOOTHLESS_IMAGE));
+        } finally {
+            isHandlingInput = false;
         }
         scrollToLatestMessage();
     }
@@ -186,12 +199,17 @@ public class MainWindow {
      * Loads an avatar packaged with the application.
      *
      * @param resourcePath absolute classpath location of the avatar.
-     * @return loaded avatar image
+     * @return loaded avatar image, or {@code null} for the image view's empty fallback.
      */
     private static Image loadImage(String resourcePath) {
-        InputStream imageStream = Objects.requireNonNull(
-                MainWindow.class.getResourceAsStream(resourcePath),
-                resourcePath + " must be available on the classpath");
-        return new Image(imageStream);
+        try (InputStream imageStream = MainWindow.class.getResourceAsStream(resourcePath)) {
+            if (imageStream == null) {
+                return null;
+            }
+            Image image = new Image(imageStream);
+            return image.isError() ? null : image;
+        } catch (IOException | IllegalArgumentException exception) {
+            return null;
+        }
     }
 }

@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import toothless.exception.ToothlessException;
 import toothless.task.Deadline;
 import toothless.task.DeadlineDate;
 import toothless.task.Event;
+import toothless.task.EventTime;
 import toothless.task.Task;
 import toothless.task.TaskList;
 import toothless.task.Todo;
@@ -27,6 +29,7 @@ public class Storage {
     private static final int MINIMUM_TEMPORARY_FILE_PREFIX_LENGTH = 3;
 
     private final Path dataFile;
+    private boolean isWriteBlocked;
 
     /**
      * Creates storage that writes to the given data file.
@@ -44,10 +47,13 @@ public class Storage {
      * @throws StorageException if the file cannot be written safely
      */
     public void save(TaskList taskList) throws StorageException {
+        if (isWriteBlocked) {
+            throw new StorageException("Saved data needs attention before writing", null);
+        }
         List<String> serializedTasks = serializeTasks(taskList);
         try {
             writeTasksSafely(serializedTasks);
-        } catch (IOException exception) {
+        } catch (IOException | SecurityException exception) {
             throw new StorageException("Unable to save tasks", exception);
         }
     }
@@ -110,21 +116,23 @@ public class Storage {
      */
     public StorageLoadResult load() throws StorageException {
         TaskList taskList = new TaskList();
-        if (Files.notExists(dataFile)) {
-            return new StorageLoadResult(taskList, 0);
-        }
         int malformedLineCount = 0;
         try {
+            if (Files.notExists(dataFile)) {
+                return new StorageLoadResult(taskList, 0);
+            }
             for (String line : Files.readAllLines(dataFile, StandardCharsets.UTF_8)) {
                 try {
-                    taskList.addTask(deserialize(line));
-                } catch (IllegalArgumentException | DateTimeParseException exception) {
+                    taskList.addUniqueTask(deserialize(line));
+                } catch (IllegalArgumentException | DateTimeParseException | ToothlessException exception) {
                     malformedLineCount++;
                 }
             }
-        } catch (IOException exception) {
+        } catch (IOException | SecurityException exception) {
+            isWriteBlocked = true;
             throw new StorageException("Unable to load tasks", exception);
         }
+        isWriteBlocked = malformedLineCount > 0;
         return new StorageLoadResult(taskList, malformedLineCount);
     }
 
@@ -190,7 +198,7 @@ public class Storage {
      * @throws IllegalArgumentException if the line has invalid fields or escape sequences
      * @throws DateTimeParseException if a stored deadline date is invalid
      */
-    private Task deserialize(String line) {
+    private Task deserialize(String line) throws ToothlessException {
         if (line.isBlank()) {
             throw new IllegalArgumentException("Saved task line is empty");
         }
@@ -203,6 +211,9 @@ public class Storage {
 
         Task task = createTask(taskType, fields);
         validateRequiredFields(task);
+        if (task instanceof Event event) {
+            EventTime.validate(event.getFrom(), event.getTo());
+        }
         restoreCompletionStatus(task, status);
         return task;
     }
@@ -257,9 +268,9 @@ public class Storage {
      * @throws IllegalArgumentException if a required field is empty
      */
     private void validateRequiredFields(Task task) {
-        boolean hasEmptyDescription = task.getDescription().isEmpty();
+        boolean hasEmptyDescription = task.getDescription().isBlank() || task.getDescription().length() > 500;
         boolean hasEmptyEventTime = task instanceof Event event
-                && (event.getFrom().isEmpty() || event.getTo().isEmpty());
+                && (event.getFrom().isBlank() || event.getTo().isBlank());
         if (hasEmptyDescription || hasEmptyEventTime) {
             throw new IllegalArgumentException("Saved task has an empty required field");
         }

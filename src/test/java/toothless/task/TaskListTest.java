@@ -36,6 +36,39 @@ public class TaskListTest {
         assertEquals(3, taskList.size());
     }
 
+    @Test
+    public void addUniqueTask_sameDetailsWithWhitespace_rejectsOnlyEquivalentTasks()
+            throws ToothlessException {
+        TaskList tasks = new TaskList();
+        tasks.addUniqueTask(new Todo("read   book"));
+        tasks.addUniqueTask(new Deadline("read book", LocalDate.of(2026, 9, 20)));
+        tasks.addUniqueTask(new Deadline("read book", LocalDate.of(2026, 9, 21)));
+        tasks.addUniqueTask(new Event("meet", "2pm", "3pm"));
+        tasks.addUniqueTask(new Event("meet", "2pm", "4pm"));
+        assertThrows(ToothlessException.class, () -> tasks.addUniqueTask(new Todo(" read book ")));
+        assertThrows(ToothlessException.class, () -> tasks.addUniqueTask(
+                new Deadline("read   book", LocalDate.of(2026, 9, 20))));
+        assertThrows(ToothlessException.class, () -> tasks.addUniqueTask(
+                new Event("meet", " 2pm ", "3pm")));
+        assertEquals(5, tasks.size());
+    }
+
+    @Test
+    public void editTask_conflictingEventOrDuplicate_preservesOriginalTask() {
+        TaskList tasks = new TaskList();
+        Todo original = new Todo("first");
+        tasks.addTask(original);
+        tasks.addTask(new Todo("second"));
+        Event event = new Event("meeting", "2pm", "3pm");
+        tasks.addTask(event);
+        assertThrows(ToothlessException.class, () -> tasks.editTask(2,
+                new TaskUpdate(" first ", null, null, null)));
+        assertThrows(ToothlessException.class, () -> tasks.editTask(3,
+                new TaskUpdate(null, null, "4pm", null)));
+        assertSame(original, tasks.getTask(0));
+        assertSame(event, tasks.getTask(2));
+    }
+
     /**
      * Verifies marking an empty list reports the focused empty-list error.
      */
